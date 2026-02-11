@@ -1,4 +1,9 @@
-.PHONY: build test clean
+.PHONY: setup build test clean
+
+# Create build directory, necessary after clean
+setup:
+	mkdir -p build
+	cd build && cmake ..
 
 # Run build
 build:
@@ -13,6 +18,6 @@ test:
 # Build and test together
 all: build test
 
-# Clean build files
+# Clean build files. Should do before pushing
 clean:
 	rm -rf build
