@@ -1,4 +1,7 @@
 #include <iostream>
+#include "features/Tuple.h"
+#include "Environment.h"
+#include "Projectile.h"
 
 int main() {
 
@@ -27,4 +30,13 @@ int main() {
     }
 
     std::clog << "\rDone.                 \n";
+
+    // Testing out the projectile
+    Projectile p = Projectile(Point(0,1,0), Vector(1,1,0));    
+    Environment e = Environment(Vector(0, -0.1, 0), Vector(-0.01, 0, 0));
+    while (p.position.y > 0) {
+        p.position = p.position + p.velocity;
+        p.velocity = p.velocity + e.gravity + e.wind;
+        std::clog << "(" << p.position.x << ", " << p.position.y << ", " << p.position.z << ")" << std::endl;
+    }
 }
