@@ -1,11 +1,10 @@
+#pragma once
+
 class Tuple {
 public:
     Tuple(float x, float y, float z, float w);
     ~Tuple() = default;
-    float x;
-    float y;
-    float z;
-    float w;
+    float x, y, z, w;
 
     float Magnitude();
     Tuple Normalized();

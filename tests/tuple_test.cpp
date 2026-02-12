@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include <cmath>
 #include "../src/features/Tuple.h" 
+#include "../src/features/Color.h"
 
 TEST(TupleTest, MakePoint1) {
     Tuple a = Tuple(4.3, -4.2, 3.1, 1.0);
@@ -132,3 +133,60 @@ TEST(TupleTest, TupleCrossProduct) {
     EXPECT_EQ(CrossProduct(b,a), Vector(1,-2,1));
 }
 
+TEST(TupleTest, CopyConstructor) {
+    Tuple a(1, 2, 3, 4);
+    Tuple b(a);  // Copy constructor
+    
+    EXPECT_EQ(a, b);
+}
+
+TEST(TupleTest, CopyAssignment) {
+    Tuple a(1, 2, 3, 4);
+    Tuple b(5, 6, 7, 8);
+    
+    a = b;
+    
+    EXPECT_EQ(a, b);
+}
+
+TEST(ColorTest, MakeColor) {
+    Color c = Color(-0.5, 0.4, 1.7);
+
+    EXPECT_FLOAT_EQ(c.x, -0.5);
+    EXPECT_FLOAT_EQ(c.y, 0.4);
+    EXPECT_FLOAT_EQ(c.z, 1.7);
+}
+
+TEST(ColorTest, ColorAddSubtractScalarMult) {
+    Color c1 = Color(0.9, 0.6, 0.75);
+    Color c2 = Color(0.7, 0.1, 0.25);
+
+    EXPECT_EQ(c1 + c2, Color(1.6, 0.7, 1.0));
+    EXPECT_EQ(c1 - c2, Color(0.2, 0.5, 0.5));
+
+    Color c = Color(0.2, 0.3, 0.4);
+    EXPECT_EQ(c * 2, Color(0.4, 0.6, 0.8));
+}
+
+TEST(ColorTest, MultiplyColors) {
+    Color c1 = Color(1, 0.2, 0.4);
+    Color c2 = Color(0.9, 1, 0.1);
+    
+    EXPECT_EQ(c1*c2, Color(0.9, 0.2, 0.04));
+}
+
+TEST(ColorTest, CopyConstructor) {
+    Color a(1.1, 2.2, 3.3);
+    Color b(a);  // Copy constructor
+    
+    EXPECT_EQ(a, b);
+}
+
+TEST(ColorTest, CopyAssignment) {
+    Color a(1, 2, 3);
+    Color b(4, 5, 6);
+    
+    a = b;
+    
+    EXPECT_EQ(a, b);
+}
