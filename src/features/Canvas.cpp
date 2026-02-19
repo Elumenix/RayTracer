@@ -23,6 +23,13 @@ void Canvas::WritePixelAt(int x, int y, Color color)
     pixels[index] = color;
 }
 
+void Canvas::WritePixelAt(float x, float y, Color color)
+{
+    int xInt = roundf32(x);
+    int yInt = roundf32(y);
+    WritePixelAt(xInt, yInt, color);
+}
+
 std::string Canvas::FormatWithLineBreaks(const std::string& input) {
     std::string result;
     std::istringstream iss(input);
