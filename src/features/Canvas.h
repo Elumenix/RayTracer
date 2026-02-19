@@ -5,6 +5,7 @@
 #include <string>
 #include <cmath>
 #include <sstream>
+#include <algorithm>
 
 class Canvas {
 private:

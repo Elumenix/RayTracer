@@ -58,11 +58,41 @@ TEST(CanvasTest, BodyString) {
     }
 
     getline(iss, line);
-    EXPECT_EQ(line, "255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0");
+    EXPECT_EQ(line, "255 0 0 0 0 0 0 0 0 0 0 0 0 0 0");
 
     getline(iss, line);
-    EXPECT_EQ(line, "0, 0, 0, 0, 0, 0, 0, 128, 0, 0, 0, 0, 0, 0, 0");
+    EXPECT_EQ(line, "0 0 0 0 0 0 0 128 0 0 0 0 0 0 0");
 
     getline(iss, line);
-    EXPECT_EQ(line, "0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255");
+    EXPECT_EQ(line, "0 0 0 0 0 0 0 0 0 0 0 0 0 0 255");
+}
+
+TEST(CanvasTest, SegmentedBodyString) {
+    Canvas c = Canvas(10,2);
+    for (int y = 0; y < 2; y++) {
+        for (int x = 0; x < 10; x++) {
+            c.WritePixelAt(x,y,Color(1,0.8,0.6));
+        }
+    }
+
+    std::string ppm = c.CanvasToPPM();
+    std::istringstream iss(ppm);
+
+    std::string line;
+    //Skip start stuff
+    for (int i = 0; i < 3; i++) {
+        getline(iss, line);
+    }
+
+    getline(iss, line);
+    EXPECT_EQ(line, "255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204");
+
+    getline(iss, line);
+    EXPECT_EQ(line, "153 255 204 153 255 204 153 255 204 153 255 204 153");
+
+    getline(iss, line);
+    EXPECT_EQ(line, "255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204");
+
+    getline(iss, line);
+    EXPECT_EQ(line, "153 255 204 153 255 204 153 255 204 153 255 204 153");
 }
