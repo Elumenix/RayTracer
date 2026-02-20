@@ -65,6 +65,22 @@ template <std::size_t width, std::size_t height> struct Matrix {
         return !(*this == other);
     }
 
+    Matrix<height, width> Transpose() const {
+        Matrix ret = Matrix<height, width>();
+        
+        for (int x = 0; x < height; x++) {
+            for (int y = 0; y < width; y++) {
+                ret[x][y] = (*this)[y][x];
+            }
+        }
+
+        return ret;
+    }
+
+    float Determinant() const requires (width == height) {
+        return 0.0;
+    }
+
     // Lets the matrix print to screen
     friend std::ostream& operator<<(std::ostream& os, const Matrix<width, height>& m) {
         os << "\n";
@@ -86,9 +102,20 @@ template <std::size_t width, std::size_t height> struct Matrix {
 };
 
 
-Matrix<1, 4> operator*(const Matrix<4, 4>& mat, const Tuple& other) {
-    Matrix<1, 4> tup({other.x, other.y, other.z, other.w});
-    return mat * tup;
+// Tuples can only multiply by 4x4 Matrices because they ar a 1x4 Matrix
+Tuple operator*(const Matrix<4, 4>& mat, const Tuple& other) {
+    float arr[4] = {other.x, other.y, other.z, other.w};
+    float ret[4] = {}; 
+
+    for (int i = 0; i < 4; i++) {
+        float sum = 0;
+        for (int j = 0; j < 4; j++) {
+            sum += mat[i][j] * arr[j];
+        }
+        ret[i] = sum;
+    }
+
+    return Tuple(ret[0], ret[1], ret[2], ret[3]);
 }
 
 template <std::size_t width, std::size_t height>

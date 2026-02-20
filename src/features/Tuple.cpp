@@ -1,5 +1,5 @@
 #include "Tuple.h"
-#include <cmath>;
+
 
 Tuple::Tuple(float x, float y, float z, float w) : x(x), y(y), z(z), w(w)
 {
@@ -65,4 +65,9 @@ Tuple operator*(const Tuple t, float scalar) {
 
 Tuple operator/(const Tuple t, float div) {
   return Tuple(t.x / div, t.y / div, t.z / div, t.w / div);
+}
+
+std::ostream &operator<<(std::ostream &os, const Tuple &t) {
+  os << "\n" << t.x << " " << t.y << " " << t.z << " " << t.w << std::endl;
+  return os;
 }

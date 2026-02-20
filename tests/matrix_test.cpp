@@ -82,19 +82,32 @@ TEST(MatrixTest, ScalarMultiplication) {
 }
 
 TEST(MatrixTest, TupleMultiplication) {
-    Matrix a = Matrix<4,4>({1,2,3,4,2,4,4,2,8,6,4,1,0,0,0,1});
+    Matrix A = Matrix<4,4>({1,2,3,4,2,4,4,2,8,6,4,1,0,0,0,1});
     Tuple b = Point(1,2,3);
 
-    Matrix expected = Matrix<1,4>({18,24,33,1});
+    Tuple expected = Tuple(18,24,33,1);
 
     // b * a wouldn't make sense
-    EXPECT_EQ(a * b, expected);
+    EXPECT_EQ(A * b, expected);
 }
 
 TEST(MatrixTest, IdentityMatrix) {
-    Matrix a = Matrix<4,4>({0,1,2,4,1,2,4,8,2,4,8,16,4,8,16,32});
-    EXPECT_EQ((a * Matrix<4,4>::Identity), a);
+    Matrix A = Matrix<4,4>({0,1,2,4,1,2,4,8,2,4,8,16,4,8,16,32});
+    EXPECT_EQ((A * Matrix<4,4>::Identity), A);
 
-    //Tuple b = Tuple(1,2,3,4);
-    //EXPECT_EQ((Matrix<4,4>::Identity * b), Matrix<1,4>(1,2,3,4));
+    Tuple b = Tuple(1,2,3,4);
+    EXPECT_EQ((Matrix<4,4>::Identity * b), b);
+}
+
+TEST(MatrixTest, TransposeTest) {
+    Matrix A = Matrix<4,4>({0,9,3,0,9,8,0,8,1,8,5,3,0,0,5,8});
+    Matrix T = Matrix<4,4>({0,9,1,0,9,8,8,0,3,0,5,5,0,8,3,8});
+
+    EXPECT_EQ(A.Transpose(), T);
+}
+
+TEST(MatrixTest, TransposeIdentity) {
+    Matrix A = Matrix<4,4>::Identity;
+
+    EXPECT_EQ(A.Transpose(), A);
 }
