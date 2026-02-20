@@ -111,3 +111,59 @@ TEST(MatrixTest, TransposeIdentity) {
 
     EXPECT_EQ(A.Transpose(), A);
 }
+
+TEST(MatrixTest, Determinant2x2) {
+    Matrix A = Matrix<2,2>({1,5,-3,2});
+
+    EXPECT_FLOAT_EQ(A.Determinant(), 17.0f);
+}
+
+TEST(MatrixTest, SubMatrix32) {
+    Matrix A = Matrix<3,3>({1,5,0,-3,2,7,0,6,-3});
+    Matrix E = Matrix<2,2>({-3,2,0,6});
+
+    EXPECT_EQ(A.SubMatrix(0, 2), E);
+}
+
+TEST(MatrixTest, SubMatrix43) {
+    Matrix A = Matrix<4,4>({-6,1,1,6,-8,5,8,6,-1,0,8,2,-7,1,-1,1});
+    Matrix E = Matrix<3,3>({-6,1,6,-8,8,6,-7,-1,1});
+
+    EXPECT_EQ(A.SubMatrix(2, 1), E);
+}
+
+TEST(MatrixTest, TestMinor) {
+    Matrix A = Matrix<3,3>({3,5,0,2,-1,-7,6,-1,5});
+    Matrix B = A.SubMatrix(1,0);
+
+    EXPECT_FLOAT_EQ(B.Determinant(), 25);
+    EXPECT_FLOAT_EQ(A.Minor(1,0), 25);
+}
+
+TEST(MatrixTest, Cofactors) {
+    Matrix A = Matrix<3,3>({3,5,0,2,-1,-7,6,-1,5});
+
+    EXPECT_FLOAT_EQ(A.Minor(0,0), -12);
+    EXPECT_FLOAT_EQ(A.Cofactor(0,0), -12);
+    EXPECT_FLOAT_EQ(A.Minor(1,0), 25);
+    EXPECT_FLOAT_EQ(A.Cofactor(1,0), -25);
+}
+
+TEST(MatrixTest, Determinant3x3) {
+    Matrix A = Matrix<3,3>({1,2,6,-5,8,-4,2,6,4});
+
+    EXPECT_FLOAT_EQ(A.Cofactor(0,0), 56);
+    EXPECT_FLOAT_EQ(A.Cofactor(0,1), 12);
+    EXPECT_FLOAT_EQ(A.Cofactor(0,2), -46);
+    EXPECT_FLOAT_EQ(A.Determinant(), -196);
+}
+
+TEST(MatrixTest, Determinant4x4) {
+    Matrix A = Matrix<4,4>({-2,-8,3,5,-3,1,7,3,1,2,-9,6,-6,7,7,-9});
+
+    EXPECT_FLOAT_EQ(A.Cofactor(0,0), 690);
+    EXPECT_FLOAT_EQ(A.Cofactor(0,1), 447);
+    EXPECT_FLOAT_EQ(A.Cofactor(0,2), 210);
+    EXPECT_FLOAT_EQ(A.Cofactor(0,3), 51);
+    EXPECT_FLOAT_EQ(A.Determinant(), -4071);
+}

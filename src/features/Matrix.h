@@ -18,21 +18,31 @@ template <std::size_t width, std::size_t height> struct Matrix {
 
     Matrix() = default;
     Matrix(std::initializer_list<float> values) {
-        if (values.size() != width * height)
+        if (values.size() != width * height) {
             throw std::invalid_argument("Wrong number of values");
+        }
+
         std::size_t i = 0;
-        for (float v : values)
+        for (float v : values) {
             mat[i++] = v;
+        } 
+    }
+
+    template <size_t n>
+    Matrix(const float (&arr)[n]) {
+        for (size_t i = 0; i < n; i++) {
+            mat[i] = arr[i];
+        }
     }
 
     // Apparently a indexing on a pointer does pointer arithmatic on it and dereferences it, so this is actually how you index a matrix
     // I did not know that this was how that worked in c++ until I tried to implement this
-    float* operator[](std::size_t row) {
-        return &mat[row * width];
+    float* operator[](std::size_t col) {
+        return &mat[col * height];
     }
 
-    const float* operator[](std::size_t row) const {
-        return &mat[row * width];
+    const float* operator[](std::size_t col) const {
+        return &mat[col * height];
     }
 
     // If the 3 dimension values don't line up, the IDE will flag it in the editor
@@ -77,9 +87,15 @@ template <std::size_t width, std::size_t height> struct Matrix {
         return ret;
     }
 
-    float Determinant() const requires (width == height) {
-        return 0.0;
+    float Determinant() const {
+        // ad - bc
+        return mat[0]*mat[3] - mat[1]*mat[2];
     }
+
+    Matrix<width-1, height-1> SubMatrix(int rowRemoved, int colRemoved) const;
+    float Minor(int row, int col) const;
+    float Cofactor(int row, int col) const;
+
 
     // Lets the matrix print to screen
     friend std::ostream& operator<<(std::ostream& os, const Matrix<width, height>& m) {
@@ -131,4 +147,37 @@ Matrix<width, height> operator*(const Matrix<width, height>& mat, float scalar) 
 template <std::size_t width, std::size_t height>
 Matrix<width, height> operator*(float scalar, const Matrix<width, height>& mat) {
     return mat * scalar;
+}
+
+template <size_t width, size_t height>
+inline Matrix<width-1, height-1> Matrix<width, height>::SubMatrix(int rowRemoved, int colRemoved) const {
+    float newArr[(width-1) * (height-1)] = {};
+    int index = 0;
+
+    for (int y = 0; y < height; y++) {
+        if (y == rowRemoved) continue;
+
+        for (int x = 0; x < width; x++) {
+            if (x == colRemoved) continue;
+            newArr[index] = (*this)[y][x];
+            index++;
+        } 
+    }
+
+    return Matrix<width-1, height-1>(newArr);
+}
+
+template <std::size_t width, std::size_t height>
+inline float Matrix<width, height>::Minor(int row, int col) const {
+    Matrix<width-1,height-1> m = SubMatrix(row, col);
+    return m.Determinant();
+}
+
+template <std::size_t width, std::size_t height>
+inline float Matrix<width, height>::Cofactor(int row, int col) const
+{
+    // even sum is positive, odd sum is negative
+    int sign = ((row + col) % 2) * -2 + 1;
+
+    return Minor(row, col) * sign;
 }
