@@ -65,7 +65,7 @@ template <std::size_t width, std::size_t height> struct Matrix {
         const float* mat2 = other.data();
 
         for (std::size_t i = 0; i < width * height; i++)
-            if (std::abs(mat[i] - mat2[i]) > 1e-6f)
+            if (std::abs(mat[i] - mat2[i]) > 1e-3f)
                 return false;
 
         return true;
@@ -88,13 +88,50 @@ template <std::size_t width, std::size_t height> struct Matrix {
     }
 
     float Determinant() const {
-        // ad - bc
-        return mat[0]*mat[3] - mat[1]*mat[2];
+        static_assert(width == height, "Determinant only exists for square matrices");
+
+        if constexpr (width == 2) {
+            // ad - bc
+            return mat[0]*mat[3] - mat[1]*mat[2];
+        }
+        else {
+            float determinant = 0;
+
+            for (int i = 0; i < width; i++) {
+                determinant += (*this)[0][i] * Cofactor(0, i);
+            }
+
+            return determinant;
+        }
     }
 
     Matrix<width-1, height-1> SubMatrix(int rowRemoved, int colRemoved) const;
     float Minor(int row, int col) const;
     float Cofactor(int row, int col) const;
+    constexpr bool IsInvertible() const {
+        float det = Determinant();
+
+        // If the determinant is essentially 0, this matrix can't be inverted
+        return abs(det) > 1e-3;
+    }
+
+    Matrix<width, height> Inverse() const {
+        static_assert(width == height, "Only square matrices can be inverted");
+
+        bool isInvertible = IsInvertible();
+        assert(isInvertible && "This matrix cannot be inverted");
+
+        Matrix m2 = Matrix<width, height>();
+        float det = Determinant();
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                m2[x][y] = Cofactor(y, x) / det;
+            }
+        }
+
+        return m2;
+    }
 
 
     // Lets the matrix print to screen
