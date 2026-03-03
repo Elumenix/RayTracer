@@ -45,7 +45,6 @@ public:
     float cofactor(int row, int col) const;
     bool  isInvertible() const { return std::abs(determinant()) > 1e-3f; }
 
-
     // Stream Output
     friend std::ostream& operator<<(std::ostream& os, const Matrix<Width, Height>& m) {
         os << "\n";

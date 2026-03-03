@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "../src/features/Matrix.h"
+#include "../src/features/Transformations.h"
 #include "../src/features/Tuple.h"
 
 TEST(MatrixTest, CreateMatrix4x4) {
@@ -223,4 +224,158 @@ TEST(MatrixTest, InverseEquality) {
     Matrix C = A * B;
 
     EXPECT_EQ(C * B.inverse(), A);
+}
+
+TEST(MatrixTransformations, Translation) {
+    Matrix transform = transformations::translation(5, -3, 2);
+    Tuple p = Point(-3,4,5);
+
+    EXPECT_EQ(transform * p, Point(2,1,7));
+}
+
+TEST(MatrixTransformations, InvTranslation) {
+    Matrix transform = transformations::translation(5,-3,2);
+    Matrix inv = transform.inverse();
+    Tuple p = Point(-3,4,5);
+
+    EXPECT_EQ(inv * p, Point(-8,7,3));
+}
+
+TEST(MatrixTransformations, VectorTranslation) {
+    Matrix transform = transformations::translation(5,-3,2);
+    Tuple v = Vector(-3,4,5);
+
+    EXPECT_EQ(transform * v, v);
+}
+
+TEST(MatrixTransformations, PointScaling) {
+    Matrix transform = transformations::scaling(2,3,4);
+    Tuple p = Point(-4,6,8);
+
+    EXPECT_EQ(transform * p, Point(-8,18,32));
+}
+
+TEST(MatrixTransformations, VectorScaling) {
+    Matrix transform = transformations::scaling(2,3,4);
+    Tuple v = Vector(-4,6,8);
+
+    EXPECT_EQ(transform * v, Vector(-8, 18, 32));
+}
+
+TEST(MatrixTransformations, InverseScaling) {
+    Matrix transform = transformations::scaling(2,3,4);
+    Matrix inv = transform.inverse();
+    Tuple v = Vector(-4,6,8);
+
+    EXPECT_EQ(inv * v, Vector(-2,2,2));
+}
+
+TEST(MatrixTransformations, Reflection) {
+    Matrix transform = transformations::scaling(-1,1,1);
+    Tuple p = Point(2,3,4);
+
+    EXPECT_EQ(transform * p, Point(-2,3,4));
+}
+
+TEST(MatrixTransformations, XRotation) {
+    Tuple p = Point(0, 1, 0);
+    Matrix halfQuarter = transformations::rotationX(M_PI / 4);
+    Matrix fullQuarter = transformations::rotationX(M_PI / 2);
+
+    EXPECT_EQ(halfQuarter * p, Point(0, sqrtf(2.0f) / 2, sqrtf(2.0f) / 2));
+    EXPECT_EQ(fullQuarter * p, Point(0, 0, 1));
+}
+
+TEST(MatrixTransformations, XInvRotation) {
+    Tuple p = Point(0,1,0);
+    Matrix halfQuarter = transformations::rotationX(M_PI / 4);
+    Matrix inv = halfQuarter.inverse();
+
+    EXPECT_EQ(inv * p, Point(0, sqrtf(2.0f) / 2, -sqrtf(2.0f) / 2));
+}
+
+TEST(MatrixTransformations, YRotation) {
+    Tuple p = Point(0,0,1);
+    Matrix halfQuarter = transformations::rotationY(M_PI / 4);
+    Matrix fullQuarter = transformations::rotationY(M_PI / 2);
+
+    EXPECT_EQ(halfQuarter * p, Point(sqrtf(2.0f) / 2, 0, sqrtf(2.0f) / 2));
+    EXPECT_EQ(fullQuarter * p, Point(1, 0, 0));
+}
+
+TEST(MatrixTransformations, ZRotation) {
+    Tuple p = Point(0,1,0);
+    Matrix halfQuarter = transformations::rotationZ(M_PI / 4);
+    Matrix fullQuarter = transformations::rotationZ(M_PI / 2);
+
+    EXPECT_EQ(halfQuarter * p, Point(-sqrtf(2.0f) / 2, sqrtf(2.0f) / 2, 0));
+    EXPECT_EQ(fullQuarter * p, Point(-1, 0, 0));
+}
+
+TEST(MatrixTransformations, ShearXY) {
+    Matrix transform = transformations::shearing(1,0,0,0,0,0);
+    Tuple p = Point(2,3,4);
+
+    EXPECT_EQ(transform * p, Point(5,3,4));
+}
+
+TEST(MatrixTransformations, ShearXZ) {
+    Matrix transform = transformations::shearing(0,1,0,0,0,0);
+    Tuple p = Point(2,3,4);
+
+    EXPECT_EQ(transform * p, Point(6,3,4));
+}
+
+TEST(MatrixTransformations, ShearYX) {
+    Matrix transform = transformations::shearing(0,0,1,0,0,0);
+    Tuple p = Point(2,3,4);
+
+    EXPECT_EQ(transform * p, Point(2,5,4));
+}
+
+TEST(MatrixTransformations, ShearYZ) {
+    Matrix transform = transformations::shearing(0,0,0,1,0,0);
+    Tuple p = Point(2,3,4);
+
+    EXPECT_EQ(transform * p, Point(2,7,4));
+}
+
+TEST(MatrixTransformations, ShearZX) {
+    Matrix transform = transformations::shearing(0,0,0,0,1,0);
+    Tuple p = Point(2,3,4);
+
+    EXPECT_EQ(transform * p, Point(2,3,6));
+}
+
+TEST(MatrixTransformations, ShearZY) {
+    Matrix transform = transformations::shearing(0,0,0,0,0,1);
+    Tuple p = Point(2,3,4);
+
+    EXPECT_EQ(transform * p, Point(2,3,7));
+}
+
+TEST(MatrixTransformations, TransformationSequence) {
+    Tuple p = Point(1,0,1);
+    Matrix A = transformations::rotationX(M_PI / 2);
+    Matrix B = transformations::scaling(5,5,5);
+    Matrix C = transformations::translation(10,5,7);
+
+    Tuple p2 = A * p;
+    EXPECT_EQ(p2, Point(1,-1,0));
+
+    Tuple p3 = B * p2;
+    EXPECT_EQ(p3, Point(5,-5,0));
+
+    Tuple p4 = C * p3;
+    EXPECT_EQ(p4, Point(15,0,7));
+}
+
+TEST(MatrixTransformations, ChainTransformation) {
+    Tuple p = Point(1,0,1);
+    Matrix A = transformations::rotationX(M_PI / 2);
+    Matrix B = transformations::scaling(5,5,5);
+    Matrix C = transformations::translation(10,5,7);
+    Matrix T = C * B * A;
+
+    EXPECT_EQ(T * p, Point(15, 0, 7));
 }
