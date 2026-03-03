@@ -23,5 +23,6 @@ Tuple operator+(const Tuple lhs, const Tuple rhs);
 Tuple operator-(const Tuple lhs, const Tuple rhs);
 Tuple operator-(const Tuple neg);
 Tuple operator*(const Tuple t, float scalar);
+Tuple operator*(float scalar, const Tuple t);
 Tuple operator/(const Tuple t, float div);
 std::ostream& operator<<(std::ostream& os, const Tuple& t); 

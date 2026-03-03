@@ -63,6 +63,11 @@ Tuple operator*(const Tuple t, float scalar) {
   return Tuple(t.x * scalar, t.y * scalar, t.z * scalar, t.w * scalar);
 }
 
+Tuple operator*(float scalar, const Tuple t) {
+  return t * scalar;
+}
+
+
 Tuple operator/(const Tuple t, float div) {
   return Tuple(t.x / div, t.y / div, t.z / div, t.w / div);
 }
