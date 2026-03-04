@@ -1,12 +1,11 @@
 #pragma once
+#include "Shape.h"
 #include "Transformations.h"
+#include "Ray.h"
+#include "Intersection.h"
 
-class Sphere {
-private:
-    // Shared iterator makes it so every sphere will have a unique ID
-    inline static int idIterator = 0;
-
+class Sphere : Shape {
 public:
-    const int id;
-    Sphere() : id(idIterator++) {}
+    Sphere() = default;
+    IntersectionList intersects(Ray r) const;
 };

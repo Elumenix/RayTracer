@@ -1,5 +1,8 @@
 #include <gtest/gtest.h>
 #include "../src/features/Ray.h"
+#include "../src/features/Sphere.h"
+#include "../src/features/Intersection.h"
+#include "../src/features/IntersectionList.h"
 
 TEST(RayTest, CreateAndQuery) {
     Tuple origin = Point(1,2,3);
@@ -22,47 +25,48 @@ TEST(RayTest, PositionQuery) {
 TEST(RayTest, TwoPointIntersection) {
     Ray r = Ray(Point(0,0,-5), Vector(0,0,1));
     Sphere s;
-    IntersectionResult xs = r.intersects(s);
+    IntersectionList xs = s.intersects(r);
 
-    EXPECT_EQ(xs.hit, true);
-    EXPECT_FLOAT_EQ(xs.t1, 4.0f);
-    EXPECT_FLOAT_EQ(xs.t2, 6.0f);
+    EXPECT_FLOAT_EQ(xs[0]->t, 4.0f);
+    EXPECT_FLOAT_EQ(xs[1]->t, 6.0f);
 }
 
 TEST(RayTest, TangentIntersection) {
     Ray r = Ray(Point(0,1,-5), Vector(0,0,1));
     Sphere s;
-    IntersectionResult xs = r.intersects(s);
+    IntersectionList xs = s.intersects(r);
 
-    EXPECT_EQ(xs.hit, true);
-    EXPECT_FLOAT_EQ(xs.t1, 5.0f);
-    EXPECT_FLOAT_EQ(xs.t2, 5.0f);
+    EXPECT_FLOAT_EQ(xs[0]->t, 5.0f);
+    EXPECT_FLOAT_EQ(xs[1]->t, 5.0f);
 }
 
 TEST(RayTest, RayMissed) {
     Ray r = Ray(Point(0,2,-5), Vector(0,0,1));
     Sphere s;
-    IntersectionResult xs = r.intersects(s);
+    IntersectionList xs = s.intersects(r);
 
-    EXPECT_EQ(xs.hit, false);
+    EXPECT_EQ(xs.size() == 0, true);
 }
 
 TEST(RayTest, RayInsideSphere) {
     Ray r = Ray(Point(0,0,0), Vector(0,0,1));
     Sphere s;
-    IntersectionResult xs = r.intersects(s);
+    IntersectionList xs = s.intersects(r);
 
-    EXPECT_EQ(xs.hit, true);
-    EXPECT_FLOAT_EQ(xs.t1, -1.0f);
-    EXPECT_FLOAT_EQ(xs.t2, 1.0f);
+    EXPECT_FLOAT_EQ(xs[0]->t, -1.0f);
+    EXPECT_FLOAT_EQ(xs[1]->t, 1.0f);
 }
 
 TEST(RayTest, RayBehindSphere) {
     Ray r = Ray(Point(0,0,5), Vector(0,0,1));
     Sphere s;
-    IntersectionResult xs = r.intersects(s);
+    IntersectionList xs = s.intersects(r);
 
-    EXPECT_EQ(xs.hit, true);
-    EXPECT_FLOAT_EQ(xs.t1, -6.0f);
-    EXPECT_FLOAT_EQ(xs.t2, -4.0f);
+    EXPECT_FLOAT_EQ(xs[0]->t, -6.0f);
+    EXPECT_FLOAT_EQ(xs[1]->t, -4.0f);
 }
+
+/*TEST(RayTest, IntersectionStruct) {
+    Sphere s;
+    Intersection i = Intersection(3.5, s);
+}*/
