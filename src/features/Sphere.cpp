@@ -2,10 +2,13 @@
 
 IntersectionList Sphere::intersects(Ray r) const
 {
+    // We are transforming the ray instead of the sphere to determine the intersection
+    Ray r2 = r.transform(transform.inverse());
+
     // Sphere is currently hard-coded to be at the world origin
-    Tuple sphereToRay = r.origin - Point(0,0,0);
-    float a = DotProduct(r.direction, r.direction); // squared distance
-    float b = 2 * DotProduct(r.direction, sphereToRay);
+    Tuple sphereToRay = r2.origin - Point(0,0,0); // Creates a vector, which is why r2.origin isn't used
+    float a = DotProduct(r2.direction, r2.direction); // squared distance
+    float b = 2 * DotProduct(r2.direction, sphereToRay);
     float c = DotProduct(sphereToRay, sphereToRay) - 1;
 
     float discriminant = b * b - 4 * a * c;

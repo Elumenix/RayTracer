@@ -1,6 +1,7 @@
 #pragma once
 #include "IntersectionList.h"
 #include "Ray.h"
+#include "Matrix.h"
 
 class Shape {
 protected:
@@ -9,5 +10,6 @@ protected:
 
 public:
     const int id;
+    Matrix<4,4> transform = IdentityMatrix;
     virtual IntersectionList intersects(Ray r) const = 0;
 };

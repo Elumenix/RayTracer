@@ -1,5 +1,6 @@
 #pragma once
 #include <cstddef>
+#include <cassert>
 #include "Tuple.h"
 
 template <std::size_t Width, std::size_t Height> 

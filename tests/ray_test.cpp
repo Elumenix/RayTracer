@@ -94,3 +94,93 @@ TEST(RayTest, IntersectionListStorageOnRays) {
     EXPECT_EQ(xs[0]->object, &s);
     EXPECT_EQ(xs[1]->object, &s);
 }
+
+TEST(RayTest, HitAllPositive) {
+    Sphere s;
+    Intersection i1 = Intersection(1, &s);
+    Intersection i2 = Intersection(2, &s);
+    IntersectionList xs = {i2,i1};
+
+    EXPECT_FLOAT_EQ(xs.hit()->t, i1.t);
+}
+
+TEST(RayTest, HitSomeNegative) {
+    Sphere s;
+    Intersection i1 = Intersection(-1, &s);
+    Intersection i2 = Intersection(1, &s);
+    IntersectionList xs = {i2, i1};
+
+    EXPECT_FLOAT_EQ(xs.hit()->t, i2.t);
+}
+
+TEST(RayTest, HitAllNegative) {
+    Sphere s;
+    Intersection i1 = Intersection(-2, &s);
+    Intersection i2 = Intersection(-1, &s);
+    IntersectionList xs = {i2, i1};
+
+    EXPECT_EQ(xs.hit(), nullptr);
+}
+
+TEST(RayTest, HitWithManyIntersections) {
+    Sphere s;
+    Intersection i1 = Intersection(5, &s);
+    Intersection i2 = Intersection(7, &s);
+    Intersection i3 = Intersection(-3, &s);
+    Intersection i4 = Intersection(2, &s);
+    IntersectionList xs = {i1, i2, i3, i4};
+
+    EXPECT_FLOAT_EQ(xs.hit()->t, i4.t);
+} 
+
+TEST(RayTest, RayTranslation) {
+    Ray r = Ray(Point(1,2,3), Vector(0,1,0));
+    Matrix m = transformations::translation(3,4,5);
+    Ray r2 = r.transform(m);
+
+    EXPECT_EQ(r2.origin, Point(4,6,8));
+    EXPECT_EQ(r2.direction, Vector(0,1,0));
+}
+
+TEST(RayTest, RayScaling) {
+    Ray r = Ray(Point(1,2,3), Vector(0,1,0));
+    Matrix m = transformations::scaling(2,3,4);
+    Ray r2 = r.transform(m);
+
+    EXPECT_EQ(r2.origin, Point(2,6,12));
+    EXPECT_EQ(r2.direction, Vector(0,3,0));
+}
+
+TEST(RayTest, DefaultShapeTransformation) {
+    Sphere s;
+
+    EXPECT_EQ(s.transform, IdentityMatrix);
+}
+
+TEST(RayTest, ChangeShapeTransformation) {
+    Sphere s;
+    Matrix t = transformations::translation(2,3,4);
+    s.transform = t;
+
+    EXPECT_EQ(s.transform, t);
+}
+
+TEST(RayTest, ScaledSphereRayIntersection) {
+    Ray r = Ray(Point(0,0,-5), Vector(0,0,1));
+    Sphere s;
+    s.transform = transformations::scaling(2,2,2);
+    IntersectionList xs = s.intersects(r);
+
+    EXPECT_EQ(xs.size(), 2);
+    EXPECT_FLOAT_EQ(xs[0]->t, 3);
+    EXPECT_FLOAT_EQ(xs[1]->t, 7);
+}
+
+TEST(RayTest, TranslatedSphereRayIntersection) {
+    Ray r = Ray(Point(0,0,-5), Vector(0,0,1));
+    Sphere s;
+    s.transform = transformations::translation(5,0,0);
+    IntersectionList xs = s.intersects(r);
+
+    EXPECT_EQ(xs.size(), 0);
+}

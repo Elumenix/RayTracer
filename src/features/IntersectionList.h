@@ -17,5 +17,6 @@ public:
     const Intersection* operator[](std::size_t index) const { return &list[index]; }
 
     // Methods
-    std::size_t size() { return list.size(); }
+    const Intersection* hit() const;
+    std::size_t size() const { return list.size(); }
 };
