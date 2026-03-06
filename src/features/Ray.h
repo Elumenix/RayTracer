@@ -4,10 +4,10 @@
 
 struct Ray {
 public:
-    Tuple origin;
-    Tuple direction;
+    Point origin;
+    Vector direction;
 
-    Ray(Tuple p_origin, Tuple v_direction) : origin(p_origin), direction(v_direction){};
-    Tuple position(float t) const {return origin + t * direction; };
-    Ray transform(Matrix<4,4> m) { return Ray(m * origin, m * direction); }
+    Ray(Point p_origin, Vector v_direction) : origin(p_origin), direction(v_direction){};
+    Point position(float t) const {return origin + t * direction; };
+    Ray transform(Matrix<4,4> m) { return Ray(m * origin, m * direction); };
 };

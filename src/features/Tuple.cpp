@@ -18,16 +18,6 @@ Tuple Tuple::Normalized()
     return Tuple(x/magnitude, y/magnitude, z/magnitude, w/magnitude);
 }
 
-Tuple Point(float x, float y, float z)
-{
-    return Tuple(x, y, z, 1.0);
-}
-
-Tuple Vector(float x, float y, float z)
-{
-    return Tuple(x, y, z, 0.0);
-}
-
 float DotProduct(Tuple a, Tuple b)
 {
     return a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;

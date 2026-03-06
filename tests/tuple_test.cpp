@@ -20,13 +20,13 @@ TEST(TupleTest, MakeVector1) {
 }
 
 TEST(TupleTest, MakePoint2) {
-    Tuple p = Point(4, -4, 3);
+    Point p = Point(4, -4, 3);
 
     EXPECT_EQ(p, Tuple(4, -4, 3, 1));
 }
 
 TEST(TupleTest, MakeVector2) {
-    Tuple v = Vector(4, -4, 3);
+    Vector v = Vector(4, -4, 3);
 
     EXPECT_EQ(v, Tuple(4, -4, 3, 0));
 }
@@ -39,29 +39,29 @@ TEST(TupleTest, AddTuple) {
 }
 
 TEST(TupleTest, SubtractPoints) {
-    Tuple p1 = Point(3,2,1);
-    Tuple p2 = Point(5,6,7);
+    Point p1 = Point(3,2,1);
+    Point p2 = Point(5,6,7);
 
     EXPECT_EQ(p1 - p2, Vector(-2,-4,-6));
 }
 
 TEST(TupleTest, SubtractVectorFromPoint) {
-    Tuple p = Point(3,2,1);
-    Tuple v = Vector(5,6,7);
+    Point p = Point(3,2,1);
+    Vector v = Vector(5,6,7);
 
     EXPECT_EQ(p - v, Point(-2,-4,-6));
 }
 
 TEST(TupleTest, SubtractingTwoVectors) {
-    Tuple v1 = Vector(3,2,1);
-    Tuple v2 = Vector(5,6,7);
+    Vector v1 = Vector(3,2,1);
+    Vector v2 = Vector(5,6,7);
 
     EXPECT_EQ(v1 - v2, Vector(-2,-4,-6));
 }
 
 TEST(TupleTest, SubtractFromZeroVector) {
     Tuple zero = Vector(0,0,0);
-    Tuple v = Vector(1,-2,3);
+    Vector v = Vector(1,-2,3);
 
     EXPECT_EQ(zero - v, Vector(-1,2,-3));
 }
@@ -108,26 +108,26 @@ TEST(TupleTest, VectorMagnitude) {
 }
 
 TEST(TupleTest, TupleNormalize) {
-    Tuple v1 = Vector(4,0,0);
+    Vector v1 = Vector(4,0,0);
     EXPECT_EQ(v1.Normalized(), Vector(1,0,0));
 
-    Tuple v2 = Vector(1,2,3);
+    Vector v2 = Vector(1,2,3);
     EXPECT_EQ(v2.Normalized(), Vector(0.26726, 0.53452, 0.80178));
 
-    Tuple norm = v2.Normalized();
+    Vector norm = v2.Normalized();
     EXPECT_FLOAT_EQ(norm.Magnitude(), 1);
 }
 
 TEST(TupleTest, TupleDotProduct) {
-    Tuple a = Vector(1,2,3);
-    Tuple b = Vector(2,3,4);
+    Vector a = Vector(1,2,3);
+    Vector b = Vector(2,3,4);
 
     EXPECT_FLOAT_EQ(DotProduct(a,b), 20);
 }
 
 TEST(TupleTest, TupleCrossProduct) {
-    Tuple a = Vector(1,2,3);
-    Tuple b = Vector(2,3,4);
+    Vector a = Vector(1,2,3);
+    Vector b = Vector(2,3,4);
 
     EXPECT_EQ(CrossProduct(a,b), Vector(-1,2,-1));
     EXPECT_EQ(CrossProduct(b,a), Vector(1,-2,1));

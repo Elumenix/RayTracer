@@ -13,8 +13,19 @@ public:
     Tuple Normalized();
 };
 
-Tuple Point(float x, float y, float z);
-Tuple Vector(float x, float y, float z);
+// Point and Vector are essentially just semantics of Tuple with a set w value if the constructor is used
+class Point : public Tuple {
+public:
+    Point(float x, float y, float z) : Tuple(x, y, z, 1.0f) {}
+    Point(const Tuple& t) : Tuple(t) {} // implicit conversion so math works
+};
+
+class Vector : public Tuple {
+public:
+    Vector(float x, float y, float z) : Tuple(x, y, z, 0.0f) {}
+    Vector(const Tuple& t) : Tuple(t) {} // implicit conversion so math works
+};
+
 float DotProduct(Tuple a, Tuple b);
 Tuple CrossProduct(Tuple a, Tuple b);
 
