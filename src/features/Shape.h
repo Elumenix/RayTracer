@@ -1,5 +1,6 @@
 #pragma once
 #include "IntersectionList.h"
+#include "Ray.h"
 
 class Shape {
 protected:
@@ -8,5 +9,5 @@ protected:
 
 public:
     const int id;
-    virtual IntersectionList intersects() const = 0;
+    virtual IntersectionList intersects(Ray r) const = 0;
 };

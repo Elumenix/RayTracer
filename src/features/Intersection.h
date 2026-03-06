@@ -1,8 +1,8 @@
 #pragma once
-#include "Shape.h"
+class Shape; // The program simply needs to know that the class exists
 
 struct Intersection {
-    float t;
-    Shape& object;
-    Intersection(float m_t, Shape& m_object) : t(m_t), object(m_object){};
+    const float t;
+    const Shape* object;
+    Intersection(float m_t, const Shape* m_object) : t(m_t), object(m_object){};
 };

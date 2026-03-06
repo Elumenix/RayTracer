@@ -4,8 +4,8 @@
 #include "Ray.h"
 #include "Intersection.h"
 
-class Sphere : Shape {
+class Sphere : public Shape {
 public:
     Sphere() = default;
-    IntersectionList intersects(Ray r) const;
+    IntersectionList intersects(Ray r) const override;
 };

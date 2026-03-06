@@ -66,7 +66,31 @@ TEST(RayTest, RayBehindSphere) {
     EXPECT_FLOAT_EQ(xs[1]->t, -4.0f);
 }
 
-/*TEST(RayTest, IntersectionStruct) {
+TEST(RayTest, IntersectionStruct) {
     Sphere s;
-    Intersection i = Intersection(3.5, s);
-}*/
+    Intersection i = Intersection(3.5f, &s);
+
+    EXPECT_FLOAT_EQ(i.t, 3.5f);
+    EXPECT_EQ(i.object, &s);
+}
+
+TEST(RayTest, AggregatingIntersections) {
+    Sphere s;
+    Intersection i1 = Intersection(1, &s);
+    Intersection i2 = Intersection(2, &s);
+    IntersectionList xs = {i1, i2};
+
+    EXPECT_EQ(xs.size(), 2);
+    EXPECT_EQ(xs[0]->t, 1);
+    EXPECT_EQ(xs[1]->t, 2);
+}
+
+TEST(RayTest, IntersectionListStorageOnRays) {
+    Ray r = Ray(Point(0,0,-5), Vector(0,0,1));
+    Sphere s;
+    IntersectionList xs = s.intersects(r);
+
+    EXPECT_EQ(xs.size(), 2);
+    EXPECT_EQ(xs[0]->object, &s);
+    EXPECT_EQ(xs[1]->object, &s);
+}

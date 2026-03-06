@@ -18,8 +18,8 @@ IntersectionList Sphere::intersects(Ray r) const
     float discSqrt = sqrtf(discriminant);
 
     // Get two intersection points wether they are in front of or behind the sphere
-    Intersection t1 = Intersection((-b - discSqrt) / (2 * a), *this);
-    Intersection t2 = Intersection((-b + discSqrt) / (2 * a), *this);
+    Intersection t1 = Intersection((-b - discSqrt) / (2 * a), this);
+    Intersection t2 = Intersection((-b + discSqrt) / (2 * a), this);
     
     return {t1, t2};
 }
