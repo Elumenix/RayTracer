@@ -5,21 +5,37 @@
 #include "features/Matrix.h"
 #include "features/Transformations.h"
 #include "features/Canvas.h"
+#include "features/Sphere.h"
 
 int main() {
 
     // Image
-    int image_width = 100;
-    int image_height = 100;
-    Canvas canvas = Canvas(image_width, image_height);
-    Color white = Color(1,1,1);
+    int imageDimensions = 100;
+    Canvas canvas = Canvas(imageDimensions, imageDimensions);
+    Color Red = Color(1,0,0);
+    Point rayOrigin = Point(0,0,-5);
+    float WallZ = 10;
+    float wallSize = 7;
+    float pixelSize = wallSize / imageDimensions;
+    float half = wallSize / 2;
+    Sphere s;
 
-    float clockRadius = image_width * .45f;
-    for (int i = 0; i < 12; i++) {
-        Tuple p = Point(0,0,0);
-        Matrix rot = transformations::rotationY(i * (M_PI / 6));
-        p = rot * Point(0,0,1) * clockRadius; 
-        canvas.WritePixelAt((int)roundf(p.x + image_width / 2), (int)roundf(p.z + image_height / 2), white);
+    for (auto y = 0; y < imageDimensions; y++) {
+        // Converting from pixel space to wall space
+        float worldY = half - pixelSize * y;
+
+        for (auto x = 0; x < imageDimensions; x++) {
+            float worldX = -half + pixelSize * x;
+            
+            Point pos = Point(worldX, worldY, WallZ);
+            Ray r = Ray(rayOrigin, (pos - rayOrigin).Normalized());
+            IntersectionList xs = s.intersects(r);
+
+            // If there's a hit in world space, we can write at the point in pixel space
+            if (xs.hit() != nullptr) {
+                canvas.WritePixelAt(x, y, Red);
+            }
+        }
     }
 
     std::string ppm = canvas.CanvasToPPM();
