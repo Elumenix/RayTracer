@@ -18,7 +18,7 @@ int main() {
     float wallSize = 7;
     float pixelSize = wallSize / imageDimensions;
     float half = wallSize / 2;
-    Sphere s;
+    Sphere s; 
 
     for (auto y = 0; y < imageDimensions; y++) {
         // Converting from pixel space to wall space

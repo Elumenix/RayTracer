@@ -149,6 +149,22 @@ TEST(TupleTest, CopyAssignment) {
     EXPECT_EQ(a, b);
 }
 
+TEST(TupleTest, Reflection45) {
+    Vector v = Vector(1,-1,0);
+    Vector n = Vector(0,1,0);
+    Vector r = Reflect(v, n);
+
+    EXPECT_EQ(r, Vector(1,1,0));
+}
+
+TEST(TupleTest, ReflectionSlanted) {
+    Vector v = Vector(0,-1,0);
+    Vector n = Vector(sqrtf(2.0)/2, sqrtf(2.0f)/2, 0);
+    Vector r = Reflect(v, n);
+
+    EXPECT_EQ(r, Vector(1,0,0));
+}
+
 TEST(ColorTest, MakeColor) {
     Color c = Color(-0.5, 0.4, 1.7);
 

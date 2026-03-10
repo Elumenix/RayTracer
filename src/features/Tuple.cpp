@@ -28,6 +28,11 @@ Tuple CrossProduct(Tuple a, Tuple b)
     return Vector(a.y*b.z - a.z*b.y, a.z*b.x - a.x*b.z, a.x*b.y - a.y*b.x);
 }
 
+Vector Reflect(Vector in, Vector normal)
+{
+    return in - normal * 2 * DotProduct(in, normal);
+}
+
 bool operator==(const Tuple lhs, const Tuple rhs)
 {
     if (abs(lhs.x - rhs.x) >= .0001) return false;

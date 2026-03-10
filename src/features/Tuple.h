@@ -28,6 +28,7 @@ public:
 
 float DotProduct(Tuple a, Tuple b);
 Tuple CrossProduct(Tuple a, Tuple b);
+Vector Reflect(Vector in, Vector normal);
 
 bool operator==(const Tuple lhs, const Tuple rhs);
 Tuple operator+(const Tuple lhs, const Tuple rhs);

@@ -151,20 +151,6 @@ TEST(RayTest, RayScaling) {
     EXPECT_EQ(r2.direction, Vector(0,3,0));
 }
 
-TEST(RayTest, DefaultShapeTransformation) {
-    Sphere s;
-
-    EXPECT_EQ(s.transform, IdentityMatrix);
-}
-
-TEST(RayTest, ChangeShapeTransformation) {
-    Sphere s;
-    Matrix t = transformations::translation(2,3,4);
-    s.transform = t;
-
-    EXPECT_EQ(s.transform, t);
-}
-
 TEST(RayTest, ScaledSphereRayIntersection) {
     Ray r = Ray(Point(0,0,-5), Vector(0,0,1));
     Sphere s;

@@ -26,3 +26,48 @@ IntersectionList Sphere::intersects(Ray r) const
     
     return {t1, t2};
 }
+
+Vector Sphere::normal_at(Point worldPoint) const
+{
+    // An assumption is made that the point is on the sphere
+    Point objectPoint = transform.inverse() * worldPoint;
+    Vector objectNormal = objectPoint - Point(0,0,0); 
+
+
+    Vector worldNormal = transform.inverse().transpose() * objectNormal;
+    worldNormal.w = 0; // Correct the w 
+    return worldNormal.Normalized();
+}
+
+Color Sphere::lighting(const Light light, const Point position, const Vector eye, const Vector normal) const
+{
+    Color diffuse = Color(0,0,0);
+    Color specular = Color(0,0,0);
+
+    Color effectiveColor = material.color * light.intensity;
+    Vector lightDir = (light.position - position).Normalized();
+    Color ambient = effectiveColor * material.ambient;
+
+    // Negative number here means that the light is on the other side of the surface
+    float lightDotNormal = DotProduct(lightDir, normal);
+    if (lightDotNormal < 0) {
+        diffuse = Color(0,0,0);
+        specular = Color(0,0,0);
+    }
+    else {
+        diffuse = effectiveColor * material.diffuse * lightDotNormal;
+        Vector reflectionVector = Reflect(-lightDir, normal);
+
+        // Negative number means light reflects away from the eye
+        float reflectDotEye = DotProduct(-lightDir, eye);
+        if (reflectDotEye <= 0) {
+            specular = Color(0,0,0);
+        }
+        else {
+            float factor = powf(reflectDotEye, material.shininess);
+            specular = light.intensity * material.specular * factor;
+        }
+    }
+
+    return ambient + diffuse + specular;
+}

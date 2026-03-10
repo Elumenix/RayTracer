@@ -2,6 +2,9 @@
 #include "IntersectionList.h"
 #include "Ray.h"
 #include "Matrix.h"
+#include "Material.h"
+#include "Tuple.h"
+#include "Light.h"
 
 class Shape {
 protected:
@@ -11,5 +14,8 @@ protected:
 public:
     const int id;
     Matrix<4,4> transform = IdentityMatrix;
+    Material material;
     virtual IntersectionList intersects(Ray r) const = 0;
+    virtual Vector normal_at(Point worldPoint) const = 0;
+    virtual Color lighting(const Light light, const Point position, const Vector eye, const Vector normal) const = 0;
 };
