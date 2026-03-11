@@ -3,7 +3,8 @@
 
 class Color : public Tuple{
 public:
-    Color(float r, float g, float b);
+    Color() : Tuple(1,1,1,0) {};
+    Color(float r, float g, float b) : Tuple(r, g, b, 0) {};
     Color(const Tuple& t) : Tuple(t.x, t.y, t.z, t.w) {}
     ~Color() = default;
 };

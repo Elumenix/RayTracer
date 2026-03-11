@@ -50,20 +50,13 @@ Color Sphere::lighting(const Light light, const Point position, const Vector eye
 
     // Negative number here means that the light is on the other side of the surface
     float lightDotNormal = DotProduct(lightDir, normal);
-    if (lightDotNormal < 0) {
-        diffuse = Color(0,0,0);
-        specular = Color(0,0,0);
-    }
-    else {
+    if (lightDotNormal >= 0) {
         diffuse = effectiveColor * material.diffuse * lightDotNormal;
         Vector reflectionVector = Reflect(-lightDir, normal);
 
         // Negative number means light reflects away from the eye
-        float reflectDotEye = DotProduct(-lightDir, eye);
-        if (reflectDotEye <= 0) {
-            specular = Color(0,0,0);
-        }
-        else {
+        float reflectDotEye = DotProduct(reflectionVector, eye);
+        if (reflectDotEye > 0) {
             float factor = powf(reflectDotEye, material.shininess);
             specular = light.intensity * material.specular * factor;
         }

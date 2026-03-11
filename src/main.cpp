@@ -10,15 +10,16 @@
 int main() {
 
     // Image
-    int imageDimensions = 100;
+    int imageDimensions = 128;
     Canvas canvas = Canvas(imageDimensions, imageDimensions);
-    Color Red = Color(1,0,0);
-    Point rayOrigin = Point(0,0,-5);
+    Point camera = Point(0,0,-5);
     float WallZ = 10;
     float wallSize = 7;
     float pixelSize = wallSize / imageDimensions;
     float half = wallSize / 2;
     Sphere s; 
+    s.material.color = Color(1,0.2,1);
+    Light light = Light(Point(-10,10,-10), Color(1,1,1));
 
     for (auto y = 0; y < imageDimensions; y++) {
         // Converting from pixel space to wall space
@@ -28,12 +29,18 @@ int main() {
             float worldX = -half + pixelSize * x;
             
             Point pos = Point(worldX, worldY, WallZ);
-            Ray r = Ray(rayOrigin, (pos - rayOrigin).Normalized());
+            Vector rayDir = (pos - camera).Normalized();
+            Ray r = Ray(camera, rayDir);
             IntersectionList xs = s.intersects(r);
 
             // If there's a hit in world space, we can write at the point in pixel space
             if (xs.hit() != nullptr) {
-                canvas.WritePixelAt(x, y, Red);
+                Point hitPosition = r.position(xs.hit()->t);
+                Vector normal = xs.hit()->object->normal_at(hitPosition);
+                Vector eye = -r.direction;
+
+                Color phongColor = xs.hit()->object->lighting(light, hitPosition, eye, normal);
+                canvas.WritePixelAt(x, y, phongColor);
             }
         }
     }
