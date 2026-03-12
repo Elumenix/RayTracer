@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include "Intersection.h"
+#include <algorithm>
 
 class IntersectionList {
 private:
@@ -9,8 +10,8 @@ private:
 public:
     // Constructor
     IntersectionList() = default;
-    IntersectionList(std::vector<Intersection> m_list) : list(m_list){};
-    IntersectionList(std::initializer_list<Intersection> values) : list(values){};
+    IntersectionList(std::vector<Intersection> m_list) : list(m_list){}
+    IntersectionList(std::initializer_list<Intersection> values) : list(values){}
 
     // Access
     Intersection* operator[](std::size_t index) { return &list[index]; }
@@ -19,4 +20,5 @@ public:
     // Methods
     const Intersection* hit() const;
     std::size_t size() const { return list.size(); }
+    void merge(IntersectionList &&other);
 };

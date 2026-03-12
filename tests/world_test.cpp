@@ -19,7 +19,18 @@ TEST(WorldTest, DefaultWorld) {
     s2.transform = transformations::scaling(0.5,0.5,0.5);
 
     EXPECT_EQ(w.lights[0], l);
-    // Need overload here for equality on base shape class
     EXPECT_EQ(*w.shapes[0], s1);
     EXPECT_EQ(*w.shapes[1], s2);
+}
+
+TEST(WorldTest, WorldIntersections) {
+    World w = World::Default();
+    Ray r = Ray(Point(0,0,-5), Vector(0,0,1));
+    IntersectionList xs = w.intersectWorld(r);
+
+    EXPECT_EQ(xs.size(), 4);
+    EXPECT_FLOAT_EQ(xs[0]->t, 4.0f);
+    EXPECT_FLOAT_EQ(xs[1]->t, 4.5f);
+    EXPECT_FLOAT_EQ(xs[2]->t, 5.5f);
+    EXPECT_FLOAT_EQ(xs[3]->t, 6.0f);
 }

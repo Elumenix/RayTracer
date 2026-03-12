@@ -19,3 +19,13 @@ World World::Default()
     
     return w;
 }
+
+const IntersectionList World::intersectWorld(const Ray r) const
+{
+    IntersectionList xs;
+    for(auto& shape : shapes) {
+        xs.merge(shape->intersects(r));
+    }
+
+    return xs;
+}

@@ -10,7 +10,7 @@ class World {
 public:
     std::vector<Light> lights;
     std::vector<std::unique_ptr<Shape>> shapes;
-    World(){};
+    World() = default;
     static World Default();
 
 
@@ -20,6 +20,6 @@ public:
         static_assert(std::is_base_of<Shape, T>::value, "T must derive from S"); 
         shapes.push_back(std::make_unique<T>(std::move(shape))); 
     };
-    void add(Light light) {lights.push_back(light);};
-
+    void add(Light light) { lights.push_back(light); }
+    const IntersectionList intersectWorld(const Ray r) const;
 };

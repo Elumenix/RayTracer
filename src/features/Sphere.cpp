@@ -1,6 +1,6 @@
 #include "Sphere.h"
 
-IntersectionList Sphere::intersects(Ray r) const
+IntersectionList Sphere::intersects(const Ray r) const
 {
     // We are transforming the ray instead of the sphere to determine the intersection
     Ray r2 = r.transform(transform.inverse());

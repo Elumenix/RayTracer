@@ -13,3 +13,9 @@ const Intersection * IntersectionList::hit() const
 
     return result;
 }
+
+void IntersectionList::merge(IntersectionList &&other)
+{
+    auto middle = list.insert(list.end(), other.list.begin(), other.list.end());
+    std::inplace_merge(list.begin(), middle, list.end());
+}
