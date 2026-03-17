@@ -29,3 +29,28 @@ const IntersectionList World::intersectWorld(const Ray r) const
 
     return xs;
 }
+
+Color World::shade_hit(const Comps &comp) const
+{
+    Color c = Color(0,0,0);
+
+    for (const Light& light : lights) {
+        c += comp.object->lighting(light, comp.point, comp.eye, comp.normal);
+    }
+
+    return c;
+}
+
+Color World::color_at(const Ray r) const
+{
+    IntersectionList xs = intersectWorld(r);
+    const Intersection* i = xs.hit();
+    
+    if (i == nullptr) {
+        return Color(0,0,0);
+    }
+
+    Comps comp = prepare_computation(*i, r);
+    Color c = shade_hit(comp);
+    return c;
+}

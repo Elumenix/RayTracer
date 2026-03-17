@@ -34,3 +34,54 @@ TEST(WorldTest, WorldIntersections) {
     EXPECT_FLOAT_EQ(xs[2]->t, 5.5f);
     EXPECT_FLOAT_EQ(xs[3]->t, 6.0f);
 }
+
+TEST(WorldTest, IntersectionShading) {
+    World w = World::Default();
+    Ray r = Ray(Point(0,0,-5), Vector(0,0,1));
+    Shape& shape = *w.shapes[0];
+    Intersection i = Intersection(4, &shape);
+    Comps comps = prepare_computation(i, r);
+    Color c = w.shade_hit(comps);
+
+    EXPECT_EQ(c, Color(0.38066, 0.47583, 0.2855));
+}
+
+TEST(WorldTest, IntersectionShadingInside) {
+    World w = World::Default();
+    w.lights[0] = Light(Point(0,0.25,0), Color(1,1,1));
+    Ray r = Ray(Point(0,0,0), Vector(0,0,1));
+    Shape& shape = *w.shapes[1];
+    Intersection i = Intersection(0.5f, &shape);
+    Comps comps = prepare_computation(i, r);
+    Color c = w.shade_hit(comps);
+
+    EXPECT_EQ(c, Color(0.90498f, 0.90498f, 0.90498f));
+}
+
+TEST(WorldTest, RayMiss) {
+    World w = World::Default();
+    Ray r = Ray(Point(0,0,-5),Vector(0,1,0));
+    Color c = w.color_at(r);
+
+    EXPECT_EQ(c, Color(0,0,0));
+}
+
+TEST(WorldTest, RayHitColor) {
+    World w = World::Default();
+    Ray r = Ray(Point(0,0,-5), Vector(0,0,1));
+    Color c = w.color_at(r);
+
+    EXPECT_EQ(c, Color(0.38066f, 0.47583f, 0.2855f));
+}
+
+TEST(WorldTest, BehindRayIntersection) {
+    World w = World::Default();
+    Shape& outer = *w.shapes[0];
+    outer.material.ambient = 1;
+    Shape& inner = *w.shapes[1];
+    inner.material.ambient = 1;
+    Ray r = Ray(Point(0,0,0.75), Vector(0,0,-1));
+    Color c = w.color_at(r);
+
+    EXPECT_EQ(c, inner.material.color);
+}

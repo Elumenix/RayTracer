@@ -170,3 +170,37 @@ TEST(RayTest, TranslatedSphereRayIntersection) {
 
     EXPECT_EQ(xs.size(), 0);
 }
+
+TEST(RayTest, CompsTest) {
+    Ray r = Ray(Point(0,0,-5), Vector(0,0,1));
+    Sphere shape;
+    Intersection i = Intersection(4, &shape);
+
+    Comps comps = prepare_computation(i, r);
+    EXPECT_FLOAT_EQ(comps.t, i.t);
+    EXPECT_EQ(i.object, &shape);
+    EXPECT_EQ(comps.point, Point(0,0,-1));
+    EXPECT_EQ(comps.eye, Vector(0,0,-1));
+    EXPECT_EQ(comps.normal, Vector(0,0,-1));
+}
+
+TEST(RayTest, CompOutsideShape) {
+    Ray r = Ray(Point(0,0,-5),Vector(0,0,1));
+    Sphere shape;
+    Intersection i = Intersection(4, &shape);
+    Comps comps = prepare_computation(i, r);
+
+    EXPECT_FALSE(comps.isInside);
+}
+
+TEST(RayTest, compInsideShape) {
+    Ray r = Ray(Point(0,0,0),Vector(0,0,1));
+    Sphere shape;
+    Intersection i = Intersection(1, &shape);
+    Comps comps = prepare_computation(i, r);
+
+    EXPECT_EQ(comps.point, Point(0,0,1));
+    EXPECT_EQ(comps.eye, Vector(0,0,-1));
+    EXPECT_TRUE(comps.isInside);
+    EXPECT_EQ(comps.normal, Vector(0,0,-1));
+}

@@ -22,4 +22,6 @@ public:
     };
     void add(Light light) { lights.push_back(light); }
     const IntersectionList intersectWorld(const Ray r) const;
+    Color shade_hit(const Comps& comp) const;
+    Color color_at(const Ray r) const;
 };

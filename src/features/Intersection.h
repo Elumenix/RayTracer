@@ -1,5 +1,7 @@
 #pragma once
-class Shape; // The program simply needs to know that the class exists
+#include "Tuple.h"
+#include "Ray.h"
+class Shape; // We don't need to operate on shape parameters, this breaks circular dependency 
 
 struct Intersection {
     float t; // should be const but that breaks the move operator

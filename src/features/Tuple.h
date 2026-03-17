@@ -16,12 +16,14 @@ public:
 // Point and Vector are essentially just semantics of Tuple with a set w value if the constructor is used
 class Point : public Tuple {
 public:
+    Point() : Tuple(0,0,0,1.0f) {}
     Point(float x, float y, float z) : Tuple(x, y, z, 1.0f) {}
     Point(const Tuple& t) : Tuple(t) {} // implicit conversion so math works
 };
 
 class Vector : public Tuple {
 public:
+    Vector() : Tuple(0,0,0,0) {}
     Vector(float x, float y, float z) : Tuple(x, y, z, 0.0f) {}
     Vector(const Tuple& t) : Tuple(t) {} // implicit conversion so math works
 };
