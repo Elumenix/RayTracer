@@ -72,4 +72,17 @@ namespace transformations {
 
         return shear;
     }
+
+    Matrix<4, 4> viewTransform(Point from, Point to, Vector up)
+    {
+        Vector forward = (to - from).Normalized();
+        Vector left = CrossProduct(forward, up.Normalized());
+        Vector trueUp = CrossProduct(left, forward);
+
+        Matrix orientation = Matrix<4,4>({left.x,left.y,left.z,0,
+                                        trueUp.x, trueUp.y, trueUp.z, 0,
+                                        -forward.x,-forward.y,-forward.z,0,
+                                        0,0,0,1});
+        return orientation * translation(-from.x, -from.y, -from.z);
+    }
 }

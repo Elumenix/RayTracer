@@ -15,7 +15,8 @@ private:
     std::string FormatWithLineBreaks(const std::string& input);
 
 public:
-    int width, height;
+    const int width;
+    const int height;
 
     Canvas(int width, int height);
     Color GetPixelAt(int x, int y);

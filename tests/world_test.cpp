@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "../src/features/World.h"
+#include "../src/features/Camera.h"
 
 TEST(WorldTest, CreateWorld) {
     World w;
@@ -84,4 +85,55 @@ TEST(WorldTest, BehindRayIntersection) {
     Color c = w.color_at(r);
 
     EXPECT_EQ(c, inner.material.color);
+}
+
+TEST(CameraTest, ConstructingCamera) {
+    Camera c = Camera(160, 120, M_PI_2);
+
+    EXPECT_EQ(c.hsize, 160);
+    EXPECT_EQ(c.vsize, 120);
+    EXPECT_FLOAT_EQ(c.fov, M_PI_2);
+    EXPECT_EQ(c.transform, IdentityMatrix);
+}
+
+TEST(CameraTest, PixelSize) {
+    Camera c = Camera(200, 125, M_PI_2);
+    EXPECT_FLOAT_EQ(c.pixelSize(), 0.01f);
+
+    Camera c1 = Camera(125, 200, M_PI_2);
+    EXPECT_FLOAT_EQ(c1.pixelSize(), 0.01f);
+}
+
+TEST(CameraTest, RayThroughCenterOfCanvas) {
+    Camera c = Camera(201,101,M_PI_2);
+    Ray r = c.RayForPixel(100, 50);
+    EXPECT_EQ(r.origin, Point(0,0,0));
+    EXPECT_EQ(r.direction, Vector(0,0,-1));
+}
+
+TEST(CameraTest, RayThroughCorner) {
+    Camera c = Camera(201,101,M_PI_2);
+    Ray r = c.RayForPixel(0, 0);
+    EXPECT_EQ(r.origin, Point(0,0,0));
+    EXPECT_EQ(r.direction, Vector(0.66519f,0.33259f,-0.66851f));
+}
+
+TEST(CameraTest, RayWithTransformedCamera) {
+    Camera c = Camera(201,101,M_PI_2);
+    c.transform = transformations::rotationY(M_PI_4) * transformations::translation(0,-2,5);
+    Ray r = c.RayForPixel(100, 50);
+    EXPECT_EQ(r.origin, Point(0,2,-5));
+    EXPECT_EQ(r.direction, Vector(sqrtf(2)/2,0,-sqrtf(2)/2));
+}
+
+TEST(CameraTest, CameraRender) {
+    World w = World::Default();
+    Camera c = Camera(11,11,M_PI_2);
+    Point from = Point(0,0,-5);
+    Point to = Point(0,0,0);
+    Vector up = Vector(0,1,0);
+    c.transform = transformations::viewTransform(from, to, up);
+    Canvas image = c.Render(w);
+
+    EXPECT_EQ(image.GetPixelAt(5,5), Color(0.38066, 0.47583, 0.2855));
 }

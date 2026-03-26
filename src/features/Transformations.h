@@ -10,5 +10,5 @@ namespace transformations {
     Matrix<4,4> rotationY(float rad);
     Matrix<4,4> rotationZ(float rad);
     Matrix<4,4> shearing(float xy, float xz, float yx, float yz, float zx, float zy);
+    Matrix<4,4> viewTransform(Point from, Point to, Vector up);
 }
-
