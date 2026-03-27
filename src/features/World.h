@@ -23,6 +23,7 @@ public:
 
 
     // This add function is designed so that the class takes full ownership of objects, making it so where they were passed from can't use them anymore
+    // Either put the constructor in here or use std::move on established objects
     template <typename T>
     void add(T&& shape) {
         static_assert(std::is_base_of<Shape, T>::value, "T must derive from S"); 

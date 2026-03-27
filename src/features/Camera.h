@@ -1,5 +1,6 @@
 #include "Matrix.h"
 #include "Canvas.h"
+#include "World.h"
 
 class Camera
 {
