@@ -17,13 +17,13 @@ int main() {
 
     Sphere leftWall = floor;
     leftWall.transform = transformations::translation(0,0,5) * 
-        transformations::rotationY(-M_PI_4) * transformations::rotationX(M_2_PI) * 
+        transformations::rotationY(-M_PI_4) * transformations::rotationX(M_PI_2) * 
         transformations::scaling(10,0.01,10);
     world.add(std::move(leftWall));
 
     Sphere rightWall = floor;
     rightWall.transform = transformations::translation(0,0,5) * 
-        transformations::rotationY(M_PI_4) * transformations::rotationX(M_2_PI) * 
+        transformations::rotationY(M_PI_4) * transformations::rotationX(M_PI_2) * 
         transformations::scaling(10,0.01,10);
     world.add(std::move(rightWall));
 

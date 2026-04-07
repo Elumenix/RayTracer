@@ -193,7 +193,7 @@ TEST(RayTest, CompOutsideShape) {
     EXPECT_FALSE(comps.isInside);
 }
 
-TEST(RayTest, compInsideShape) {
+TEST(RayTest, CompInsideShape) {
     Ray r = Ray(Point(0,0,0),Vector(0,0,1));
     Sphere shape;
     Intersection i = Intersection(1, &shape);
@@ -203,4 +203,14 @@ TEST(RayTest, compInsideShape) {
     EXPECT_EQ(comps.eye, Vector(0,0,-1));
     EXPECT_TRUE(comps.isInside);
     EXPECT_EQ(comps.normal, Vector(0,0,-1));
+}
+
+TEST (RayTest, CompOverPoint) {
+    Ray r = Ray(Point(0,0,-5), Vector(0,0,1));
+    Sphere shape;
+    shape.transform = transformations::translation(0,0,1);
+    Intersection i = Intersection(5, &shape);
+    Comps comps = prepare_computation(i, r);
+    EXPECT_TRUE(comps.over_point.z < -0.00001 / 2);
+    EXPECT_TRUE(comps.point.z > comps.over_point.z);
 }

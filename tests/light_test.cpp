@@ -3,6 +3,7 @@
 #include "../src/features/Light.h"
 #include "../src/features/Material.h"
 #include "../src/features/Sphere.h"
+#include "../src/features/World.h"
 
 TEST(LightTest, LightObject) {
     Color intensity = Color(1,1,1);
@@ -89,4 +90,57 @@ TEST(LightTest, LightBehindSurface) {
     Color result = s.lighting(light, Point(0,0,0), eye, normal);
 
     EXPECT_EQ(result, Color(0.1,0.1,0.1));
+}
+
+TEST(LightTest, SurfaceInShadow) {
+    Sphere s;
+    Vector eye = Vector(0,0,-1);
+    Vector normal = Vector(0,0,-1);
+    Light light = Light(Point(0,0,-10), Color(1,1,1));
+    
+    Color result = s.lighting(light, Point(0,0,0), eye, normal, true);
+    EXPECT_EQ(result, Color(0.1,0.1,0.1));
+}
+
+TEST(LightTest, NoShadowWorld) {
+    World w = World::Default();
+    Point p = Point(0,10,0);
+
+    EXPECT_FALSE(w.is_shadowed(p, w.lights[0]));
+}
+
+TEST(LightTest, IsShadowWorld) {
+    World w = World::Default();
+    Point p = Point(10,-10,10);
+
+    EXPECT_TRUE(w.is_shadowed(p, w.lights[0]));
+}
+
+TEST(LightTest, WorldObjectBehindLight) {
+    World w = World::Default();
+    Point p = Point(-20,20,-20);
+
+    EXPECT_FALSE(w.is_shadowed(p, w.lights[0]));
+}
+
+TEST(LightTest, WorldObjectBehindPoint) {
+    World w = World::Default();
+    Point p = Point(-2,2,-2);
+
+    EXPECT_FALSE(w.is_shadowed(p, w.lights[0]));
+}
+
+TEST(LightTest, ShadeHitIntersection) {
+    World w;
+    w.add(Light(Point(0,0,-10), Color(1,1,1)));
+    Sphere s1;
+    w.add(std::move(s1));
+    Sphere s2;
+    s2.transform = transformations::translation(0,0,10);
+    w.add(std::move(s2));
+    Intersection i = Intersection(4, w.shapes[1].get());
+    Ray r = Ray(Point(0,0,5), Vector(0,0,1));
+    Comps comps = prepare_computation(i, r);
+    Color c = w.shade_hit(comps);
+    EXPECT_EQ(c, Color(0.1, 0.1, 0.1));
 }

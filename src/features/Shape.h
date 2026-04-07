@@ -19,7 +19,7 @@ public:
     virtual ~Shape() = default;
     virtual IntersectionList intersects(const Ray r) const = 0;
     virtual Vector normal_at(Point worldPoint) const = 0;
-    virtual Color lighting(const Light light, const Point position, const Vector eye, const Vector normal) const = 0;
+    virtual Color lighting(const Light light, const Point position, const Vector eye, const Vector normal, const bool inShadow = false) const = 0;
     virtual bool operator==(const Shape& other) const { return other.material == material && other.transform == transform; };
     bool operator!=(const Shape& other) const { return !(*this == other); }
 };
@@ -36,6 +36,7 @@ struct Comps {
     Point point;
     Vector eye;
     Vector normal;
+    Vector over_point;
 };
 
 inline Comps prepare_computation(Intersection i, Ray r) {
@@ -55,6 +56,8 @@ inline Comps prepare_computation(Intersection i, Ray r) {
     else {
         comp.isInside = false;
     }
+
+    comp.over_point = comp.point + comp.normal * 0.0001;
 
     return comp;
 };

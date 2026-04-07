@@ -33,4 +33,5 @@ public:
     const IntersectionList intersectWorld(const Ray r) const;
     Color shade_hit(const Comps& comp) const;
     Color color_at(const Ray r) const;
+    bool is_shadowed(Point p, Light light) const;
 };

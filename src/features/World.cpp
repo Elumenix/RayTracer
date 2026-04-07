@@ -35,7 +35,8 @@ Color World::shade_hit(const Comps &comp) const
     Color c = Color(0,0,0);
 
     for (const Light& light : lights) {
-        c += comp.object->lighting(light, comp.point, comp.eye, comp.normal);
+        bool isShadowed = is_shadowed(comp.over_point, light);
+        c += comp.object->lighting(light, comp.over_point, comp.eye, comp.normal, isShadowed);
     }
 
     return c;
@@ -53,4 +54,16 @@ Color World::color_at(const Ray r) const
     Comps comp = prepare_computation(*i, r);
     Color c = shade_hit(comp);
     return c;
+}
+
+bool World::is_shadowed(Point p, Light light) const {
+    Vector v = light.position - p;
+    float distance = v.Magnitude();
+    Vector direction = v.Normalized();
+
+    Ray r = Ray(p, direction);
+    IntersectionList intersections = intersectWorld(r);
+    const Intersection* h = intersections.hit();
+
+    return h != nullptr && h->t < distance;
 }

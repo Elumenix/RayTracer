@@ -10,5 +10,5 @@ public:
     Sphere() = default;
     IntersectionList intersects(const Ray r) const override;
     Vector normal_at(Point worldPoint) const override;
-    Color lighting(const Light light, const Point position, const Vector eye, const Vector normal) const override;
+    Color lighting(const Light light, const Point position, const Vector eye, const Vector normal, const bool inShadow = false) const override;
 };

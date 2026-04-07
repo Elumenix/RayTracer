@@ -39,7 +39,7 @@ Vector Sphere::normal_at(Point worldPoint) const
     return worldNormal.Normalized();
 }
 
-Color Sphere::lighting(const Light light, const Point position, const Vector eye, const Vector normal) const
+Color Sphere::lighting(const Light light, const Point position, const Vector eye, const Vector normal, const bool inShadow) const
 {
     Color diffuse = Color(0,0,0);
     Color specular = Color(0,0,0);
@@ -47,6 +47,8 @@ Color Sphere::lighting(const Light light, const Point position, const Vector eye
     Color effectiveColor = material.color * light.intensity;
     Vector lightDir = (light.position - position).Normalized();
     Color ambient = effectiveColor * material.ambient;
+
+    if (inShadow) return ambient;
 
     // Negative number here means that the light is on the other side of the surface
     float lightDotNormal = DotProduct(lightDir, normal);
