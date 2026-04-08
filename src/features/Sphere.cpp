@@ -1,14 +1,10 @@
 #include "Sphere.h"
 
-IntersectionList Sphere::intersects(const Ray r) const
+IntersectionList Sphere::custom_intersects(const Ray rayOS) const
 {
-    // We are transforming the ray instead of the sphere to determine the intersection
-    Ray r2 = r.transform(transform.inverse());
-
-    // Sphere is currently hard-coded to be at the world origin
-    Tuple sphereToRay = r2.origin - Point(0,0,0); // Creates a vector, which is why r2.origin isn't used
-    float a = DotProduct(r2.direction, r2.direction); // squared distance
-    float b = 2 * DotProduct(r2.direction, sphereToRay);
+    Tuple sphereToRay = rayOS.origin - Point(0,0,0); 
+    float a = DotProduct(rayOS.direction, rayOS.direction); // squared distance
+    float b = 2 * DotProduct(rayOS.direction, sphereToRay);
     float c = DotProduct(sphereToRay, sphereToRay) - 1;
 
     float discriminant = b * b - 4 * a * c;
@@ -27,42 +23,9 @@ IntersectionList Sphere::intersects(const Ray r) const
     return {t1, t2};
 }
 
-Vector Sphere::normal_at(Point worldPoint) const
+Vector Sphere::custom_normal(Point pointOS) const
 {
-    // An assumption is made that the point is on the sphere
-    Point objectPoint = transform.inverse() * worldPoint;
-    Vector objectNormal = objectPoint - Point(0,0,0); 
-
-
-    Vector worldNormal = transform.inverse().transpose() * objectNormal;
-    worldNormal.w = 0; // Correct the w 
-    return worldNormal.Normalized();
-}
-
-Color Sphere::lighting(const Light light, const Point position, const Vector eye, const Vector normal, const bool inShadow) const
-{
-    Color diffuse = Color(0,0,0);
-    Color specular = Color(0,0,0);
-
-    Color effectiveColor = material.color * light.intensity;
-    Vector lightDir = (light.position - position).Normalized();
-    Color ambient = effectiveColor * material.ambient;
-
-    if (inShadow) return ambient;
-
-    // Negative number here means that the light is on the other side of the surface
-    float lightDotNormal = DotProduct(lightDir, normal);
-    if (lightDotNormal >= 0) {
-        diffuse = effectiveColor * material.diffuse * lightDotNormal;
-        Vector reflectionVector = Reflect(-lightDir, normal);
-
-        // Negative number means light reflects away from the eye
-        float reflectDotEye = DotProduct(reflectionVector, eye);
-        if (reflectDotEye > 0) {
-            float factor = powf(reflectDotEye, material.shininess);
-            specular = light.intensity * material.specular * factor;
-        }
-    }
-
-    return ambient + diffuse + specular;
+    // Spheres are very simple. This is all thats needed to translate the points to the normal vector
+    Vector normalOS = pointOS - Point(0,0,0);
+    return normalOS;
 }

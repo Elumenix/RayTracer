@@ -8,7 +8,6 @@
 class Sphere : public Shape {
 public:
     Sphere() = default;
-    IntersectionList intersects(const Ray r) const override;
-    Vector normal_at(Point worldPoint) const override;
-    Color lighting(const Light light, const Point position, const Vector eye, const Vector normal, const bool inShadow = false) const override;
+    IntersectionList custom_intersects(const Ray rayOS) const override;
+    Vector custom_normal(Point pointOS) const override;
 };

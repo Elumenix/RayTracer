@@ -11,15 +11,61 @@ protected:
     inline static int idIterator = 0; // Each shape gets a unique id
     Shape() : id(idIterator++) {}; // Protected constructor, class can't be made by programmer
 
+    // Force subclass to make implementations of these
+    virtual IntersectionList custom_intersects(const Ray rayOS) const = 0;
+    virtual Vector custom_normal(Point pointOS) const = 0;
+
 public:
     const int id;
     Matrix<4,4> transform = IdentityMatrix;
     Material material;
 
     virtual ~Shape() = default;
-    virtual IntersectionList intersects(const Ray r) const = 0;
-    virtual Vector normal_at(Point worldPoint) const = 0;
-    virtual Color lighting(const Light light, const Point position, const Vector eye, const Vector normal, const bool inShadow = false) const = 0;
+
+    IntersectionList intersects(const Ray rayWS) const{
+        Ray rayOS = rayWS.transform(transform.inverse());
+        return custom_intersects(rayOS);
+    }
+
+    virtual Vector normal_at(Point pointWS) const {
+        // An assumption is made that the point is on the shape
+        Point pointOS = transform.inverse() * pointWS;
+
+        // Subclass needs to handle object space
+        Vector normalOS = custom_normal(pointOS); 
+
+        Vector normalWS = transform.inverse().transpose() * normalOS;
+        normalWS.w = 0; // Correct the w 
+        return normalWS.Normalized();
+    }
+
+    Color lighting(const Light light, const Point position, const Vector eye, const Vector normal, const bool inShadow = false) const {
+        Color diffuse = Color(0,0,0);
+        Color specular = Color(0,0,0);
+
+        Color effectiveColor = material.color * light.intensity;
+        Vector lightDir = (light.position - position).Normalized();
+        Color ambient = effectiveColor * material.ambient;
+
+        if (inShadow) return ambient;
+
+        // Negative number here means that the light is on the other side of the surface
+        float lightDotNormal = DotProduct(lightDir, normal);
+        if (lightDotNormal >= 0) {
+            diffuse = effectiveColor * material.diffuse * lightDotNormal;
+            Vector reflectionVector = Reflect(-lightDir, normal);
+
+            // Negative number means light reflects away from the eye
+            float reflectDotEye = DotProduct(reflectionVector, eye);
+            if (reflectDotEye > 0) {
+                float factor = powf(reflectDotEye, material.shininess);
+                specular = light.intensity * material.specular * factor;
+            }
+        }
+
+        return ambient + diffuse + specular;
+    }
+
     virtual bool operator==(const Shape& other) const { return other.material == material && other.transform == transform; };
     bool operator!=(const Shape& other) const { return !(*this == other); }
 };
@@ -39,6 +85,8 @@ struct Comps {
     Vector over_point;
 };
 
+inline float EPSILON = 0.0001f;
+
 inline Comps prepare_computation(Intersection i, Ray r) {
     Comps comp;
     comp.t = i.t;
@@ -49,6 +97,9 @@ inline Comps prepare_computation(Intersection i, Ray r) {
     comp.eye = -r.direction;
     comp.normal = i.object->normal_at(comp.point);
 
+    assert(!std::isnan(comp.point.z) && "point.z is NaN");
+assert(!std::isnan(comp.normal.z) && "normal.z is NaN");
+
     if (DotProduct(comp.normal, comp.eye) < 0) {
         comp.isInside = true;
         comp.normal = -comp.normal;
@@ -57,7 +108,7 @@ inline Comps prepare_computation(Intersection i, Ray r) {
         comp.isInside = false;
     }
 
-    comp.over_point = comp.point + comp.normal * 0.0001;
+    comp.over_point = comp.point + comp.normal * EPSILON;
 
     return comp;
 };

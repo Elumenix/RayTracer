@@ -211,6 +211,6 @@ TEST (RayTest, CompOverPoint) {
     shape.transform = transformations::translation(0,0,1);
     Intersection i = Intersection(5, &shape);
     Comps comps = prepare_computation(i, r);
-    EXPECT_TRUE(comps.over_point.z < -0.00001 / 2);
+    EXPECT_TRUE(comps.over_point.z < -EPSILON / 2);
     EXPECT_TRUE(comps.point.z > comps.over_point.z);
 }
