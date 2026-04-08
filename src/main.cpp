@@ -4,24 +4,25 @@
 #include "features/Sphere.h"
 #include "features/Camera.h"
 #include "features/World.h"
+#include "features/Plane.h"
 
 int main() {
     World world;
     world.lights.push_back(Light(Point(-10,10,-10), Color(1,1,1)));
 
-    Sphere floor;
+    Plane floor;
     floor.transform = transformations::scaling(10,0.01,10);
     floor.material.color = Color(1,0.9,0.9);
     floor.material.specular = 0;
     world.add(std::move(floor));
 
-    Sphere leftWall = floor;
+    Plane leftWall = floor;
     leftWall.transform = transformations::translation(0,0,5) * 
         transformations::rotationY(-M_PI_4) * transformations::rotationX(M_PI_2) * 
         transformations::scaling(10,0.01,10);
     world.add(std::move(leftWall));
 
-    Sphere rightWall = floor;
+    Plane rightWall = floor;
     rightWall.transform = transformations::translation(0,0,5) * 
         transformations::rotationY(M_PI_4) * transformations::rotationX(M_PI_2) * 
         transformations::scaling(10,0.01,10);
