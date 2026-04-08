@@ -49,10 +49,8 @@ int main() {
     left.material.specular = 0.3f;
     world.add(std::move(left));
 
-    Camera camera = Camera(300, 150, M_PI / 3);
+    Camera camera = Camera(640, 480, M_PI / 3);
     camera.transform = transformations::viewTransform(Point(0,1.5,-5), Point(0,1,0), Vector(0,1,0));
     Canvas canvas = camera.Render(world);
-
-    std::string ppm = canvas.CanvasToPPM();
-    std::cout << ppm;
+    canvas.CanvasToPNG();
 }

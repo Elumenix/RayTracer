@@ -1,4 +1,6 @@
+#define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "Canvas.h"
+#include "stb_image_write.h"
 
 Canvas::Canvas(int width, int height) : width(width), height(height) {
     int size = width * height;
@@ -87,4 +89,21 @@ std::string Canvas::CanvasToPPM()
     }
 
     return ppm + FormatWithLineBreaks(activeString);
+}
+
+void Canvas::CanvasToPNG() 
+{
+    // Set up the data for a png
+    std::vector<unsigned char> raw(width * height * 3);
+    for (int i = 0; i < width * height; i++) {
+        raw[i * 3 + 0] = static_cast<unsigned char>(std::clamp(pixels[i].x, 0.0f, 1.0f) * 255);
+        raw[i * 3 + 1] = static_cast<unsigned char>(std::clamp(pixels[i].y, 0.0f, 1.0f) * 255);
+        raw[i * 3 + 2] = static_cast<unsigned char>(std::clamp(pixels[i].z, 0.0f, 1.0f) * 255);
+    }
+
+    int result = stbi_write_png("/workspaces/RayTracer/Scene.png", width, height, 3, raw.data(), width*3);
+
+    if (result == 0) {
+        std::cerr << "Failed to write Scene.png" << std::endl;
+    }
 }

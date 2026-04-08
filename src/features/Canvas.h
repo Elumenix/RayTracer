@@ -23,5 +23,6 @@ public:
     void WritePixelAt(int x, int y, Color color);
     void WritePixelAt(float x, float y, Color color);
     std::string CanvasToPPM();
+    void CanvasToPNG();
 };
 

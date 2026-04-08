@@ -8,7 +8,7 @@ setup:
 # Run build
 build:
 	cmake --build build
-	./build/RayTracer > image.ppm
+	./build/RayTracer
 
 # Run tests
 test:
