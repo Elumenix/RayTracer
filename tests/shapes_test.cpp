@@ -4,7 +4,6 @@
 #include "../src/features/IntersectionList.h"
 #include "../src/features/Color.h"
 #include "../src/features/Light.h"
-#include "../src/features/Material.h"
 #include "../src/features/Plane.h"
 
 TEST(ShapeTest, DefaultShapeTransformation) {

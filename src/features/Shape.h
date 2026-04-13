@@ -20,6 +20,16 @@ public:
     Matrix<4,4> transform = IdentityMatrix;
     Material material;
 
+    Shape(Shape&&) = default;
+    Shape& operator=(Shape&&) = default;
+
+    Shape(const Shape& other) : transform(other.transform), material(other.material) {}
+
+    Shape& operator=(const Shape& other) {
+        transform = other.transform;
+        material = other.material;
+        return *this;
+    }
     virtual ~Shape() = default;
 
     IntersectionList intersects(const Ray rayWS) const{
@@ -43,7 +53,8 @@ public:
         Color diffuse = Color(0,0,0);
         Color specular = Color(0,0,0);
 
-        Color effectiveColor = material.color * light.intensity;
+        Color effectiveColor = (material.pattern == nullptr ? material.color : material.pattern->StripeAt(position)) * light.intensity;
+
         Vector lightDir = (light.position - position).Normalized();
         Color ambient = effectiveColor * material.ambient;
 
