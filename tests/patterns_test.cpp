@@ -70,3 +70,34 @@ TEST(PatternTest, LightingWithPatternApplied)
     Color c2 = light.lighting(s, Point(1.1, 0, 0), eye, normal, false);
     EXPECT_EQ(c2, Color(0, 0, 0));
 }
+
+TEST(PatternTest, StripesObjectTransform)
+{
+    Sphere object;
+    object.transform = transformations::scaling(2, 2, 2);
+    Pattern p = Pattern(White, Black);
+    Color c = p.StripeAtObject(object, Point(1.5, 0, 0));
+
+    EXPECT_EQ(c, White);
+}
+
+TEST(PatternTest, StripesPatternTransform)
+{
+    Sphere object;
+    Pattern pattern(White, Black);
+    pattern.transform = transformations::scaling(2, 2, 2);
+    Color c = pattern.StripeAtObject(object, Point(1.5, 0, 0));
+
+    EXPECT_EQ(c, White);
+}
+
+TEST(PatternTest, StripesPatternBothTransform)
+{
+    Sphere object;
+    object.transform = transformations::scaling(2, 2, 2);
+    Pattern pattern(White, Black);
+    pattern.transform = transformations::translation(0.5, 0, 0);
+    Color c = pattern.StripeAtObject(object, Point(2.5, 0, 0));
+
+    EXPECT_EQ(c, White);
+}
