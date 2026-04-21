@@ -3,7 +3,6 @@
 #include <memory>
 #include <concepts>
 #include "Light.h"
-#include "Shape.h"
 #include "Sphere.h"
 
 class World {
