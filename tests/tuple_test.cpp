@@ -1,9 +1,10 @@
 #include <gtest/gtest.h>
 #include <cmath>
-#include "../src/features/Tuple.h" 
+#include "../src/features/Tuple.h"
 #include "../src/features/Color.h"
 
-TEST(TupleTest, MakePoint1) {
+TEST(TupleTest, MakePoint1)
+{
     Tuple a = Tuple(4.3, -4.2, 3.1, 1.0);
     EXPECT_FLOAT_EQ(a.x, 4.3);
     EXPECT_FLOAT_EQ(a.y, -4.2);
@@ -11,7 +12,8 @@ TEST(TupleTest, MakePoint1) {
     EXPECT_FLOAT_EQ(a.w, 1.0);
 }
 
-TEST(TupleTest, MakeVector1) {
+TEST(TupleTest, MakeVector1)
+{
     Tuple a = Tuple(4.3, -4.2, 3.1, 0.0);
     EXPECT_FLOAT_EQ(a.x, 4.3);
     EXPECT_FLOAT_EQ(a.y, -4.2);
@@ -19,153 +21,173 @@ TEST(TupleTest, MakeVector1) {
     EXPECT_FLOAT_EQ(a.w, 0.0);
 }
 
-TEST(TupleTest, MakePoint2) {
+TEST(TupleTest, MakePoint2)
+{
     Point p = Point(4, -4, 3);
 
     EXPECT_EQ(p, Tuple(4, -4, 3, 1));
 }
 
-TEST(TupleTest, MakeVector2) {
+TEST(TupleTest, MakeVector2)
+{
     Vector v = Vector(4, -4, 3);
 
     EXPECT_EQ(v, Tuple(4, -4, 3, 0));
 }
 
-TEST(TupleTest, AddTuple) {
+TEST(TupleTest, AddTuple)
+{
     Tuple a1 = Tuple(3, -2, 5, 1);
     Tuple a2 = Tuple(-2, 3, 1, 0);
 
-    EXPECT_EQ(a1 + a2, Tuple(1,1,6,1));
+    EXPECT_EQ(a1 + a2, Tuple(1, 1, 6, 1));
 }
 
-TEST(TupleTest, SubtractPoints) {
-    Point p1 = Point(3,2,1);
-    Point p2 = Point(5,6,7);
+TEST(TupleTest, SubtractPoints)
+{
+    Point p1 = Point(3, 2, 1);
+    Point p2 = Point(5, 6, 7);
 
-    EXPECT_EQ(p1 - p2, Vector(-2,-4,-6));
+    EXPECT_EQ(p1 - p2, Vector(-2, -4, -6));
 }
 
-TEST(TupleTest, SubtractVectorFromPoint) {
-    Point p = Point(3,2,1);
-    Vector v = Vector(5,6,7);
+TEST(TupleTest, SubtractVectorFromPoint)
+{
+    Point p = Point(3, 2, 1);
+    Vector v = Vector(5, 6, 7);
 
-    EXPECT_EQ(p - v, Point(-2,-4,-6));
+    EXPECT_EQ(p - v, Point(-2, -4, -6));
 }
 
-TEST(TupleTest, SubtractingTwoVectors) {
-    Vector v1 = Vector(3,2,1);
-    Vector v2 = Vector(5,6,7);
+TEST(TupleTest, SubtractingTwoVectors)
+{
+    Vector v1 = Vector(3, 2, 1);
+    Vector v2 = Vector(5, 6, 7);
 
-    EXPECT_EQ(v1 - v2, Vector(-2,-4,-6));
+    EXPECT_EQ(v1 - v2, Vector(-2, -4, -6));
 }
 
-TEST(TupleTest, SubtractFromZeroVector) {
-    Tuple zero = Vector(0,0,0);
-    Vector v = Vector(1,-2,3);
+TEST(TupleTest, SubtractFromZeroVector)
+{
+    Tuple zero = Vector(0, 0, 0);
+    Vector v = Vector(1, -2, 3);
 
-    EXPECT_EQ(zero - v, Vector(-1,2,-3));
+    EXPECT_EQ(zero - v, Vector(-1, 2, -3));
 }
 
-TEST(TupleTest, TupleNegation) {
-    Tuple a = Tuple(1,-2,3,-4);
+TEST(TupleTest, TupleNegation)
+{
+    Tuple a = Tuple(1, -2, 3, -4);
 
     EXPECT_EQ(-a, Tuple(-1, 2, -3, 4));
 }
 
-TEST(TupleTest, MultiplyTupleByScalar) {
-    Tuple a = Tuple(1,-2, 3,-4);
+TEST(TupleTest, MultiplyTupleByScalar)
+{
+    Tuple a = Tuple(1, -2, 3, -4);
 
     EXPECT_EQ(a * 3.5, Tuple(3.5, -7, 10.5, -14));
 }
 
-TEST(TupleTest, MultiplyTupleByFraction) {
-    Tuple a = Tuple(1,-2, 3,-4);
+TEST(TupleTest, MultiplyTupleByFraction)
+{
+    Tuple a = Tuple(1, -2, 3, -4);
 
     EXPECT_EQ(a * 0.5, Tuple(0.5, -1, 1.5, -2));
 }
 
-TEST(TupleTest, DivideTupleByScalar) {
-    Tuple a = Tuple(1,-2, 3,-4);
+TEST(TupleTest, DivideTupleByScalar)
+{
+    Tuple a = Tuple(1, -2, 3, -4);
 
     EXPECT_EQ(a / 2, Tuple(0.5, -1, 1.5, -2));
 }
 
-TEST(TupleTest, VectorMagnitude) {
-    Tuple v = Vector(1,0,0);
+TEST(TupleTest, VectorMagnitude)
+{
+    Tuple v = Vector(1, 0, 0);
     EXPECT_FLOAT_EQ(v.Magnitude(), 1);
 
-    Tuple v2 = Vector(0,0,1);
+    Tuple v2 = Vector(0, 0, 1);
     EXPECT_FLOAT_EQ(v2.Magnitude(), 1);
 
-    Tuple v3 = Vector(0,0,1);
+    Tuple v3 = Vector(0, 0, 1);
     EXPECT_FLOAT_EQ(v3.Magnitude(), 1);
 
-    Tuple v4 = Vector(1,2,3);
+    Tuple v4 = Vector(1, 2, 3);
     EXPECT_FLOAT_EQ(v4.Magnitude(), sqrt(14));
 
     Tuple v5 = Vector(-1, -2, -3);
     EXPECT_FLOAT_EQ(v5.Magnitude(), sqrt(14));
 }
 
-TEST(TupleTest, TupleNormalize) {
-    Vector v1 = Vector(4,0,0);
-    EXPECT_EQ(v1.Normalized(), Vector(1,0,0));
+TEST(TupleTest, TupleNormalize)
+{
+    Vector v1 = Vector(4, 0, 0);
+    EXPECT_EQ(v1.Normalized(), Vector(1, 0, 0));
 
-    Vector v2 = Vector(1,2,3);
+    Vector v2 = Vector(1, 2, 3);
     EXPECT_EQ(v2.Normalized(), Vector(0.26726, 0.53452, 0.80178));
 
     Vector norm = v2.Normalized();
     EXPECT_FLOAT_EQ(norm.Magnitude(), 1);
 }
 
-TEST(TupleTest, TupleDotProduct) {
-    Vector a = Vector(1,2,3);
-    Vector b = Vector(2,3,4);
+TEST(TupleTest, TupleDotProduct)
+{
+    Vector a = Vector(1, 2, 3);
+    Vector b = Vector(2, 3, 4);
 
-    EXPECT_FLOAT_EQ(DotProduct(a,b), 20);
+    EXPECT_FLOAT_EQ(DotProduct(a, b), 20);
 }
 
-TEST(TupleTest, TupleCrossProduct) {
-    Vector a = Vector(1,2,3);
-    Vector b = Vector(2,3,4);
+TEST(TupleTest, TupleCrossProduct)
+{
+    Vector a = Vector(1, 2, 3);
+    Vector b = Vector(2, 3, 4);
 
-    EXPECT_EQ(CrossProduct(a,b), Vector(-1,2,-1));
-    EXPECT_EQ(CrossProduct(b,a), Vector(1,-2,1));
+    EXPECT_EQ(CrossProduct(a, b), Vector(-1, 2, -1));
+    EXPECT_EQ(CrossProduct(b, a), Vector(1, -2, 1));
 }
 
-TEST(TupleTest, CopyConstructor) {
+TEST(TupleTest, CopyConstructor)
+{
     Tuple a(1, 2, 3, 4);
-    Tuple b(a);  // Copy constructor
-    
+    Tuple b(a); // Copy constructor
+
     EXPECT_EQ(a, b);
 }
 
-TEST(TupleTest, CopyAssignment) {
+TEST(TupleTest, CopyAssignment)
+{
     Tuple a(1, 2, 3, 4);
     Tuple b(5, 6, 7, 8);
-    
+
     a = b;
-    
+
     EXPECT_EQ(a, b);
 }
 
-TEST(TupleTest, Reflection45) {
-    Vector v = Vector(1,-1,0);
-    Vector n = Vector(0,1,0);
+TEST(TupleTest, Reflection45)
+{
+    Vector v = Vector(1, -1, 0);
+    Vector n = Vector(0, 1, 0);
     Vector r = Reflect(v, n);
 
-    EXPECT_EQ(r, Vector(1,1,0));
+    EXPECT_EQ(r, Vector(1, 1, 0));
 }
 
-TEST(TupleTest, ReflectionSlanted) {
-    Vector v = Vector(0,-1,0);
-    Vector n = Vector(sqrtf(2.0)/2, sqrtf(2.0f)/2, 0);
+TEST(TupleTest, ReflectionSlanted)
+{
+    Vector v = Vector(0, -1, 0);
+    Vector n = Vector(sqrtf(2.0) / 2, sqrtf(2.0f) / 2, 0);
     Vector r = Reflect(v, n);
 
-    EXPECT_EQ(r, Vector(1,0,0));
+    EXPECT_EQ(r, Vector(1, 0, 0));
 }
 
-TEST(ColorTest, MakeColor) {
+TEST(ColorTest, MakeColor)
+{
     Color c = Color(-0.5, 0.4, 1.7);
 
     EXPECT_FLOAT_EQ(c.x, -0.5);
@@ -173,7 +195,8 @@ TEST(ColorTest, MakeColor) {
     EXPECT_FLOAT_EQ(c.z, 1.7);
 }
 
-TEST(ColorTest, ColorAddSubtractScalarMult) {
+TEST(ColorTest, ColorAddSubtractScalarMult)
+{
     Color c1 = Color(0.9, 0.6, 0.75);
     Color c2 = Color(0.7, 0.1, 0.25);
 
@@ -184,25 +207,28 @@ TEST(ColorTest, ColorAddSubtractScalarMult) {
     EXPECT_EQ(c * 2, Color(0.4, 0.6, 0.8));
 }
 
-TEST(ColorTest, MultiplyColors) {
+TEST(ColorTest, MultiplyColors)
+{
     Color c1 = Color(1, 0.2, 0.4);
     Color c2 = Color(0.9, 1, 0.1);
-    
-    EXPECT_EQ(c1*c2, Color(0.9, 0.2, 0.04));
+
+    EXPECT_EQ(c1 * c2, Color(0.9, 0.2, 0.04));
 }
 
-TEST(ColorTest, CopyConstructor) {
+TEST(ColorTest, CopyConstructor)
+{
     Color a(1.1, 2.2, 3.3);
-    Color b(a);  // Copy constructor
-    
+    Color b(a); // Copy constructor
+
     EXPECT_EQ(a, b);
 }
 
-TEST(ColorTest, CopyAssignment) {
+TEST(ColorTest, CopyAssignment)
+{
     Color a(1, 2, 3);
     Color b(4, 5, 6);
-    
+
     a = b;
-    
+
     EXPECT_EQ(a, b);
 }

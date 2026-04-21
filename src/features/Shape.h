@@ -4,7 +4,6 @@
 #include "Matrix.h"
 #include "Material.h"
 #include "Tuple.h"
-#include "Light.h"
 
 class Shape
 {
@@ -55,38 +54,6 @@ public:
         Vector normalWS = transform.inverse().transpose() * normalOS;
         normalWS.w = 0; // Correct the w
         return normalWS.Normalized();
-    }
-
-    Color lighting(const Light light, const Point position, const Vector eye, const Vector normal, const bool inShadow = false) const
-    {
-        Color diffuse = Color(0, 0, 0);
-        Color specular = Color(0, 0, 0);
-
-        Color effectiveColor = (material.pattern == nullptr ? material.color : material.pattern->StripeAt(position)) * light.intensity;
-
-        Vector lightDir = (light.position - position).Normalized();
-        Color ambient = effectiveColor * material.ambient;
-
-        if (inShadow)
-            return ambient;
-
-        // Negative number here means that the light is on the other side of the surface
-        float lightDotNormal = DotProduct(lightDir, normal);
-        if (lightDotNormal >= 0)
-        {
-            diffuse = effectiveColor * material.diffuse * lightDotNormal;
-            Vector reflectionVector = Reflect(-lightDir, normal);
-
-            // Negative number means light reflects away from the eye
-            float reflectDotEye = DotProduct(reflectionVector, eye);
-            if (reflectDotEye > 0)
-            {
-                float factor = powf(reflectDotEye, material.shininess);
-                specular = light.intensity * material.specular * factor;
-            }
-        }
-
-        return ambient + diffuse + specular;
     }
 
     virtual bool operator==(const Shape &other) const { return other.material == material && other.transform == transform; };

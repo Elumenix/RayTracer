@@ -36,7 +36,7 @@ Color World::shade_hit(const Comps &comp) const
 
     for (const Light& light : lights) {
         bool isShadowed = is_shadowed(comp.over_point, light);
-        c += comp.object->lighting(light, comp.over_point, comp.eye, comp.normal, isShadowed);
+        c += light.lighting(*comp.object, comp.over_point, comp.eye, comp.normal, isShadowed);
     }
 
     return c;
