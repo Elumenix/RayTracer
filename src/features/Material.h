@@ -21,7 +21,7 @@ struct Material
     Material(const Material &other)
         : color(other.color), ambient(other.ambient), diffuse(other.diffuse),
           specular(other.specular), shininess(other.shininess),
-          pattern(other.pattern ? other.pattern->clone() : nullptr) {}
+          pattern(other.pattern ? other.pattern->Clone() : nullptr) {}
 
     // Copy assignment
     Material &operator=(const Material &other)
@@ -31,7 +31,7 @@ struct Material
         diffuse = other.diffuse;
         specular = other.specular;
         shininess = other.shininess;
-        pattern = other.pattern ? other.pattern->clone() : nullptr;
+        pattern = other.pattern ? other.pattern->Clone() : nullptr;
         return *this;
     }
 

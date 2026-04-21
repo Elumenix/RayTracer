@@ -15,8 +15,7 @@ TEST(PatternTest, TestConstants)
 
 TEST(PatternTest, StripePatternColors)
 {
-    // StripePattern pattern = StripePattern(White, Black);
-    Pattern pattern = Pattern(White, Black);
+    StripePattern pattern(White, Black);
 
     EXPECT_EQ(pattern.a, White);
     EXPECT_EQ(pattern.b, Black);
@@ -24,8 +23,7 @@ TEST(PatternTest, StripePatternColors)
 
 TEST(PatternTest, StripeConstantY)
 {
-    // StripePattern pattern = StripePattern(White, Black);
-    Pattern pattern = Pattern(White, Black);
+    StripePattern pattern(White, Black);
 
     EXPECT_EQ(pattern.StripeAt(Point(0, 0, 0)), White);
     EXPECT_EQ(pattern.StripeAt(Point(0, 1, 0)), White);
@@ -34,8 +32,7 @@ TEST(PatternTest, StripeConstantY)
 
 TEST(PatternTest, StripeConstantZ)
 {
-    // StripePattern pattern = StripePattern(White, Black);
-    Pattern pattern = Pattern(White, Black);
+    StripePattern pattern(White, Black);
 
     EXPECT_EQ(pattern.StripeAt(Point(0, 0, 0)), White);
     EXPECT_EQ(pattern.StripeAt(Point(0, 0, 1)), White);
@@ -44,8 +41,7 @@ TEST(PatternTest, StripeConstantZ)
 
 TEST(PatternTest, StripeAlternateX)
 {
-    // StripePattern pattern = StripePattern(White, Black);
-    Pattern pattern = Pattern(White, Black);
+    StripePattern pattern(White, Black);
 
     EXPECT_EQ(pattern.StripeAt(Point(0, 0, 0)), White);
     EXPECT_EQ(pattern.StripeAt(Point(0.9, 0, 0)), White);
@@ -59,7 +55,7 @@ TEST(PatternTest, LightingWithPatternApplied)
 {
     Sphere s;
     Material m = Material(White, 1, 0, 0, 0);
-    m.pattern = std::make_unique<Pattern>(Pattern(White, Black));
+    m.pattern = std::make_unique<StripePattern>(StripePattern(White, Black));
     s.material = std::move(m);
     Vector eye = Vector(0, 0, -1);
     Vector normal = Vector(0, 0, -1);
@@ -75,8 +71,8 @@ TEST(PatternTest, StripesObjectTransform)
 {
     Sphere object;
     object.transform = transformations::scaling(2, 2, 2);
-    Pattern p = Pattern(White, Black);
-    Color c = p.StripeAtObject(object, Point(1.5, 0, 0));
+    StripePattern p(White, Black);
+    Color c = p.SampleAt(object, Point(1.5, 0, 0));
 
     EXPECT_EQ(c, White);
 }
@@ -84,9 +80,9 @@ TEST(PatternTest, StripesObjectTransform)
 TEST(PatternTest, StripesPatternTransform)
 {
     Sphere object;
-    Pattern pattern(White, Black);
+    StripePattern pattern(White, Black);
     pattern.transform = transformations::scaling(2, 2, 2);
-    Color c = pattern.StripeAtObject(object, Point(1.5, 0, 0));
+    Color c = pattern.SampleAt(object, Point(1.5, 0, 0));
 
     EXPECT_EQ(c, White);
 }
@@ -95,9 +91,54 @@ TEST(PatternTest, StripesPatternBothTransform)
 {
     Sphere object;
     object.transform = transformations::scaling(2, 2, 2);
-    Pattern pattern(White, Black);
+    StripePattern pattern(White, Black);
     pattern.transform = transformations::translation(0.5, 0, 0);
-    Color c = pattern.StripeAtObject(object, Point(2.5, 0, 0));
+    Color c = pattern.SampleAt(object, Point(2.5, 0, 0));
 
     EXPECT_EQ(c, White);
+}
+
+TEST(PatternTest, DefaultPatternTransformation)
+{
+    TestPattern pattern;
+    EXPECT_EQ(pattern.transform, IdentityMatrix);
+}
+
+TEST(PatternTest, AssigningPatternTransformation)
+{
+    TestPattern pattern;
+    pattern.transform = transformations::translation(1, 2, 3);
+
+    EXPECT_EQ(pattern.transform, transformations::translation(1, 2, 3));
+}
+
+TEST(PatternTest, PatternObjectTransform)
+{
+    Sphere s;
+    s.transform = transformations::scaling(2, 2, 2);
+    TestPattern pattern;
+    Color c = pattern.SampleAt(s, Point(2, 3, 4));
+
+    EXPECT_EQ(c, Color(1, 1.5, 2));
+}
+
+TEST(PatternTest, PatternTransform)
+{
+    Sphere shape;
+    TestPattern pattern;
+    pattern.transform = transformations::scaling(2, 2, 2);
+    Color c = pattern.SampleAt(shape, Point(2, 3, 4));
+
+    EXPECT_EQ(c, Color(1, 1.5, 2));
+}
+
+TEST(PatternTest, ObjectAndPatternTransform)
+{
+    Sphere shape;
+    shape.transform = transformations::scaling(2, 2, 2);
+    TestPattern pattern;
+    pattern.transform = transformations::translation(0.5, 1, 1.5);
+    Color c = pattern.SampleAt(shape, Point(2.5, 3, 3.5));
+
+    EXPECT_EQ(c, Color(0.75, 0.5, 0.25));
 }

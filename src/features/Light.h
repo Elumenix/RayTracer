@@ -15,7 +15,7 @@ public:
         Color diffuse = Color(0, 0, 0);
         Color specular = Color(0, 0, 0);
 
-        Color effectiveColor = (shape.material.pattern == nullptr ? shape.material.color : shape.material.pattern->StripeAtObject(shape, pointPos)) * intensity;
+        Color effectiveColor = (shape.material.pattern == nullptr ? shape.material.color : shape.material.pattern->SampleAt(shape, pointPos)) * intensity;
 
         Vector lightDir = (position - pointPos).Normalized();
         Color ambient = effectiveColor * shape.material.ambient;
