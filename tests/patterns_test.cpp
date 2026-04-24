@@ -146,7 +146,7 @@ TEST(PatternTest, ObjectAndPatternTransform)
 TEST(PatternTest, GradientPatternTest)
 {
     Sphere shape;
-    GradientPattern pattern;
+    Gradient pattern;
 
     EXPECT_EQ(pattern.SampleAt(shape, Point(0, 0, 0)), White);
     EXPECT_EQ(pattern.SampleAt(shape, Point(0.25, 0, 0)), Color(0.75, 0.75, 0.75));
@@ -157,7 +157,7 @@ TEST(PatternTest, GradientPatternTest)
 TEST(PatternTest, RingTest)
 {
     Sphere shape;
-    RingPattern pattern;
+    Ring pattern;
 
     EXPECT_EQ(pattern.SampleAt(shape, Point(0, 0, 0)), White);
     EXPECT_EQ(pattern.SampleAt(shape, Point(1, 0, 0)), Black);
@@ -168,7 +168,7 @@ TEST(PatternTest, RingTest)
 TEST(PatternTest, CheckersTestX)
 {
     Sphere s;
-    CheckerPattern pattern;
+    Checker pattern;
 
     EXPECT_EQ(pattern.SampleAt(s, Point(0, 0, 0)), White);
     EXPECT_EQ(pattern.SampleAt(s, Point(0.99, 0, 0)), White);
@@ -178,7 +178,7 @@ TEST(PatternTest, CheckersTestX)
 TEST(PatternTest, CheckersTestY)
 {
     Sphere s;
-    CheckerPattern pattern;
+    Checker pattern;
 
     EXPECT_EQ(pattern.SampleAt(s, Point(0, 0, 0)), White);
     EXPECT_EQ(pattern.SampleAt(s, Point(0, 0.99, 0)), White);
@@ -188,7 +188,7 @@ TEST(PatternTest, CheckersTestY)
 TEST(PatternTest, CheckersTestZ)
 {
     Sphere s;
-    CheckerPattern pattern;
+    Checker pattern;
 
     EXPECT_EQ(pattern.SampleAt(s, Point(0, 0, 0)), White);
     EXPECT_EQ(pattern.SampleAt(s, Point(0, 0, 0.99)), White);

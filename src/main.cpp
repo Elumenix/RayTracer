@@ -14,26 +14,28 @@ int main()
     Plane floor;
     floor.transform = transformations::scaling(10, 0.01, 10);
     floor.material.color = Color(1, 0.9, 0.9);
-    floor.material.pattern = MakePattern<CheckerPattern>();
+    floor.material.pattern = MakePattern<Checker>();
+    floor.material.pattern->transform = transformations::scaling(.05, .05, .05);
     floor.material.specular = 0;
     world.add(std::move(floor));
 
-    Plane leftWall = floor;
-    leftWall.transform = transformations::translation(0, 0, 5) *
-                         transformations::rotationY(-M_PI_4) * transformations::rotationX(M_PI_2) *
-                         transformations::scaling(10, 0.01, 10);
-    world.add(std::move(leftWall));
-
-    Plane rightWall = floor;
-    rightWall.transform = transformations::translation(0, 0, 5) *
-                          transformations::rotationY(M_PI_4) * transformations::rotationX(M_PI_2) *
+    /* Plane leftWall = floor;
+     leftWall.transform = transformations::translation(0, 0, 5) *
+                          transformations::rotationY(-M_PI_4) * transformations::rotationX(M_PI_2) *
                           transformations::scaling(10, 0.01, 10);
-    world.add(std::move(rightWall));
+     world.add(std::move(leftWall));
+
+     Plane rightWall = floor;
+     rightWall.transform = transformations::translation(0, 0, 5) *
+                           transformations::rotationY(M_PI_4) * transformations::rotationX(M_PI_2) *
+                           transformations::scaling(10, 0.01, 10);
+     world.add(std::move(rightWall));*/
 
     Sphere middle;
     middle.transform = transformations::translation(-0.5, 1, 0.5);
     middle.material.color = Color(0.1, 1, 0.5);
-    middle.material.pattern = MakePattern<RingPattern>(White, Color(0.1, 1, 0.5));
+    middle.material.pattern = MakePattern<RadialGradient>(White, Color(0.1, 1, 0.5));
+    middle.material.pattern->transform = transformations::rotationX(M_PI_2) * transformations::scaling(.3, .3, .3);
     middle.material.diffuse = 0.7f;
     middle.material.specular = 0.3f;
     world.add(std::move(middle));
@@ -41,7 +43,8 @@ int main()
     Sphere right;
     right.transform = transformations::translation(1.5, 0.5, -0.5) * transformations::scaling(0.5, 0.5, 0.5);
     right.material.color = Color(0.5, 1, 0.1);
-    right.material.pattern = MakePattern<RingPattern>(Color(0.5, 1, 0.1), Black);
+    right.material.pattern = MakePattern<Gradient>(Color(0.5, 1, 0.1), White);
+    right.material.pattern->transform = transformations::rotationY(M_PI_4) * transformations::scaling(2, 2, 2) * transformations::translation(.5,0,0);
     right.material.diffuse = 0.7f;
     right.material.specular = 0.3f;
     world.add(std::move(right));
@@ -55,7 +58,8 @@ int main()
     left.material.specular = 0.3f;
     world.add(std::move(left));
 
-    Camera camera = Camera(640, 480, M_PI / 3);
+    // Camera camera = Camera(640, 480, M_PI / 3);
+    Camera camera = Camera(320, 240, M_PI / 3);
     camera.transform = transformations::viewTransform(Point(0, 1.5, -5), Point(0, 1, 0), Vector(0, 1, 0));
     Canvas canvas = camera.Render(world);
     canvas.CanvasToPNG();

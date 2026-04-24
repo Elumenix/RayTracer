@@ -8,7 +8,7 @@ Color Pattern::SampleAt(const Shape &object, Point worldPoint)
     return CustomSampleAt(patternPoint);
 }
 
-Color RingPattern::CustomSampleAt(Point patternPoint) const
+Color Ring::CustomSampleAt(Point patternPoint) const
 {
     float root = std::sqrt(patternPoint.x * patternPoint.x + patternPoint.z * patternPoint.z);
     if (static_cast<int>(std::floor(root)) % 2 == 0)
@@ -21,7 +21,7 @@ Color RingPattern::CustomSampleAt(Point patternPoint) const
     }
 }
 
-Color CheckerPattern::CustomSampleAt(Point patternPoint) const
+Color Checker::CustomSampleAt(Point patternPoint) const
 {
     float t = std::floor(patternPoint.x) + std::floor(patternPoint.y) + std::floor(patternPoint.z);
 
@@ -32,5 +32,19 @@ Color CheckerPattern::CustomSampleAt(Point patternPoint) const
     else
     {
         return b;
+    }
+}
+
+Color RadialGradient::CustomSampleAt(Point patternPoint) const
+{
+    float root = std::sqrt(patternPoint.x * patternPoint.x + patternPoint.z * patternPoint.z);
+    float t = std::fmod(root, 2);
+    if (t <= 1)
+    {
+        return lerp(a, b, t);
+    }
+    else
+    {
+        return lerp(b, a, t - 1);
     }
 }

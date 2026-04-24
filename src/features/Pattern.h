@@ -46,31 +46,41 @@ private:
     Color CustomSampleAt(Point patternPoint) const override { return (static_cast<int>(floor(patternPoint.x)) % 2 == 0 ? a : b); }
 };
 
-class GradientPattern : public Pattern
+class Gradient : public Pattern
 {
 public:
-    GradientPattern(Color c_A = White, Color c_B = Black) : Pattern(c_A, c_B) {}
-    std::unique_ptr<Pattern> Clone() const override { return std::make_unique<GradientPattern>(*this); }
+    Gradient(Color c_A = White, Color c_B = Black) : Pattern(c_A, c_B) {}
+    std::unique_ptr<Pattern> Clone() const override { return std::make_unique<Gradient>(*this); }
 
 private:
     Color CustomSampleAt(Point patternPoint) const override { return lerp(a, b, patternPoint.x - std::floor(patternPoint.x)); }
 };
 
-class RingPattern : public Pattern
+class Ring : public Pattern
 {
 public:
-    RingPattern(Color c_A = White, Color c_B = Black) : Pattern(c_A, c_B) {}
-    std::unique_ptr<Pattern> Clone() const override { return std::make_unique<RingPattern>(*this); }
+    Ring(Color c_A = White, Color c_B = Black) : Pattern(c_A, c_B) {}
+    std::unique_ptr<Pattern> Clone() const override { return std::make_unique<Ring>(*this); }
 
 private:
     Color CustomSampleAt(Point patternPoint) const override;
 };
 
-class CheckerPattern : public Pattern
+class Checker : public Pattern
 {
 public:
-    CheckerPattern(Color c_A = White, Color c_B = Black) : Pattern(c_A, c_B) {}
-    std::unique_ptr<Pattern> Clone() const override { return std::make_unique<CheckerPattern>(*this); }
+    Checker(Color c_A = White, Color c_B = Black) : Pattern(c_A, c_B) {}
+    std::unique_ptr<Pattern> Clone() const override { return std::make_unique<Checker>(*this); }
+
+private:
+    Color CustomSampleAt(Point patternPoint) const override;
+};
+
+class RadialGradient : public Pattern
+{
+public:
+    RadialGradient(Color c_A = White, Color c_B = Black) : Pattern(c_A, c_B) {}
+    std::unique_ptr<Pattern> Clone() const override { return std::make_unique<RadialGradient>(*this); }
 
 private:
     Color CustomSampleAt(Point patternPoint) const override;
