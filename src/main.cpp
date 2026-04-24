@@ -34,7 +34,9 @@ int main()
     Sphere middle;
     middle.transform = transformations::translation(-0.5, 1, 0.5);
     middle.material.color = Color(0.1, 1, 0.5);
-    middle.material.pattern = MakePattern<RadialGradient>(White, Color(0.1, 1, 0.5));
+    SolidColor c1(Color(0.1,1,0.5));
+    RadialGradient smallStripe(&c1, &SolidBlack);
+    middle.material.pattern = MakePattern<RadialGradient>(&smallStripe, &SolidWhite);
     middle.material.pattern->transform = transformations::rotationX(M_PI_2) * transformations::scaling(.3, .3, .3);
     middle.material.diffuse = 0.7f;
     middle.material.specular = 0.3f;
@@ -43,7 +45,8 @@ int main()
     Sphere right;
     right.transform = transformations::translation(1.5, 0.5, -0.5) * transformations::scaling(0.5, 0.5, 0.5);
     right.material.color = Color(0.5, 1, 0.1);
-    right.material.pattern = MakePattern<Gradient>(Color(0.5, 1, 0.1), White);
+    SolidColor c2(Color(0.5,1,0.1));
+    right.material.pattern = MakePattern<Gradient>(&c2, &SolidWhite);
     right.material.pattern->transform = transformations::rotationY(M_PI_4) * transformations::scaling(2, 2, 2) * transformations::translation(.5,0,0);
     right.material.diffuse = 0.7f;
     right.material.specular = 0.3f;
@@ -52,14 +55,15 @@ int main()
     Sphere left;
     left.transform = transformations::translation(-1.5, 0.33, -0.75) * transformations::scaling(0.33, 0.33, 0.33);
     left.material.color = Color(1, 0.8, 0.1);
-    left.material.pattern = MakePattern<StripePattern>(Color(1, 0.8, 0.1), White);
+    SolidColor c3(Color(1, 0.8, 0.1));
+    left.material.pattern = MakePattern<StripePattern>(&c3, &SolidWhite);
     left.material.pattern->transform = transformations::rotationX(-M_PI_2) * transformations::scaling(.2, .2, .2);
     left.material.diffuse = 0.7f;
     left.material.specular = 0.3f;
     world.add(std::move(left));
 
-    // Camera camera = Camera(640, 480, M_PI / 3);
-    Camera camera = Camera(320, 240, M_PI / 3);
+    Camera camera = Camera(640, 480, M_PI / 3);
+    //Camera camera = Camera(320, 240, M_PI / 3);
     camera.transform = transformations::viewTransform(Point(0, 1.5, -5), Point(0, 1, 0), Vector(0, 1, 0));
     Canvas canvas = camera.Render(world);
     canvas.CanvasToPNG();

@@ -15,15 +15,15 @@ TEST(PatternTest, TestConstants)
 
 TEST(PatternTest, StripePatternColors)
 {
-    StripePattern pattern(White, Black);
+    StripePattern pattern;
 
-    EXPECT_EQ(pattern.a, White);
-    EXPECT_EQ(pattern.b, Black);
+    EXPECT_EQ(pattern.a, &SolidWhite);
+    EXPECT_EQ(pattern.b, &SolidBlack);
 }
 
 TEST(PatternTest, StripeConstantY)
 {
-    StripePattern pattern(White, Black);
+    StripePattern pattern;
 
     EXPECT_EQ(pattern.StripeAt(Point(0, 0, 0)), White);
     EXPECT_EQ(pattern.StripeAt(Point(0, 1, 0)), White);
@@ -32,7 +32,7 @@ TEST(PatternTest, StripeConstantY)
 
 TEST(PatternTest, StripeConstantZ)
 {
-    StripePattern pattern(White, Black);
+    StripePattern pattern;
 
     EXPECT_EQ(pattern.StripeAt(Point(0, 0, 0)), White);
     EXPECT_EQ(pattern.StripeAt(Point(0, 0, 1)), White);
@@ -41,7 +41,7 @@ TEST(PatternTest, StripeConstantZ)
 
 TEST(PatternTest, StripeAlternateX)
 {
-    StripePattern pattern(White, Black);
+    StripePattern pattern;
 
     EXPECT_EQ(pattern.StripeAt(Point(0, 0, 0)), White);
     EXPECT_EQ(pattern.StripeAt(Point(0.9, 0, 0)), White);
@@ -71,7 +71,7 @@ TEST(PatternTest, StripesObjectTransform)
 {
     Sphere object;
     object.transform = transformations::scaling(2, 2, 2);
-    StripePattern p(White, Black);
+    StripePattern p;
     Color c = p.SampleAt(object, Point(1.5, 0, 0));
 
     EXPECT_EQ(c, White);
@@ -80,7 +80,7 @@ TEST(PatternTest, StripesObjectTransform)
 TEST(PatternTest, StripesPatternTransform)
 {
     Sphere object;
-    StripePattern pattern(White, Black);
+    StripePattern pattern;
     pattern.transform = transformations::scaling(2, 2, 2);
     Color c = pattern.SampleAt(object, Point(1.5, 0, 0));
 
@@ -91,7 +91,7 @@ TEST(PatternTest, StripesPatternBothTransform)
 {
     Sphere object;
     object.transform = transformations::scaling(2, 2, 2);
-    StripePattern pattern(White, Black);
+    StripePattern pattern;
     pattern.transform = transformations::translation(0.5, 0, 0);
     Color c = pattern.SampleAt(object, Point(2.5, 0, 0));
 
