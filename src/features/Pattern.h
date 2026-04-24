@@ -46,6 +46,43 @@ private:
     Color CustomSampleAt(Point patternPoint) const override { return (static_cast<int>(floor(patternPoint.x)) % 2 == 0 ? a : b); }
 };
 
+class GradientPattern : public Pattern
+{
+public:
+    GradientPattern(Color c_A = White, Color c_B = Black) : Pattern(c_A, c_B) {}
+    std::unique_ptr<Pattern> Clone() const override { return std::make_unique<GradientPattern>(*this); }
+
+private:
+    Color CustomSampleAt(Point patternPoint) const override { return lerp(a, b, patternPoint.x - std::floor(patternPoint.x)); }
+};
+
+class RingPattern : public Pattern
+{
+public:
+    RingPattern(Color c_A = White, Color c_B = Black) : Pattern(c_A, c_B) {}
+    std::unique_ptr<Pattern> Clone() const override { return std::make_unique<RingPattern>(*this); }
+
+private:
+    Color CustomSampleAt(Point patternPoint) const override;
+};
+
+class CheckerPattern : public Pattern
+{
+public:
+    CheckerPattern(Color c_A = White, Color c_B = Black) : Pattern(c_A, c_B) {}
+    std::unique_ptr<Pattern> Clone() const override { return std::make_unique<CheckerPattern>(*this); }
+
+private:
+    Color CustomSampleAt(Point patternPoint) const override;
+};
+
+// Factory Method for creating patterns that will automatically be in a smart pointer
+template <typename T>
+std::unique_ptr<Pattern> MakePattern(Color a = White, Color b = Black)
+{
+    return std::make_unique<T>(a, b);
+}
+
 inline bool operator==(const Pattern &self, const Pattern &other)
 {
     return typeid(self) == typeid(other) && self.a == other.a && self.b == other.b && self.transform == other.transform;

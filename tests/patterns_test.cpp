@@ -55,7 +55,7 @@ TEST(PatternTest, LightingWithPatternApplied)
 {
     Sphere s;
     Material m = Material(White, 1, 0, 0, 0);
-    m.pattern = std::make_unique<StripePattern>(StripePattern(White, Black));
+    m.pattern = MakePattern<StripePattern>();
     s.material = std::move(m);
     Vector eye = Vector(0, 0, -1);
     Vector normal = Vector(0, 0, -1);
@@ -141,4 +141,56 @@ TEST(PatternTest, ObjectAndPatternTransform)
     Color c = pattern.SampleAt(shape, Point(2.5, 3, 3.5));
 
     EXPECT_EQ(c, Color(0.75, 0.5, 0.25));
+}
+
+TEST(PatternTest, GradientPatternTest)
+{
+    Sphere shape;
+    GradientPattern pattern;
+
+    EXPECT_EQ(pattern.SampleAt(shape, Point(0, 0, 0)), White);
+    EXPECT_EQ(pattern.SampleAt(shape, Point(0.25, 0, 0)), Color(0.75, 0.75, 0.75));
+    EXPECT_EQ(pattern.SampleAt(shape, Point(0.5, 0, 0)), Color(0.5, 0.5, 0.5));
+    EXPECT_EQ(pattern.SampleAt(shape, Point(0.75, 0, 0)), Color(0.25, 0.25, 0.25));
+}
+
+TEST(PatternTest, RingTest)
+{
+    Sphere shape;
+    RingPattern pattern;
+
+    EXPECT_EQ(pattern.SampleAt(shape, Point(0, 0, 0)), White);
+    EXPECT_EQ(pattern.SampleAt(shape, Point(1, 0, 0)), Black);
+    EXPECT_EQ(pattern.SampleAt(shape, Point(0, 0, 1)), Black);
+    EXPECT_EQ(pattern.SampleAt(shape, Point(0.708, 0, 0.708)), Black);
+}
+
+TEST(PatternTest, CheckersTestX)
+{
+    Sphere s;
+    CheckerPattern pattern;
+
+    EXPECT_EQ(pattern.SampleAt(s, Point(0, 0, 0)), White);
+    EXPECT_EQ(pattern.SampleAt(s, Point(0.99, 0, 0)), White);
+    EXPECT_EQ(pattern.SampleAt(s, Point(1.01, 0, 0)), Black);
+}
+
+TEST(PatternTest, CheckersTestY)
+{
+    Sphere s;
+    CheckerPattern pattern;
+
+    EXPECT_EQ(pattern.SampleAt(s, Point(0, 0, 0)), White);
+    EXPECT_EQ(pattern.SampleAt(s, Point(0, 0.99, 0)), White);
+    EXPECT_EQ(pattern.SampleAt(s, Point(0, 1.01, 0)), Black);
+}
+
+TEST(PatternTest, CheckersTestZ)
+{
+    Sphere s;
+    CheckerPattern pattern;
+
+    EXPECT_EQ(pattern.SampleAt(s, Point(0, 0, 0)), White);
+    EXPECT_EQ(pattern.SampleAt(s, Point(0, 0, 0.99)), White);
+    EXPECT_EQ(pattern.SampleAt(s, Point(0, 0, 1.01)), Black);
 }
