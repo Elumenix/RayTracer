@@ -53,3 +53,28 @@ Color RadialGradient::CustomSampleAt(Point patternPoint) const
         return lerp(colorB, colorA, t - 1);
     }
 }
+
+Color Blend::CustomSampleAt(Point patternPoint) const
+{
+    Color colorA = Sample(a, patternPoint);
+    Color colorB = Sample(b, patternPoint);
+
+    return (colorA + colorB) * .5f;
+}
+
+Color Perturb::CustomSampleAt(Point patternPoint) const
+{
+    float jitterX = p.Sample(0, patternPoint.x, patternPoint.y, patternPoint.z);
+    float jitterY = p.Sample(32, patternPoint.x, patternPoint.y, patternPoint.z);
+    float jitterZ = p.Sample(64, patternPoint.x, patternPoint.y, patternPoint.z);
+
+    float scale = 0.2f;
+
+    Point jitteredPoint = Point(
+        patternPoint.x + jitterX * scale,
+        patternPoint.y + jitterY * scale,
+        patternPoint.z + jitterZ * scale);
+
+    // The pattern this is perturbing will sample this
+    return Sample(a, jitteredPoint);
+}

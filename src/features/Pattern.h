@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include "Color.h"
+#include "Noise.h"
 #include "Matrix.h"
 
 inline Color White = Color(1, 1, 1);
@@ -102,6 +103,31 @@ private:
     Color CustomSampleAt(Point patternPoint) const override;
 };
 
+class Blend : public Pattern
+{
+public:
+    Blend(Pattern *c_A = &SolidWhite, Pattern *c_B = &SolidBlack) : Pattern(c_A, c_B) {}
+    std::unique_ptr<Pattern> Clone() const override { return std::make_unique<Blend>(*this); }
+
+private:
+    Color CustomSampleAt(Point patternPoint) const override;
+};
+
+class Perturb : public Pattern
+{
+public:
+    Perturb(Pattern *c_A, int seed = 1337) : Pattern(c_A, nullptr)
+    {
+        assert(a != nullptr && "Perturb specifically required a pattern reference to be passed in");
+        p = Noise::Perlin(seed);
+    }
+    std::unique_ptr<Pattern> Clone() const override { return std::make_unique<Perturb>(*this); }
+
+private:
+    Color CustomSampleAt(Point patternPoint) const override;
+    Noise::Perlin p;
+};
+
 // Factory Method for creating patterns that will automatically be in a smart pointer
 template <typename T>
 std::unique_ptr<Pattern> MakePattern(Pattern *a = &SolidWhite, Pattern *b = &SolidBlack)
@@ -111,10 +137,27 @@ std::unique_ptr<Pattern> MakePattern(Pattern *a = &SolidWhite, Pattern *b = &Sol
         static_assert(!std::is_same_v<T, SolidColor>, "Tried to make SolidColor as a smart pointer. Should just use material color instead.");
         return nullptr;
     }
+    else if (std::is_same_v<T, Perturb>)
+    {
+        static_assert(!std::is_same_v<T, Perturb>, "Tried to make Perturb with the wrong overload.");
+        return nullptr;
+    }
     else
     {
         return std::make_unique<T>(a, b);
     }
+}
+
+template <typename T>
+std::unique_ptr<Pattern> MakePattern(Pattern *a, int seed)
+{
+    if constexpr (!std::is_same_v<T, Perturb>)
+    {
+        if constexpr (std::is_same_v<T, Perturb>, "Wrong overload used to make this pattern. This wouldn't have a seed.");
+        return nullptr;
+    }
+
+    return std::make_unique<Perturb>(a, seed);
 }
 
 inline bool operator==(const Pattern &self, const Pattern &other)

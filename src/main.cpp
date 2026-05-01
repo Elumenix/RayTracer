@@ -56,7 +56,8 @@ int main()
     left.transform = transformations::translation(-1.5, 0.33, -0.75) * transformations::scaling(0.33, 0.33, 0.33);
     left.material.color = Color(1, 0.8, 0.1);
     SolidColor c3(Color(1, 0.8, 0.1));
-    left.material.pattern = MakePattern<StripePattern>(&c3, &SolidWhite);
+    StripePattern sp(&c3, &SolidBlack);
+    left.material.pattern = MakePattern<Perturb>(&sp, 1337);
     left.material.pattern->transform = transformations::rotationX(-M_PI_2) * transformations::scaling(.2, .2, .2);
     left.material.diffuse = 0.7f;
     left.material.specular = 0.3f;
