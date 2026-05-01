@@ -3,38 +3,39 @@
 #include "Color.h"
 #include "Noise.h"
 #include "Matrix.h"
+#include <assert.h>
 
-inline Color White = Color(1, 1, 1);
-inline Color Black = Color(0, 0, 0);
+inline Rendering::Color White = Rendering::Color(1, 1, 1);
+inline Rendering::Color Black = Rendering::Color(0, 0, 0);
 class Shape; // Forward Declaration
 
 class Pattern
 {
 protected:
     Pattern(Pattern *c_A, Pattern *c_B) : a(c_A), b(c_B) {}
-    virtual Color CustomSampleAt(Point patternPoint) const = 0;
-    static Color Sample(const Pattern *pattern, Point p) { return pattern->CustomSampleAt(p); }
+    virtual Rendering::Color CustomSampleAt(Math::Point patternPoint) const = 0;
+    static Rendering::Color Sample(const Pattern *pattern, Math::Point p) { return pattern->CustomSampleAt(p); }
 
 public:
     Pattern *a;
     Pattern *b;
-    Matrix<4, 4> transform = IdentityMatrix;
+    Math::Matrix<4, 4> transform = Math::IdentityMatrix;
 
     virtual std::unique_ptr<Pattern> Clone() const = 0;
 
-    Color SampleAt(const Shape &object, Point worldPoint);
+    Rendering::Color SampleAt(const Shape &object, Math::Point worldPoint);
 };
 
 class SolidColor : public Pattern
 {
 public:
-    SolidColor(Color c) : Pattern(nullptr, nullptr), color(c) {}
+    SolidColor(Rendering::Color c) : Pattern(nullptr, nullptr), color(c) {}
     std::unique_ptr<Pattern> Clone() const override { return std::make_unique<SolidColor>(*this); }
 
-    Color color;
+    Rendering::Color color;
 
 private:
-    Color CustomSampleAt(Point patternPoint) const override { return color; }
+    Rendering::Color CustomSampleAt(Math::Point patternPoint) const override { return color; }
 };
 
 inline SolidColor SolidWhite = SolidColor(White);
@@ -47,7 +48,7 @@ public:
     std::unique_ptr<Pattern> Clone() const override { return std::make_unique<TestPattern>(*this); }
 
 private:
-    Color CustomSampleAt(Point patternPoint) const override { return Color(patternPoint.x, patternPoint.y, patternPoint.z); }
+    Rendering::Color CustomSampleAt(Math::Point patternPoint) const override { return Rendering::Color(patternPoint.x, patternPoint.y, patternPoint.z); }
 };
 
 class StripePattern : public Pattern
@@ -57,10 +58,10 @@ public:
     std::unique_ptr<Pattern> Clone() const override { return std::make_unique<StripePattern>(*this); }
 
     // Test Function Only
-    Color StripeAt(Point p) { return CustomSampleAt(p); }
+    Rendering::Color StripeAt(Math::Point p) { return CustomSampleAt(p); }
 
 private:
-    Color CustomSampleAt(Point patternPoint) const override;
+    Rendering::Color CustomSampleAt(Math::Point patternPoint) const override;
 };
 
 class Gradient : public Pattern
@@ -70,7 +71,7 @@ public:
     std::unique_ptr<Pattern> Clone() const override { return std::make_unique<Gradient>(*this); }
 
 private:
-    Color CustomSampleAt(Point patternPoint) const override;
+    Rendering::Color CustomSampleAt(Math::Point patternPoint) const override;
 };
 
 class Ring : public Pattern
@@ -80,7 +81,7 @@ public:
     std::unique_ptr<Pattern> Clone() const override { return std::make_unique<Ring>(*this); }
 
 private:
-    Color CustomSampleAt(Point patternPoint) const override;
+    Rendering::Color CustomSampleAt(Math::Point patternPoint) const override;
 };
 
 class Checker : public Pattern
@@ -90,7 +91,7 @@ public:
     std::unique_ptr<Pattern> Clone() const override { return std::make_unique<Checker>(*this); }
 
 private:
-    Color CustomSampleAt(Point patternPoint) const override;
+    Rendering::Color CustomSampleAt(Math::Point patternPoint) const override;
 };
 
 class RadialGradient : public Pattern
@@ -100,7 +101,7 @@ public:
     std::unique_ptr<Pattern> Clone() const override { return std::make_unique<RadialGradient>(*this); }
 
 private:
-    Color CustomSampleAt(Point patternPoint) const override;
+    Rendering::Color CustomSampleAt(Math::Point patternPoint) const override;
 };
 
 class Blend : public Pattern
@@ -110,7 +111,7 @@ public:
     std::unique_ptr<Pattern> Clone() const override { return std::make_unique<Blend>(*this); }
 
 private:
-    Color CustomSampleAt(Point patternPoint) const override;
+    Rendering::Color CustomSampleAt(Math::Point patternPoint) const override;
 };
 
 class Perturb : public Pattern
@@ -124,7 +125,7 @@ public:
     std::unique_ptr<Pattern> Clone() const override { return std::make_unique<Perturb>(*this); }
 
 private:
-    Color CustomSampleAt(Point patternPoint) const override;
+    Rendering::Color CustomSampleAt(Math::Point patternPoint) const override;
     Noise::Perlin p;
 };
 
@@ -153,7 +154,8 @@ std::unique_ptr<Pattern> MakePattern(Pattern *a, int seed)
 {
     if constexpr (!std::is_same_v<T, Perturb>)
     {
-        if constexpr (std::is_same_v<T, Perturb>, "Wrong overload used to make this pattern. This wouldn't have a seed.");
+        if constexpr (std::is_same_v<T, Perturb>, "Wrong overload used to make this pattern. This wouldn't have a seed.")
+            ;
         return nullptr;
     }
 

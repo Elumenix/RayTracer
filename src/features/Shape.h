@@ -4,6 +4,7 @@
 #include "Matrix.h"
 #include "Material.h"
 #include "Tuple.h"
+#include <cmath>
 
 class Shape
 {
@@ -28,11 +29,11 @@ protected:
 
     // Force subclass to make implementations of these
     virtual IntersectionList custom_intersects(const Ray rayOS) const = 0;
-    virtual Vector custom_normal(Point pointOS) const = 0;
+    virtual Math::Vector custom_normal(Math::Point pointOS) const = 0;
 
 public:
     const int id;
-    Matrix<4, 4> transform = IdentityMatrix;
+    Math::Matrix<4, 4> transform = Math::IdentityMatrix;
     Material material;
 
     virtual ~Shape() = default;
@@ -43,15 +44,15 @@ public:
         return custom_intersects(rayOS);
     }
 
-    virtual Vector normal_at(Point pointWS) const
+    virtual Math::Vector normal_at(Math::Point pointWS) const
     {
         // An assumption is made that the point is on the shape
-        Point pointOS = transform.inverse() * pointWS;
+        Math::Point pointOS = transform.inverse() * pointWS;
 
         // Subclass needs to handle object space
-        Vector normalOS = custom_normal(pointOS);
+        Math::Vector normalOS = custom_normal(pointOS);
 
-        Vector normalWS = transform.inverse().transpose() * normalOS;
+        Math::Vector normalWS = transform.inverse().transpose() * normalOS;
         normalWS.w = 0; // Correct the w
         return normalWS.Normalized();
     }
@@ -70,10 +71,10 @@ struct Comps
     float t;
     bool isInside;
     const Shape *object;
-    Point point;
-    Vector eye;
-    Vector normal;
-    Vector over_point;
+    Math::Point point;
+    Math::Vector eye;
+    Math::Vector normal;
+    Math::Vector over_point;
 };
 
 inline float EPSILON = 0.0001f;

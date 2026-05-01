@@ -2,23 +2,24 @@
 #include "Color.h"
 #include "Tuple.h"
 #include "Shape.h"
+#include <cmath>
 
 class Light
 {
 public:
-    Point position;
-    Color intensity;
-    Light(Point c_position, Color c_intensity) : position(c_position), intensity(c_intensity) {};
+    Math::Point position;
+    Rendering::Color intensity;
+    Light(Math::Point c_position, Rendering::Color c_intensity) : position(c_position), intensity(c_intensity) {};
 
-    Color lighting(const Shape &shape, const Point pointPos, const Vector eye, const Vector normal, const bool inShadow = false) const
+    Rendering::Color lighting(const Shape &shape, const Math::Point pointPos, const Math::Vector eye, const Math::Vector normal, const bool inShadow = false) const
     {
-        Color diffuse = Color(0, 0, 0);
-        Color specular = Color(0, 0, 0);
+        Rendering::Color diffuse;
+        Rendering::Color specular;
 
-        Color effectiveColor = (shape.material.pattern == nullptr ? shape.material.color : shape.material.pattern->SampleAt(shape, pointPos)) * intensity;
+        Rendering::Color effectiveColor = (shape.material.pattern == nullptr ? shape.material.color : shape.material.pattern->SampleAt(shape, pointPos)) * intensity;
 
-        Vector lightDir = (position - pointPos).Normalized();
-        Color ambient = effectiveColor * shape.material.ambient;
+        Math::Vector lightDir = (position - pointPos).Normalized();
+        Rendering::Color ambient = effectiveColor * shape.material.ambient;
 
         if (inShadow)
             return ambient;
@@ -28,7 +29,7 @@ public:
         if (lightDotNormal >= 0)
         {
             diffuse = effectiveColor * shape.material.diffuse * lightDotNormal;
-            Vector reflectionVector = Reflect(-lightDir, normal);
+            Math::Vector reflectionVector = Reflect(-lightDir, normal);
 
             // Negative number means light reflects away from the eye
             float reflectDotEye = DotProduct(reflectionVector, eye);

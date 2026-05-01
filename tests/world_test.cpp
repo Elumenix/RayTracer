@@ -2,6 +2,9 @@
 #include "../src/features/World.h"
 #include "../src/features/Camera.h"
 
+using namespace Math;
+using namespace Rendering;
+
 TEST(WorldTest, CreateWorld)
 {
     World w;
@@ -19,7 +22,7 @@ TEST(WorldTest, DefaultWorld)
     s1.material.diffuse = 0.7f;
     s1.material.specular = 0.2f;
     Sphere s2;
-    s2.transform = transformations::scaling(0.5, 0.5, 0.5);
+    s2.transform = Transformations::scaling(0.5, 0.5, 0.5);
 
     EXPECT_EQ(w.lights[0], l);
     EXPECT_EQ(*w.shapes[0], s1);
@@ -133,7 +136,7 @@ TEST(CameraTest, RayThroughCorner)
 TEST(CameraTest, RayWithTransformedCamera)
 {
     Camera c = Camera(201, 101, M_PI_2);
-    c.transform = transformations::rotationY(M_PI_4) * transformations::translation(0, -2, 5);
+    c.transform = Transformations::rotationY(M_PI_4) * Transformations::translation(0, -2, 5);
     Ray r = c.RayForPixel(100, 50);
     EXPECT_EQ(r.origin, Point(0, 2, -5));
     EXPECT_EQ(r.direction, Vector(sqrtf(2) / 2, 0, -sqrtf(2) / 2));
@@ -146,7 +149,7 @@ TEST(CameraTest, CameraRender)
     Point from = Point(0, 0, -5);
     Point to = Point(0, 0, 0);
     Vector up = Vector(0, 1, 0);
-    c.transform = transformations::viewTransform(from, to, up);
+    c.transform = Transformations::viewTransform(from, to, up);
     Canvas image = c.Render(w);
 
     EXPECT_EQ(image.GetPixelAt(5, 5), Color(0.38066, 0.47583, 0.2855));

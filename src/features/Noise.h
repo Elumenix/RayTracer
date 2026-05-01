@@ -15,7 +15,7 @@ namespace Noise
 
         void SetSeed(int seed);
         float Sample(unsigned char offset, float x, float y, float z) const;
-        float Sample(unsigned char offset, Point p) const;
+        float Sample(unsigned char offset, Math::Point p) const;
 
     private:
         int m_seed = 1337;

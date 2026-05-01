@@ -1,6 +1,8 @@
 #include <gtest/gtest.h>
 #include "../src/features/Canvas.h"
 
+using namespace Rendering;
+
 TEST(CanvasTest, CreateCanvas)
 {
     Canvas c = Canvas(10, 20);

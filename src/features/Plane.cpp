@@ -1,5 +1,7 @@
 #include "Plane.h"
 
+using namespace Math;
+
 IntersectionList Plane::custom_intersects(const Ray rayOS) const
 {
     if (abs(rayOS.direction.y) < EPSILON) {

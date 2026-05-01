@@ -2,6 +2,8 @@
 #include "Canvas.h"
 #include "stb_image_write.h"
 
+using namespace Rendering;
+
 Canvas::Canvas(int width, int height) : width(width), height(height) {
     int size = width * height;
     pixels = std::vector<Color>(width * height, Color(0,0,0));

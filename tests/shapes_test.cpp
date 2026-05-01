@@ -4,6 +4,9 @@
 #include "../src/features/IntersectionList.h"
 #include "../src/features/Color.h"
 #include "../src/features/Plane.h"
+#include <cmath>
+
+using namespace Math;
 
 TEST(ShapeTest, DefaultShapeTransformation)
 {
@@ -15,7 +18,7 @@ TEST(ShapeTest, DefaultShapeTransformation)
 TEST(ShapeTest, ChangeShapeTransformation)
 {
     Sphere s;
-    Matrix t = transformations::translation(2, 3, 4);
+    Matrix t = Transformations::translation(2, 3, 4);
     s.transform = t;
 
     EXPECT_EQ(s.transform, t);
@@ -65,7 +68,7 @@ TEST(ShapeTest, SphereNormalIsNormalized)
 TEST(ShapeTest, SphereNormalTranslated)
 {
     Sphere s;
-    s.transform = transformations::translation(0, 1, 0);
+    s.transform = Transformations::translation(0, 1, 0);
     Vector n = s.normal_at(Point(0, 1.70711, -0.70711));
 
     EXPECT_EQ(n, Vector(0, 0.70711, -0.70711));
@@ -74,7 +77,7 @@ TEST(ShapeTest, SphereNormalTranslated)
 TEST(ShapeTest, SphereTransformed)
 {
     Sphere s;
-    Matrix m = transformations::scaling(1, 0.5, 1) * transformations::rotationZ(M_PI / 5);
+    Matrix m = Transformations::scaling(1, 0.5, 1) * Transformations::rotationZ(M_PI / 5);
     s.transform = m;
     Vector n = s.normal_at(Vector(0, sqrtf(2.0f) / 2, -sqrtf(2.0f) / 2));
 

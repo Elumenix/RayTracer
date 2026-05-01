@@ -4,6 +4,10 @@
 #include "../src/features/Material.h"
 #include "../src/features/Sphere.h"
 #include "../src/features/World.h"
+#include <cmath>
+
+using namespace Math;
+using namespace Rendering;
 
 TEST(LightTest, LightObject)
 {
@@ -151,7 +155,7 @@ TEST(LightTest, ShadeHitIntersection)
     Sphere s1;
     w.add(std::move(s1));
     Sphere s2;
-    s2.transform = transformations::translation(0, 0, 10);
+    s2.transform = Transformations::translation(0, 0, 10);
     w.add(std::move(s2));
     Intersection i = Intersection(4, w.shapes[1].get());
     Ray r = Ray(Point(0, 0, 5), Vector(0, 0, 1));

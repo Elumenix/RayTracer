@@ -1,5 +1,7 @@
 #include "Sphere.h"
 
+using namespace Math;
+
 IntersectionList Sphere::custom_intersects(const Ray rayOS) const
 {
     Tuple sphereToRay = rayOS.origin - Point(0,0,0); 

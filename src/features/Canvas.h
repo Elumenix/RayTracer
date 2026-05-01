@@ -7,22 +7,22 @@
 #include <sstream>
 #include <algorithm>
 
-class Canvas {
+class Canvas
+{
 private:
-    std::vector<Color> pixels;
+    std::vector<Rendering::Color> pixels;
 
     // Helper Function
-    std::string FormatWithLineBreaks(const std::string& input);
+    std::string FormatWithLineBreaks(const std::string &input);
 
 public:
     const int width;
     const int height;
 
     Canvas(int width, int height);
-    Color GetPixelAt(int x, int y);
-    void WritePixelAt(int x, int y, Color color);
-    void WritePixelAt(float x, float y, Color color);
+    Rendering::Color GetPixelAt(int x, int y);
+    void WritePixelAt(int x, int y, Rendering::Color color);
+    void WritePixelAt(float x, float y, Rendering::Color color);
     std::string CanvasToPPM();
     void CanvasToPNG();
 };
-

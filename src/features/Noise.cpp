@@ -94,7 +94,7 @@ namespace Noise
         return Lerp(yf0, yf1, zs);
     }
 
-    float Perlin::Sample(unsigned char offset, Point p) const
+    float Perlin::Sample(unsigned char offset, Math::Point p) const
     {
         return Sample(offset, p.x, p.y, p.z);
     }

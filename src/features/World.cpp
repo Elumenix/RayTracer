@@ -1,5 +1,8 @@
 #include "World.h"
 
+using namespace Math;
+using namespace Rendering;
+
 World World::Default()
 {
     World w = World();
@@ -14,7 +17,7 @@ World World::Default()
     w.add(std::move(s1));
 
     Sphere s2;
-    s2.transform = transformations::scaling(0.5,0.5,0.5);
+    s2.transform = Transformations::scaling(0.5,0.5,0.5);
     w.add(std::move(s2));
     
     return w;

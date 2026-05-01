@@ -1,5 +1,9 @@
 #include "Pattern.h"
 #include "Shape.h"
+#include <cmath>
+
+using namespace Math;
+using namespace Rendering;
 
 Color Pattern::SampleAt(const Shape &object, Point worldPoint)
 {
@@ -10,7 +14,7 @@ Color Pattern::SampleAt(const Shape &object, Point worldPoint)
 
 Color StripePattern::CustomSampleAt(Point patternPoint) const
 {
-    Pattern *slot = (static_cast<int>(floor(patternPoint.x)) % 2 == 0 ? a : b);
+    Pattern *slot = (static_cast<int>(std::floor(patternPoint.x)) % 2 == 0 ? a : b);
     return Sample(slot, patternPoint);
 }
 
@@ -25,7 +29,7 @@ Color Gradient::CustomSampleAt(Point patternPoint) const
 Color Ring::CustomSampleAt(Point patternPoint) const
 {
     float root = std::sqrt(patternPoint.x * patternPoint.x + patternPoint.z * patternPoint.z);
-    Pattern *slot = (static_cast<int>(floor(root)) % 2 == 0) ? a : b;
+    Pattern *slot = (static_cast<int>(std::floor(root)) % 2 == 0) ? a : b;
     return Sample(slot, patternPoint);
 }
 

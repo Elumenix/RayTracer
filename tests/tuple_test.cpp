@@ -1,7 +1,9 @@
 #include <gtest/gtest.h>
 #include <cmath>
-#include "../src/features/Tuple.h"
 #include "../src/features/Color.h"
+
+using namespace Math;
+using namespace Rendering;
 
 TEST(TupleTest, MakePoint1)
 {
