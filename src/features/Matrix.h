@@ -25,8 +25,8 @@ namespace Math
         }
 
         // Raw data access
-        float *data() { return m_data; }
-        const float *data() const { return m_data; }
+        float *Data() { return m_data; }
+        const float *Data() const { return m_data; }
 
         // Member access
         float *operator[](std::size_t col) { return &m_data[col * Height]; }
@@ -43,13 +43,13 @@ namespace Math
         bool operator!=(const Matrix<Width, Height> &other) const { return !(*this == other); }
 
         // Matrix Operations
-        Matrix<Height, Width> transpose() const;
-        Matrix<Width, Height> inverse() const;
-        Matrix<Width - 1, Height - 1> subMatrix(int rowRemoved, int colRemoved) const;
-        float determinant() const;
-        float minor(int row, int col) const;
-        float cofactor(int row, int col) const;
-        bool isInvertible() const { return std::abs(determinant()) > 0.0001; }
+        Matrix<Height, Width> Transpose() const;
+        Matrix<Width, Height> Inverse() const;
+        Matrix<Width - 1, Height - 1> SubMatrix(int rowRemoved, int colRemoved) const;
+        float Determinant() const;
+        float Minor(int row, int col) const;
+        float Cofactor(int row, int col) const;
+        bool IsInvertible() const { return std::abs(Determinant()) > 0.0001; }
 
         // Stream Output
         friend std::ostream &operator<<(std::ostream &os, const Matrix<Width, Height> &m)
@@ -137,7 +137,7 @@ namespace Math
     }
 
     template <std::size_t Width, std::size_t Height>
-    inline Matrix<Height, Width> Matrix<Width, Height>::transpose() const
+    inline Matrix<Height, Width> Matrix<Width, Height>::Transpose() const
     {
         Matrix<Height, Width> ret;
 
@@ -153,19 +153,19 @@ namespace Math
     }
 
     template <std::size_t Width, std::size_t Height>
-    inline Matrix<Width, Height> Matrix<Width, Height>::inverse() const
+    inline Matrix<Width, Height> Matrix<Width, Height>::Inverse() const
     {
         static_assert(Width == Height, "Only square matrices can be inverted");
-        assert(isInvertible() && "Attempted to invert a non-invertible matrix");
+        assert(IsInvertible() && "Attempted to invert a non-invertible matrix");
 
         Matrix m2 = Matrix<Width, Height>();
-        const float det = determinant();
+        float det = Determinant();
 
         for (int row = 0; row < Height; row++)
         {
             for (int col = 0; col < Width; col++)
             {
-                m2[row][col] = cofactor(col, row) / det;
+                m2[row][col] = Cofactor(col, row) / det;
             }
         }
 
@@ -173,7 +173,7 @@ namespace Math
     }
 
     template <size_t Width, size_t Height>
-    inline Matrix<Width - 1, Height - 1> Matrix<Width, Height>::subMatrix(int rowRemoved, int colRemoved) const
+    inline Matrix<Width - 1, Height - 1> Matrix<Width, Height>::SubMatrix(int rowRemoved, int colRemoved) const
     {
         Matrix<Width - 1, Height - 1> result;
         int rowIndex = 0;
@@ -197,7 +197,7 @@ namespace Math
     }
 
     template <std::size_t Width, std::size_t Height>
-    inline float Matrix<Width, Height>::determinant() const
+    inline float Matrix<Width, Height>::Determinant() const
     {
         static_assert(Width == Height, "Determinant only exists for square matrices");
 
@@ -212,7 +212,7 @@ namespace Math
 
             for (int col = 0; col < Width; col++)
             {
-                determinant += (*this)[0][col] * cofactor(0, col);
+                determinant += (*this)[0][col] * Cofactor(0, col);
             }
 
             return determinant;
@@ -220,19 +220,19 @@ namespace Math
     }
 
     template <std::size_t Width, std::size_t Height>
-    inline float Matrix<Width, Height>::minor(int row, int col) const
+    inline float Matrix<Width, Height>::Minor(int row, int col) const
     {
-        Matrix<Width - 1, Height - 1> m = subMatrix(row, col);
-        return m.determinant();
+        Matrix<Width - 1, Height - 1> m = SubMatrix(row, col);
+        return m.Determinant();
     }
 
     template <std::size_t Width, std::size_t Height>
-    inline float Matrix<Width, Height>::cofactor(int row, int col) const
+    inline float Matrix<Width, Height>::Cofactor(int row, int col) const
     {
         // even sum is positive, odd sum is negative
         float sign = ((row + col) % 2) ? -1.0f : 1.0f;
 
-        return minor(row, col) * sign;
+        return Minor(row, col) * sign;
     }
 
     // =============================================================================

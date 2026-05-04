@@ -155,7 +155,7 @@ TEST(LightTest, ShadeHitIntersection)
     Sphere s1;
     w.add(std::move(s1));
     Sphere s2;
-    s2.transform = Transformations::translation(0, 0, 10);
+    s2.transform = Transformations::Translation(0, 0, 10);
     w.add(std::move(s2));
     Intersection i = Intersection(4, w.shapes[1].get());
     Ray r = Ray(Point(0, 0, 5), Vector(0, 0, 1));

@@ -32,17 +32,17 @@ namespace Math
     };
 
     // Advanced Tuple operations
-    float DotProduct(Tuple a, Tuple b);
-    Tuple CrossProduct(Tuple a, Tuple b);
-    Vector Reflect(Vector in, Vector normal);
+    float DotProduct(const Tuple &a, const Tuple &b);
+    Tuple CrossProduct(const Tuple &a, const Tuple &b);
+    Vector Reflect(const Vector &in, const Vector &normal);
 
     // Basic Tuple operations
-    bool operator==(const Tuple lhs, const Tuple rhs);
-    Tuple operator+(const Tuple lhs, const Tuple rhs);
-    Tuple operator-(const Tuple lhs, const Tuple rhs);
-    Tuple operator-(const Tuple neg);
-    Tuple operator*(const Tuple t, float scalar);
-    Tuple operator*(float scalar, const Tuple t);
-    Tuple operator/(const Tuple t, float div);
+    bool operator==(const Tuple &lhs, const Tuple &rhs);
+    Tuple operator+(const Tuple &lhs, const Tuple &rhs);
+    Tuple operator-(const Tuple &lhs, const Tuple &rhs);
+    Tuple operator-(const Tuple &neg);
+    Tuple operator*(const Tuple &t, float scalar);
+    Tuple operator*(float scalar, const Tuple &t);
+    Tuple operator/(const Tuple &t, float div);
     std::ostream &operator<<(std::ostream &os, const Tuple &t);
 }

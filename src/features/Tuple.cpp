@@ -19,23 +19,23 @@ namespace Math
     return Tuple(x / magnitude, y / magnitude, z / magnitude, w / magnitude);
   }
 
-  float DotProduct(Tuple a, Tuple b)
+  float DotProduct(const Tuple &a, const Tuple &b)
   {
     // Also known as |A||B|cos(theta)
     return a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
   }
 
-  Tuple CrossProduct(Tuple a, Tuple b)
+  Tuple CrossProduct(const Tuple &a, const Tuple &b)
   {
     return Vector(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
   }
 
-  Vector Reflect(Vector in, Vector normal)
+  Vector Reflect(const Vector &in, const Vector &normal)
   {
     return in - normal * 2 * DotProduct(in, normal);
   }
 
-  bool operator==(const Tuple lhs, const Tuple rhs)
+  bool operator==(const Tuple &lhs, const Tuple &rhs)
   {
     if (abs(lhs.x - rhs.x) >= .0001)
       return false;
@@ -48,32 +48,32 @@ namespace Math
     return true;
   }
 
-  Tuple operator+(const Tuple lhs, const Tuple rhs)
+  Tuple operator+(const Tuple &lhs, const Tuple &rhs)
   {
     return Tuple(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z, lhs.w + rhs.w);
   }
 
-  Tuple operator-(const Tuple lhs, const Tuple rhs)
+  Tuple operator-(const Tuple &lhs, const Tuple &rhs)
   {
     return Tuple(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z, lhs.w - rhs.w);
   }
 
-  Tuple operator-(const Tuple neg)
+  Tuple operator-(const Tuple &neg)
   {
     return Tuple(-neg.x, -neg.y, -neg.z, -neg.w);
   }
 
-  Tuple operator*(const Tuple t, float scalar)
+  Tuple operator*(const Tuple &t, float scalar)
   {
     return Tuple(t.x * scalar, t.y * scalar, t.z * scalar, t.w * scalar);
   }
 
-  Tuple operator*(float scalar, const Tuple t)
+  Tuple operator*(float scalar, const Tuple &t)
   {
     return t * scalar;
   }
 
-  Tuple operator/(const Tuple t, float div)
+  Tuple operator/(const Tuple &t, float div)
   {
     return Tuple(t.x / div, t.y / div, t.z / div, t.w / div);
   }

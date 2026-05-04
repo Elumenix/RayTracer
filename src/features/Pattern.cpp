@@ -7,8 +7,8 @@ using namespace Rendering;
 
 Color Pattern::SampleAt(const Shape &object, Point worldPoint)
 {
-    Point objPoint = object.transform.inverse() * worldPoint;
-    Point patternPoint = transform.inverse() * objPoint;
+    Point objPoint = object.transform.Inverse() * worldPoint;
+    Point patternPoint = transform.Inverse() * objPoint;
     return CustomSampleAt(patternPoint);
 }
 
@@ -23,7 +23,7 @@ Color Gradient::CustomSampleAt(Point patternPoint) const
     Color colorA = Sample(a, patternPoint);
     Color colorB = Sample(b, patternPoint);
     float t = patternPoint.x - std::floor(patternPoint.x);
-    return lerp(colorA, colorB, t);
+    return Lerp(colorA, colorB, t);
 }
 
 Color Ring::CustomSampleAt(Point patternPoint) const
@@ -50,11 +50,11 @@ Color RadialGradient::CustomSampleAt(Point patternPoint) const
 
     if (t <= 1)
     {
-        return lerp(colorA, colorB, t);
+        return Lerp(colorA, colorB, t);
     }
     else
     {
-        return lerp(colorB, colorA, t - 1);
+        return Lerp(colorB, colorA, t - 1);
     }
 }
 

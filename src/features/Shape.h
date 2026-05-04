@@ -40,19 +40,19 @@ public:
 
     IntersectionList intersects(const Ray rayWS) const
     {
-        Ray rayOS = rayWS.transform(transform.inverse());
+        Ray rayOS = rayWS.transform(transform.Inverse());
         return custom_intersects(rayOS);
     }
 
     virtual Math::Vector normal_at(Math::Point pointWS) const
     {
         // An assumption is made that the point is on the shape
-        Math::Point pointOS = transform.inverse() * pointWS;
+        Math::Point pointOS = transform.Inverse() * pointWS;
 
         // Subclass needs to handle object space
         Math::Vector normalOS = custom_normal(pointOS);
 
-        Math::Vector normalWS = transform.inverse().transpose() * normalOS;
+        Math::Vector normalWS = transform.Inverse().Transpose() * normalOS;
         normalWS.w = 0; // Correct the w
         return normalWS.Normalized();
     }

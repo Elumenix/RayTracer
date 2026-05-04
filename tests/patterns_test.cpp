@@ -6,6 +6,7 @@
 
 using namespace Math;
 using namespace Rendering;
+using namespace Transformations;
 
 TEST(PatternTest, TestConstants)
 {
@@ -73,7 +74,7 @@ TEST(PatternTest, LightingWithPatternApplied)
 TEST(PatternTest, StripesObjectTransform)
 {
     Sphere object;
-    object.transform = Transformations::scaling(2, 2, 2);
+    object.transform = Scaling(2, 2, 2);
     StripePattern p;
     Color c = p.SampleAt(object, Point(1.5, 0, 0));
 
@@ -84,7 +85,7 @@ TEST(PatternTest, StripesPatternTransform)
 {
     Sphere object;
     StripePattern pattern;
-    pattern.transform = Transformations::scaling(2, 2, 2);
+    pattern.transform = Scaling(2, 2, 2);
     Color c = pattern.SampleAt(object, Point(1.5, 0, 0));
 
     EXPECT_EQ(c, White);
@@ -93,9 +94,9 @@ TEST(PatternTest, StripesPatternTransform)
 TEST(PatternTest, StripesPatternBothTransform)
 {
     Sphere object;
-    object.transform = Transformations::scaling(2, 2, 2);
+    object.transform = Scaling(2, 2, 2);
     StripePattern pattern;
-    pattern.transform = Transformations::translation(0.5, 0, 0);
+    pattern.transform = Translation(0.5, 0, 0);
     Color c = pattern.SampleAt(object, Point(2.5, 0, 0));
 
     EXPECT_EQ(c, White);
@@ -110,15 +111,15 @@ TEST(PatternTest, DefaultPatternTransformation)
 TEST(PatternTest, AssigningPatternTransformation)
 {
     TestPattern pattern;
-    pattern.transform = Transformations::translation(1, 2, 3);
+    pattern.transform = Translation(1, 2, 3);
 
-    EXPECT_EQ(pattern.transform, Transformations::translation(1, 2, 3));
+    EXPECT_EQ(pattern.transform, Translation(1, 2, 3));
 }
 
 TEST(PatternTest, PatternObjectTransform)
 {
     Sphere s;
-    s.transform = Transformations::scaling(2, 2, 2);
+    s.transform = Scaling(2, 2, 2);
     TestPattern pattern;
     Color c = pattern.SampleAt(s, Point(2, 3, 4));
 
@@ -129,7 +130,7 @@ TEST(PatternTest, PatternTransform)
 {
     Sphere shape;
     TestPattern pattern;
-    pattern.transform = Transformations::scaling(2, 2, 2);
+    pattern.transform = Scaling(2, 2, 2);
     Color c = pattern.SampleAt(shape, Point(2, 3, 4));
 
     EXPECT_EQ(c, Color(1, 1.5, 2));
@@ -138,9 +139,9 @@ TEST(PatternTest, PatternTransform)
 TEST(PatternTest, ObjectAndPatternTransform)
 {
     Sphere shape;
-    shape.transform = Transformations::scaling(2, 2, 2);
+    shape.transform = Scaling(2, 2, 2);
     TestPattern pattern;
-    pattern.transform = Transformations::translation(0.5, 1, 1.5);
+    pattern.transform = Translation(0.5, 1, 1.5);
     Color c = pattern.SampleAt(shape, Point(2.5, 3, 3.5));
 
     EXPECT_EQ(c, Color(0.75, 0.5, 0.25));

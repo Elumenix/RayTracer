@@ -3,7 +3,7 @@
 
 namespace Transformations
 {
-    Math::Matrix<4, 4> translation(float x, float y, float z)
+    Math::Matrix<4, 4> Translation(float x, float y, float z)
     {
         Math::Matrix translation = Math::IdentityMatrix;
         translation[0][3] = x;
@@ -12,7 +12,7 @@ namespace Transformations
         return translation;
     }
 
-    Math::Matrix<4, 4> scaling(float x, float y, float z)
+    Math::Matrix<4, 4> Scaling(float x, float y, float z)
     {
         Math::Matrix scale = Math::IdentityMatrix;
         scale[0][0] = x;
@@ -22,7 +22,7 @@ namespace Transformations
         return scale;
     }
 
-    Math::Matrix<4, 4> rotationX(float rad)
+    Math::Matrix<4, 4> RotationX(float rad)
     {
         float s = sinf(rad);
         float c = cosf(rad);
@@ -35,7 +35,7 @@ namespace Transformations
         return rotation;
     }
 
-    Math::Matrix<4, 4> rotationY(float rad)
+    Math::Matrix<4, 4> RotationY(float rad)
     {
         float s = sinf(rad);
         float c = cosf(rad);
@@ -48,7 +48,7 @@ namespace Transformations
         return rotation;
     }
 
-    Math::Matrix<4, 4> rotationZ(float rad)
+    Math::Matrix<4, 4> RotationZ(float rad)
     {
         float s = sinf(rad);
         float c = cosf(rad);
@@ -61,7 +61,7 @@ namespace Transformations
         return rotation;
     }
 
-    Math::Matrix<4, 4> shearing(float xy, float xz, float yx, float yz, float zx, float zy)
+    Math::Matrix<4, 4> Shearing(float xy, float xz, float yx, float yz, float zx, float zy)
     {
         Math::Matrix shear = Math::Matrix<4, 4>{
             1, xy, xz, 0,
@@ -72,7 +72,7 @@ namespace Transformations
         return shear;
     }
 
-    Math::Matrix<4, 4> viewTransform(Math::Point from, Math::Point to, Math::Vector up)
+    Math::Matrix<4, 4> ViewTransform(Math::Point from, Math::Point to, Math::Vector up)
     {
         Math::Vector forward = (to - from).Normalized();
         Math::Vector left = CrossProduct(forward, up.Normalized());
@@ -82,6 +82,6 @@ namespace Transformations
                                                        trueUp.x, trueUp.y, trueUp.z, 0,
                                                        -forward.x, -forward.y, -forward.z, 0,
                                                        0, 0, 0, 1});
-        return orientation * translation(-from.x, -from.y, -from.z);
+        return orientation * Translation(-from.x, -from.y, -from.z);
     }
 }

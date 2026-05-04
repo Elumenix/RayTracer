@@ -50,8 +50,8 @@ public:
         float worldX = _halfWidth - xOffset;
         float worldY = _halfHeight - yOffset;
 
-        Math::Point pixel = transform.inverse() * Math::Point(worldX, worldY, -1);
-        Math::Point origin = transform.inverse() * Math::Point(0, 0, 0);
+        Math::Point pixel = transform.Inverse() * Math::Point(worldX, worldY, -1);
+        Math::Point origin = transform.Inverse() * Math::Point(0, 0, 0);
         Math::Vector direction = (pixel - origin).Normalized();
 
         return Ray(origin, direction);

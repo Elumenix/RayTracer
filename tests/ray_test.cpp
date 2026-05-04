@@ -5,6 +5,7 @@
 #include "../src/features/IntersectionList.h"
 
 using namespace Math;
+using namespace Transformations;
 
 TEST(RayTest, CreateAndQuery)
 {
@@ -152,7 +153,7 @@ TEST(RayTest, HitWithManyIntersections)
 TEST(RayTest, RayTranslation)
 {
     Ray r = Ray(Point(1, 2, 3), Vector(0, 1, 0));
-    Matrix m = Transformations::translation(3, 4, 5);
+    Matrix m = Translation(3, 4, 5);
     Ray r2 = r.transform(m);
 
     EXPECT_EQ(r2.origin, Point(4, 6, 8));
@@ -162,7 +163,7 @@ TEST(RayTest, RayTranslation)
 TEST(RayTest, RayScaling)
 {
     Ray r = Ray(Point(1, 2, 3), Vector(0, 1, 0));
-    Matrix m = Transformations::scaling(2, 3, 4);
+    Matrix m = Scaling(2, 3, 4);
     Ray r2 = r.transform(m);
 
     EXPECT_EQ(r2.origin, Point(2, 6, 12));
@@ -173,7 +174,7 @@ TEST(RayTest, ScaledSphereRayIntersection)
 {
     Ray r = Ray(Point(0, 0, -5), Vector(0, 0, 1));
     Sphere s;
-    s.transform = Transformations::scaling(2, 2, 2);
+    s.transform = Scaling(2, 2, 2);
     IntersectionList xs = s.intersects(r);
 
     EXPECT_EQ(xs.size(), 2);
@@ -185,7 +186,7 @@ TEST(RayTest, TranslatedSphereRayIntersection)
 {
     Ray r = Ray(Point(0, 0, -5), Vector(0, 0, 1));
     Sphere s;
-    s.transform = Transformations::translation(5, 0, 0);
+    s.transform = Translation(5, 0, 0);
     IntersectionList xs = s.intersects(r);
 
     EXPECT_EQ(xs.size(), 0);
@@ -232,7 +233,7 @@ TEST(RayTest, CompOverPoint)
 {
     Ray r = Ray(Point(0, 0, -5), Vector(0, 0, 1));
     Sphere shape;
-    shape.transform = Transformations::translation(0, 0, 1);
+    shape.transform = Translation(0, 0, 1);
     Intersection i = Intersection(5, &shape);
     Comps comps = prepare_computation(i, r);
     EXPECT_TRUE(comps.over_point.z < -EPSILON / 2);
