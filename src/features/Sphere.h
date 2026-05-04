@@ -8,6 +8,6 @@
 class Sphere : public Shape {
 public:
     Sphere() = default;
-    IntersectionList custom_intersects(const Ray rayOS) const override;
-    Math::Vector custom_normal(Math::Point pointOS) const override;
+    Rendering::IntersectionList custom_intersects(const Rendering::Ray &rayOS) const override;
+    Math::Vector custom_normal(const Math::Point &pointOS) const override;
 };

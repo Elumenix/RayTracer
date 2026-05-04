@@ -28,23 +28,23 @@ protected:
     Shape &operator=(Shape &&) = default; // Move Assignment
 
     // Force subclass to make implementations of these
-    virtual IntersectionList custom_intersects(const Ray rayOS) const = 0;
-    virtual Math::Vector custom_normal(Math::Point pointOS) const = 0;
+    virtual Rendering::IntersectionList custom_intersects(const Rendering::Ray &rayOS) const = 0;
+    virtual Math::Vector custom_normal(const Math::Point &pointOS) const = 0;
 
 public:
     const int id;
     Math::Matrix<4, 4> transform = Math::IdentityMatrix;
-    Material material;
+    Rendering::Material material;
 
     virtual ~Shape() = default;
 
-    IntersectionList intersects(const Ray rayWS) const
+    Rendering::IntersectionList intersects(const Rendering::Ray &rayWS) const
     {
-        Ray rayOS = rayWS.transform(transform.Inverse());
+        Rendering::Ray rayOS = rayWS.transform(transform.Inverse());
         return custom_intersects(rayOS);
     }
 
-    virtual Math::Vector normal_at(Math::Point pointWS) const
+    virtual Math::Vector normal_at(const Math::Point &pointWS) const
     {
         // An assumption is made that the point is on the shape
         Math::Point pointOS = transform.Inverse() * pointWS;
@@ -79,7 +79,7 @@ struct Comps
 
 inline float EPSILON = 0.0001f;
 
-inline Comps prepare_computation(Intersection i, Ray r)
+inline Comps prepare_computation(const Rendering::Intersection &i, const Rendering::Ray &r)
 {
     Comps comp;
     comp.t = i.t;

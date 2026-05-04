@@ -6,6 +6,7 @@
 
 using namespace Math;
 using namespace Transformations;
+using namespace Rendering;
 
 TEST(RayTest, CreateAndQuery)
 {

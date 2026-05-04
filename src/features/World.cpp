@@ -23,7 +23,7 @@ World World::Default()
     return w;
 }
 
-const IntersectionList World::intersectWorld(const Ray r) const
+const IntersectionList World::intersectWorld(const Ray &r) const
 {
     IntersectionList xs;
     for(auto& shape : shapes) {
@@ -45,7 +45,7 @@ Color World::shade_hit(const Comps &comp) const
     return c;
 }
 
-Color World::color_at(const Ray r) const
+Color World::color_at(const Ray &r) const
 {
     IntersectionList xs = intersectWorld(r);
     const Intersection* i = xs.hit();

@@ -3,82 +3,84 @@
 #include <cmath>
 
 using namespace Math;
-using namespace Rendering;
 
-Color Pattern::SampleAt(const Shape &object, Point worldPoint)
+namespace Rendering
 {
-    Point objPoint = object.transform.Inverse() * worldPoint;
-    Point patternPoint = transform.Inverse() * objPoint;
-    return CustomSampleAt(patternPoint);
-}
-
-Color StripePattern::CustomSampleAt(Point patternPoint) const
-{
-    Pattern *slot = (static_cast<int>(std::floor(patternPoint.x)) % 2 == 0 ? a : b);
-    return Sample(slot, patternPoint);
-}
-
-Color Gradient::CustomSampleAt(Point patternPoint) const
-{
-    Color colorA = Sample(a, patternPoint);
-    Color colorB = Sample(b, patternPoint);
-    float t = patternPoint.x - std::floor(patternPoint.x);
-    return Lerp(colorA, colorB, t);
-}
-
-Color Ring::CustomSampleAt(Point patternPoint) const
-{
-    float root = std::sqrt(patternPoint.x * patternPoint.x + patternPoint.z * patternPoint.z);
-    Pattern *slot = (static_cast<int>(std::floor(root)) % 2 == 0) ? a : b;
-    return Sample(slot, patternPoint);
-}
-
-Color Checker::CustomSampleAt(Point patternPoint) const
-{
-    float t = std::floor(patternPoint.x) + std::floor(patternPoint.y) + std::floor(patternPoint.z);
-    Pattern *slot = (static_cast<int>(t) % 2 == 0) ? a : b;
-    return Sample(slot, patternPoint);
-}
-
-Color RadialGradient::CustomSampleAt(Point patternPoint) const
-{
-    float root = std::sqrt(patternPoint.x * patternPoint.x + patternPoint.z * patternPoint.z);
-    float t = std::fmod(root, 2);
-
-    Color colorA = Sample(a, patternPoint);
-    Color colorB = Sample(b, patternPoint);
-
-    if (t <= 1)
+    Color Pattern::SampleAt(const Shape &object, const Point &worldPoint)
     {
+        Point objPoint = object.transform.Inverse() * worldPoint;
+        Point patternPoint = transform.Inverse() * objPoint;
+        return CustomSampleAt(patternPoint);
+    }
+
+    Color StripePattern::CustomSampleAt(const Point &patternPoint) const
+    {
+        Pattern *slot = (static_cast<int>(std::floor(patternPoint.x)) % 2 == 0 ? a : b);
+        return Sample(slot, patternPoint);
+    }
+
+    Color Gradient::CustomSampleAt(const Point &patternPoint) const
+    {
+        Color colorA = Sample(a, patternPoint);
+        Color colorB = Sample(b, patternPoint);
+        float t = patternPoint.x - std::floor(patternPoint.x);
         return Lerp(colorA, colorB, t);
     }
-    else
+
+    Color Ring::CustomSampleAt(const Point &patternPoint) const
     {
-        return Lerp(colorB, colorA, t - 1);
+        float root = std::sqrt(patternPoint.x * patternPoint.x + patternPoint.z * patternPoint.z);
+        Pattern *slot = (static_cast<int>(std::floor(root)) % 2 == 0) ? a : b;
+        return Sample(slot, patternPoint);
     }
-}
 
-Color Blend::CustomSampleAt(Point patternPoint) const
-{
-    Color colorA = Sample(a, patternPoint);
-    Color colorB = Sample(b, patternPoint);
+    Color Checker::CustomSampleAt(const Point &patternPoint) const
+    {
+        float t = std::floor(patternPoint.x) + std::floor(patternPoint.y) + std::floor(patternPoint.z);
+        Pattern *slot = (static_cast<int>(t) % 2 == 0) ? a : b;
+        return Sample(slot, patternPoint);
+    }
 
-    return (colorA + colorB) * .5f;
-}
+    Color RadialGradient::CustomSampleAt(const Point &patternPoint) const
+    {
+        float root = std::sqrt(patternPoint.x * patternPoint.x + patternPoint.z * patternPoint.z);
+        float t = std::fmod(root, 2);
 
-Color Perturb::CustomSampleAt(Point patternPoint) const
-{
-    float jitterX = p.Sample(0, patternPoint.x, patternPoint.y, patternPoint.z);
-    float jitterY = p.Sample(32, patternPoint.x, patternPoint.y, patternPoint.z);
-    float jitterZ = p.Sample(64, patternPoint.x, patternPoint.y, patternPoint.z);
+        Color colorA = Sample(a, patternPoint);
+        Color colorB = Sample(b, patternPoint);
 
-    float scale = 0.2f;
+        if (t <= 1)
+        {
+            return Lerp(colorA, colorB, t);
+        }
+        else
+        {
+            return Lerp(colorB, colorA, t - 1);
+        }
+    }
 
-    Point jitteredPoint = Point(
-        patternPoint.x + jitterX * scale,
-        patternPoint.y + jitterY * scale,
-        patternPoint.z + jitterZ * scale);
+    Color Blend::CustomSampleAt(const Point &patternPoint) const
+    {
+        Color colorA = Sample(a, patternPoint);
+        Color colorB = Sample(b, patternPoint);
 
-    // The pattern this is perturbing will sample this
-    return Sample(a, jitteredPoint);
+        return (colorA + colorB) * .5f;
+    }
+
+    Color Perturb::CustomSampleAt(const Point &patternPoint) const
+    {
+        float jitterX = p.Sample(0, patternPoint.x, patternPoint.y, patternPoint.z);
+        float jitterY = p.Sample(32, patternPoint.x, patternPoint.y, patternPoint.z);
+        float jitterZ = p.Sample(64, patternPoint.x, patternPoint.y, patternPoint.z);
+
+        float scale = 0.2f;
+
+        Point jitteredPoint = Point(
+            patternPoint.x + jitterX * scale,
+            patternPoint.y + jitterY * scale,
+            patternPoint.z + jitterZ * scale);
+
+        // The pattern this is perturbing will sample this
+        return Sample(a, jitteredPoint);
+    }
 }

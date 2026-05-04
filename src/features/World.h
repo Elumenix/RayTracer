@@ -30,8 +30,8 @@ public:
         shapes.push_back(std::make_unique<T>(std::move(shape)));
     };
     void add(Light light) { lights.push_back(light); }
-    const IntersectionList intersectWorld(const Ray r) const;
+    const Rendering::IntersectionList intersectWorld(const Rendering::Ray &r) const;
     Rendering::Color shade_hit(const Comps &comp) const;
-    Rendering::Color color_at(const Ray r) const;
+    Rendering::Color color_at(const Rendering::Ray &r) const;
     bool is_shadowed(Math::Point p, Light light) const;
 };

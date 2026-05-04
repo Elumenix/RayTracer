@@ -8,6 +8,7 @@
 
 using namespace Math;
 using namespace Transformations;
+using namespace Rendering;
 
 TEST(ShapeTest, DefaultShapeTransformation)
 {

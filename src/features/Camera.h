@@ -42,7 +42,7 @@ public:
     inline float halfWidth() { return _halfWidth; }
     inline float halfHeight() { return _halfHeight; }
 
-    Ray RayForPixel(float px, float py)
+    Rendering::Ray RayForPixel(float px, float py)
     {
         float xOffset = (px + 0.5) * _pixelSize;
         float yOffset = (py + 0.5) * _pixelSize;
@@ -54,18 +54,18 @@ public:
         Math::Point origin = transform.Inverse() * Math::Point(0, 0, 0);
         Math::Vector direction = (pixel - origin).Normalized();
 
-        return Ray(origin, direction);
+        return Rendering::Ray(origin, direction);
     }
 
-    Canvas Render(const World &world)
+    Rendering::Canvas Render(const World &world)
     {
-        Canvas image(hsize, vsize);
+        Rendering::Canvas image(hsize, vsize);
 
         for (int y = 0; y < vsize; y++)
         {
             for (int x = 0; x < hsize; x++)
             {
-                Ray ray = RayForPixel(x, y);
+                Rendering::Ray ray = RayForPixel(x, y);
                 Rendering::Color color = world.color_at(ray);
                 image.WritePixelAt(x, y, color);
             }
