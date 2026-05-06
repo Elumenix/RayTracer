@@ -1,7 +1,11 @@
 // A lot of the implementation for this class came from Here:
 // https://github.dev/charlesangus/FastNoise/
 #pragma once
-#include "Tuple.h"
+
+namespace Math
+{
+    class Point; // Forward Declare
+}
 
 namespace Noise
 {

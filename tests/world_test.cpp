@@ -1,10 +1,16 @@
 #include <gtest/gtest.h>
 #include "../src/features/World.h"
 #include "../src/features/Camera.h"
+#include "../src/features/Transformations.h"
+#include "../src/features/Sphere.h"
+#include "../src/features/Intersection.h"
+#include "../src/features/IntersectionList.h"
+#include "../src/features/Comps.h"
 
 using namespace Math;
 using namespace Rendering;
 using namespace Transformations;
+using namespace Scene;
 
 TEST(WorldTest, CreateWorld)
 {
@@ -36,7 +42,7 @@ TEST(WorldTest, WorldIntersections)
     Ray r = Ray(Point(0, 0, -5), Vector(0, 0, 1));
     IntersectionList xs = w.intersectWorld(r);
 
-    EXPECT_EQ(xs.size(), 4);
+    EXPECT_EQ(xs.Size(), 4);
     EXPECT_FLOAT_EQ(xs[0]->t, 4.0f);
     EXPECT_FLOAT_EQ(xs[1]->t, 4.5f);
     EXPECT_FLOAT_EQ(xs[2]->t, 5.5f);
@@ -49,7 +55,7 @@ TEST(WorldTest, IntersectionShading)
     Ray r = Ray(Point(0, 0, -5), Vector(0, 0, 1));
     Shape &shape = *w.shapes[0];
     Intersection i = Intersection(4, &shape);
-    Comps comps = prepare_computation(i, r);
+    Comps comps = PrepareComputation(i, r);
     Color c = w.shade_hit(comps);
 
     EXPECT_EQ(c, Color(0.38066, 0.47583, 0.2855));
@@ -62,7 +68,7 @@ TEST(WorldTest, IntersectionShadingInside)
     Ray r = Ray(Point(0, 0, 0), Vector(0, 0, 1));
     Shape &shape = *w.shapes[1];
     Intersection i = Intersection(0.5f, &shape);
-    Comps comps = prepare_computation(i, r);
+    Comps comps = PrepareComputation(i, r);
     Color c = w.shade_hit(comps);
 
     EXPECT_EQ(c, Color(0.90498f, 0.90498f, 0.90498f));

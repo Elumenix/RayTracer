@@ -1,14 +1,18 @@
 #pragma once
-class Shape; // We don't need to operate on shape parameters, this breaks circular dependency
+
+namespace Scene
+{
+    class Shape;
+}
 
 namespace Rendering
 {
     struct Intersection
     {
         float t; // should be const but that breaks the move operator
-        const Shape *object;
+        const Scene::Shape *object;
 
-        Intersection(float m_t, const Shape *m_object) : t(m_t), object(m_object) {};
+        Intersection(float m_t, const Scene::Shape *m_object) : t(m_t), object(m_object) {};
 
         bool operator<(const Intersection &other) const { return t < other.t; }
         bool operator>(const Intersection &other) const { return t > other.t; }

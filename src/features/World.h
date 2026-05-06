@@ -3,13 +3,14 @@
 #include <memory>
 #include <concepts>
 #include "Light.h"
-#include "Sphere.h"
+#include "Shape.h"
+#include "Comps.h" // This is the only class that uses this, so I'm not forward declaring it
 
 class World
 {
 public:
     std::vector<Light> lights;
-    std::vector<std::unique_ptr<Shape>> shapes;
+    std::vector<std::unique_ptr<Scene::Shape>> shapes;
     World() = default;
     static World Default();
 
@@ -26,12 +27,12 @@ public:
     template <typename T>
     void add(T &&shape)
     {
-        static_assert(std::is_base_of<Shape, T>::value, "T must derive from S");
+        static_assert(std::is_base_of<Scene::Shape, T>::value, "T must derive from S");
         shapes.push_back(std::make_unique<T>(std::move(shape)));
     };
     void add(Light light) { lights.push_back(light); }
     const Rendering::IntersectionList intersectWorld(const Rendering::Ray &r) const;
-    Rendering::Color shade_hit(const Comps &comp) const;
+    Rendering::Color shade_hit(const Rendering::Comps &comp) const;
     Rendering::Color color_at(const Rendering::Ray &r) const;
     bool is_shadowed(Math::Point p, Light light) const;
 };

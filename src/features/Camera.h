@@ -1,6 +1,9 @@
+#pragma once
+
 #include "Matrix.h"
 #include "Canvas.h"
 #include "World.h"
+#include "Ray.h"
 
 class Camera
 {

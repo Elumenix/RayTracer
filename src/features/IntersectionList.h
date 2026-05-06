@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-#include "Intersection.h"
+#include "Intersection.h" // Required for vector sizing
 
 namespace Rendering
 {
@@ -20,8 +20,8 @@ namespace Rendering
         const Intersection *operator[](std::size_t index) const { return &list[index]; }
 
         // Methods
-        const Intersection *hit() const;
-        std::size_t size() const { return list.size(); }
-        void merge(IntersectionList &&other);
+        const Intersection *Hit() const;
+        std::size_t Size() const { return list.size(); }
+        void Merge(IntersectionList &&other);
     };
 }

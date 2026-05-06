@@ -3,6 +3,7 @@
 #include <cmath>
 
 using namespace Math;
+using namespace Scene;
 
 namespace Rendering
 {
@@ -82,5 +83,10 @@ namespace Rendering
 
         // The pattern this is perturbing will sample this
         return Sample(a, jitteredPoint);
+    }
+
+    Color TestPattern::CustomSampleAt(const Math::Point &patternPoint) const
+    {
+        return Color(patternPoint.x, patternPoint.y, patternPoint.z);
     }
 }

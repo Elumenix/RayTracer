@@ -3,10 +3,10 @@
 
 namespace Rendering
 {
-    const Intersection *IntersectionList::hit() const
+    const Intersection *IntersectionList::Hit() const
     {
         const Intersection *result = nullptr;
-        int n = size();
+        int n = Size();
 
         for (auto i = 0; i < n; i++)
         {
@@ -19,7 +19,7 @@ namespace Rendering
         return result;
     }
 
-    void IntersectionList::merge(IntersectionList &&other)
+    void IntersectionList::Merge(IntersectionList &&other)
     {
         auto middle = list.insert(list.end(), other.list.begin(), other.list.end());
         std::inplace_merge(list.begin(), middle, list.end());

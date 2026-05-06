@@ -5,9 +5,14 @@
 #include "Matrix.h"
 #include <assert.h>
 
+// Forward declare
+namespace Scene
+{
+    class Shape;
+}
+
 inline Rendering::Color White = Rendering::Color(1, 1, 1);
 inline Rendering::Color Black = Rendering::Color(0, 0, 0);
-class Shape; // Forward Declaration
 
 namespace Rendering
 {
@@ -25,7 +30,7 @@ namespace Rendering
 
         virtual std::unique_ptr<Pattern> Clone() const = 0;
 
-        Color SampleAt(const Shape &object, const Math::Point &worldPoint);
+        Color SampleAt(const Scene::Shape &object, const Math::Point &worldPoint);
     };
 
     class SolidColor : public Pattern
@@ -50,7 +55,7 @@ namespace Rendering
         std::unique_ptr<Pattern> Clone() const override { return std::make_unique<TestPattern>(*this); }
 
     private:
-        Color CustomSampleAt(const Math::Point &patternPoint) const override { return Color(patternPoint.x, patternPoint.y, patternPoint.z); }
+        Color CustomSampleAt(const Math::Point &patternPoint) const override;
     };
 
     class StripePattern : public Pattern

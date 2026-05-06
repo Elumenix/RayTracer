@@ -11,10 +11,10 @@ public:
     Rendering::Color intensity;
     Light(Math::Point c_position, Rendering::Color c_intensity) : position(c_position), intensity(c_intensity) {};
 
-    Rendering::Color lighting(const Shape &shape, const Math::Point pointPos, const Math::Vector eye, const Math::Vector normal, const bool inShadow = false) const
+    Rendering::Color lighting(const Scene::Shape &shape, const Math::Point pointPos, const Math::Vector eye, const Math::Vector normal, const bool inShadow = false) const
     {
-        Rendering::Color diffuse = Rendering::Color(0,0,0);
-        Rendering::Color specular = Rendering::Color(0,0,0);
+        Rendering::Color diffuse = Rendering::Color(0, 0, 0);
+        Rendering::Color specular = Rendering::Color(0, 0, 0);
 
         Rendering::Color effectiveColor = (shape.material.pattern == nullptr ? shape.material.color : shape.material.pattern->SampleAt(shape, pointPos)) * intensity;
 

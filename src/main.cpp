@@ -9,6 +9,7 @@
 using namespace Math;
 using namespace Rendering;
 using namespace Transformations;
+using namespace Scene;
 
 int main()
 {

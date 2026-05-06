@@ -1,5 +1,6 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "Canvas.h"
+#include "Color.h"
 #include "stb_image_write.h"
 #include <iostream>
 #include <algorithm>
@@ -7,7 +8,6 @@
 
 namespace Rendering
 {
-
     Canvas::Canvas(int width, int height) : width(width), height(height)
     {
         int size = width * height;

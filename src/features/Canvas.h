@@ -1,10 +1,12 @@
 #pragma once
-#include <vector>
-#include "Color.h"
 #include <string>
+#include <vector>
 
 namespace Rendering
 {
+    // Forward Declare
+    class Color;
+
     class Canvas
     {
     private:

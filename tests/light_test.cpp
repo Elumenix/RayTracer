@@ -4,10 +4,16 @@
 #include "../src/features/Material.h"
 #include "../src/features/Sphere.h"
 #include "../src/features/World.h"
+#include "../src/features/Comps.h"
+#include "../src/features/Ray.h"
+#include "../src/features/Transformations.h"
+#include "../src/features/Intersection.h"
 #include <cmath>
 
 using namespace Math;
 using namespace Rendering;
+using namespace Scene;
+using namespace Transformations;
 
 TEST(LightTest, LightObject)
 {
@@ -159,7 +165,7 @@ TEST(LightTest, ShadeHitIntersection)
     w.add(std::move(s2));
     Intersection i = Intersection(4, w.shapes[1].get());
     Ray r = Ray(Point(0, 0, 5), Vector(0, 0, 1));
-    Comps comps = prepare_computation(i, r);
+    Comps comps = PrepareComputation(i, r);
     Color c = w.shade_hit(comps);
     EXPECT_EQ(c, Color(0.1, 0.1, 0.1));
 }

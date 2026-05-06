@@ -1,4 +1,5 @@
 #include "Noise.h"
+#include "Tuple.h"
 #include <random>
 
 namespace

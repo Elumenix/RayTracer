@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
-#include "Color.h"
-#include "Pattern.h"
+#include "Color.h"   // Can't forward declare because constructor is used in default constructor
+#include "Pattern.h" // Can't forward declare because smart pointer needs to know it's size
 
 namespace Rendering
 {
