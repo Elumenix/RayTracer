@@ -62,7 +62,7 @@ TEST(LightTest, EyeBetweenLightAndSurface)
     Vector eye = Vector(0, 0, -1);
     Vector normal = Vector(0, 0, -1);
     Light light = Light(Point(0, 0, -10), Color(1, 1, 1));
-    Color result = light.lighting(s, position, eye, normal);
+    Color result = light.Lighting(s, position, eye, normal);
 
     EXPECT_EQ(result, Color(1.9, 1.9, 1.9));
 }
@@ -73,7 +73,7 @@ TEST(LightTest, LightBetweeenEyeAndSurface)
     Vector eye = Vector(0, sqrtf(2.0f) / 2, -sqrtf(2.0f) / 2);
     Vector normal = Vector(0, 0, -1);
     Light light = Light(Point(0, 0, -10), Color(1, 1, 1));
-    Color result = light.lighting(s, Point(0, 0, 0), eye, normal);
+    Color result = light.Lighting(s, Point(0, 0, 0), eye, normal);
 
     EXPECT_EQ(result, Color(1.0, 1.0, 1.0));
 }
@@ -84,7 +84,7 @@ TEST(LightTest, EyeOppositeSurfaceLightOffset45)
     Vector eye = Vector(0, 0, -1);
     Vector normal = Vector(0, 0, -1);
     Light light = Light(Point(0, 10, -10), Color(1, 1, 1));
-    Vector result = light.lighting(s, Point(0, 0, 0), eye, normal);
+    Vector result = light.Lighting(s, Point(0, 0, 0), eye, normal);
 
     EXPECT_EQ(result, Color(0.7364, 0.7364, 0.7364));
 }
@@ -95,7 +95,7 @@ TEST(LightTest, EyeInPathOfReflectionVector)
     Vector eye = Vector(0, -sqrtf(2.0f) / 2, -sqrtf(2.0f) / 2);
     Vector normal = Vector(0, 0, -1);
     Light light = Light(Point(0, 10, -10), Color(1, 1, 1));
-    Color result = light.lighting(s, Point(0, 0, 0), eye, normal);
+    Color result = light.Lighting(s, Point(0, 0, 0), eye, normal);
 
     EXPECT_EQ(result, Color(1.6364, 1.6364, 1.6364));
 }
@@ -106,7 +106,7 @@ TEST(LightTest, LightBehindSurface)
     Vector eye = Vector(0, 0, -1);
     Vector normal = Vector(0, 0, -1);
     Light light = Light(Point(0, 0, 10), Color(1, 1, 1));
-    Color result = light.lighting(s, Point(0, 0, 0), eye, normal);
+    Color result = light.Lighting(s, Point(0, 0, 0), eye, normal);
 
     EXPECT_EQ(result, Color(0.1, 0.1, 0.1));
 }
@@ -118,7 +118,7 @@ TEST(LightTest, SurfaceInShadow)
     Vector normal = Vector(0, 0, -1);
     Light light = Light(Point(0, 0, -10), Color(1, 1, 1));
 
-    Color result = light.lighting(s, Point(0, 0, 0), eye, normal, true);
+    Color result = light.Lighting(s, Point(0, 0, 0), eye, normal, true);
     EXPECT_EQ(result, Color(0.1, 0.1, 0.1));
 }
 
@@ -127,7 +127,7 @@ TEST(LightTest, NoShadowWorld)
     World w = World::Default();
     Point p = Point(0, 10, 0);
 
-    EXPECT_FALSE(w.is_shadowed(p, w.lights[0]));
+    EXPECT_FALSE(w.IsShadowed(p, w.lights[0]));
 }
 
 TEST(LightTest, IsShadowWorld)
@@ -135,7 +135,7 @@ TEST(LightTest, IsShadowWorld)
     World w = World::Default();
     Point p = Point(10, -10, 10);
 
-    EXPECT_TRUE(w.is_shadowed(p, w.lights[0]));
+    EXPECT_TRUE(w.IsShadowed(p, w.lights[0]));
 }
 
 TEST(LightTest, WorldObjectBehindLight)
@@ -143,7 +143,7 @@ TEST(LightTest, WorldObjectBehindLight)
     World w = World::Default();
     Point p = Point(-20, 20, -20);
 
-    EXPECT_FALSE(w.is_shadowed(p, w.lights[0]));
+    EXPECT_FALSE(w.IsShadowed(p, w.lights[0]));
 }
 
 TEST(LightTest, WorldObjectBehindPoint)
@@ -151,21 +151,21 @@ TEST(LightTest, WorldObjectBehindPoint)
     World w = World::Default();
     Point p = Point(-2, 2, -2);
 
-    EXPECT_FALSE(w.is_shadowed(p, w.lights[0]));
+    EXPECT_FALSE(w.IsShadowed(p, w.lights[0]));
 }
 
 TEST(LightTest, ShadeHitIntersection)
 {
     World w;
-    w.add(Light(Point(0, 0, -10), Color(1, 1, 1)));
+    w.Add(Light(Point(0, 0, -10), Color(1, 1, 1)));
     Sphere s1;
-    w.add(std::move(s1));
+    w.Add(std::move(s1));
     Sphere s2;
     s2.transform = Transformations::Translation(0, 0, 10);
-    w.add(std::move(s2));
+    w.Add(std::move(s2));
     Intersection i = Intersection(4, w.shapes[1].get());
     Ray r = Ray(Point(0, 0, 5), Vector(0, 0, 1));
     Comps comps = PrepareComputation(i, r);
-    Color c = w.shade_hit(comps);
+    Color c = w.ShadeHit(comps);
     EXPECT_EQ(c, Color(0.1, 0.1, 0.1));
 }

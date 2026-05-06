@@ -6,6 +6,9 @@
 #include "../src/features/Intersection.h"
 #include "../src/features/IntersectionList.h"
 #include "../src/features/Comps.h"
+#include "../src/features/Light.h"
+#include "../src/features/Ray.h"
+#include "../src/features/Canvas.h"
 
 using namespace Math;
 using namespace Rendering;
@@ -40,7 +43,7 @@ TEST(WorldTest, WorldIntersections)
 {
     World w = World::Default();
     Ray r = Ray(Point(0, 0, -5), Vector(0, 0, 1));
-    IntersectionList xs = w.intersectWorld(r);
+    IntersectionList xs = w.IntersectWorld(r);
 
     EXPECT_EQ(xs.Size(), 4);
     EXPECT_FLOAT_EQ(xs[0]->t, 4.0f);
@@ -56,7 +59,7 @@ TEST(WorldTest, IntersectionShading)
     Shape &shape = *w.shapes[0];
     Intersection i = Intersection(4, &shape);
     Comps comps = PrepareComputation(i, r);
-    Color c = w.shade_hit(comps);
+    Color c = w.ShadeHit(comps);
 
     EXPECT_EQ(c, Color(0.38066, 0.47583, 0.2855));
 }
@@ -69,7 +72,7 @@ TEST(WorldTest, IntersectionShadingInside)
     Shape &shape = *w.shapes[1];
     Intersection i = Intersection(0.5f, &shape);
     Comps comps = PrepareComputation(i, r);
-    Color c = w.shade_hit(comps);
+    Color c = w.ShadeHit(comps);
 
     EXPECT_EQ(c, Color(0.90498f, 0.90498f, 0.90498f));
 }
@@ -78,7 +81,7 @@ TEST(WorldTest, RayMiss)
 {
     World w = World::Default();
     Ray r = Ray(Point(0, 0, -5), Vector(0, 1, 0));
-    Color c = w.color_at(r);
+    Color c = w.ColorAt(r);
 
     EXPECT_EQ(c, Color(0, 0, 0));
 }
@@ -87,7 +90,7 @@ TEST(WorldTest, RayHitColor)
 {
     World w = World::Default();
     Ray r = Ray(Point(0, 0, -5), Vector(0, 0, 1));
-    Color c = w.color_at(r);
+    Color c = w.ColorAt(r);
 
     EXPECT_EQ(c, Color(0.38066f, 0.47583f, 0.2855f));
 }
@@ -100,7 +103,7 @@ TEST(WorldTest, BehindRayIntersection)
     Shape &inner = *w.shapes[1];
     inner.material.ambient = 1;
     Ray r = Ray(Point(0, 0, 0.75), Vector(0, 0, -1));
-    Color c = w.color_at(r);
+    Color c = w.ColorAt(r);
 
     EXPECT_EQ(c, inner.material.color);
 }
@@ -118,10 +121,10 @@ TEST(CameraTest, ConstructingCamera)
 TEST(CameraTest, PixelSize)
 {
     Camera c = Camera(200, 125, M_PI_2);
-    EXPECT_FLOAT_EQ(c.pixelSize(), 0.01f);
+    EXPECT_FLOAT_EQ(c.PixelSize(), 0.01f);
 
     Camera c1 = Camera(125, 200, M_PI_2);
-    EXPECT_FLOAT_EQ(c1.pixelSize(), 0.01f);
+    EXPECT_FLOAT_EQ(c1.PixelSize(), 0.01f);
 }
 
 TEST(CameraTest, RayThroughCenterOfCanvas)

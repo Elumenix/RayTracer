@@ -68,9 +68,9 @@ TEST(PatternTest, LightingWithPatternApplied)
     Vector normal = Vector(0, 0, -1);
     Light light = Light(Point(0, 0, -10), Color(1, 1, 1));
 
-    Color c1 = light.lighting(s, Point(0.9, 0, 0), eye, normal, false);
+    Color c1 = light.Lighting(s, Point(0.9, 0, 0), eye, normal, false);
     EXPECT_EQ(c1, Color(1, 1, 1));
-    Color c2 = light.lighting(s, Point(1.1, 0, 0), eye, normal, false);
+    Color c2 = light.Lighting(s, Point(1.1, 0, 0), eye, normal, false);
     EXPECT_EQ(c2, Color(0, 0, 0));
 }
 
