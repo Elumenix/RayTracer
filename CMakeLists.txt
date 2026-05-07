@@ -20,20 +20,32 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(stb)
 
-# Get all feature files
-file(GLOB FEATURES "src/features/*.cpp")
+# Add include directory for all targets (The .h files)
+#include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+# Get all feature files (The .cpp files)
+file(GLOB RAYTRACERLIB "src/*.cpp")
 file(GLOB TESTS "tests/*_test.cpp")
 
 
 # Set up the main function
-add_library(features_lib ${FEATURES})
-target_include_directories(features_lib PUBLIC ${stb_SOURCE_DIR})
-add_executable(RayTracer src/main.cpp)
-target_link_libraries(RayTracer features_lib)
+add_library(raytrace_lib ${RAYTRACERLIB})
+target_include_directories(raytrace_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(raytrace_lib PUBLIC ${stb_SOURCE_DIR})
+
+# Set up the main function
+#add_library(raytrace_lib ${RAYTRACERLIB})
+#target_include_directories(raytrace_lib PUBLIC ${stb_SOURCE_DIR})
+
+add_executable(RayTracer main.cpp)
+target_link_libraries(RayTracer raytrace_lib)
 
 
 # Set up unit testing with Google Test
 add_executable(run_tests ${TESTS})
-target_link_libraries(run_tests features_lib gtest gtest_main)
+target_include_directories(run_tests PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_link_libraries(run_tests raytrace_lib gtest gtest_main)
+
+#target_link_libraries(run_tests raytrace_lib gtest gtest_main)
 enable_testing()
 add_test(NAME AllTests COMMAND run_tests)

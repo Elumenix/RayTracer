@@ -1,11 +1,11 @@
 #include <gtest/gtest.h>
-#include "../src/features/Sphere.h"
-#include "../src/features/Intersection.h"
-#include "../src/features/IntersectionList.h"
-#include "../src/features/Color.h"
-#include "../src/features/Plane.h"
-#include "../src/features/Transformations.h"
-#include "../src/features/Ray.h"
+#include "Sphere.h"
+#include "Intersection.h"
+#include "IntersectionList.h"
+#include "Color.h"
+#include "Plane.h"
+#include "Transformations.h"
+#include "Ray.h"
 #include <cmath>
 
 using namespace Math;

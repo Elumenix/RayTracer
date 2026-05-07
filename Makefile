@@ -5,18 +5,18 @@ setup:
 	mkdir -p build
 	cd build && cmake ..
 
-# Run build
+# Build and run only the main executable
 build:
-	cmake --build build
+	cmake --build build --target RayTracer
 	./build/RayTracer
 
-# Run tests
+# Build and run only the tests
 test:
-	cmake --build build
+	cmake --build build --target run_tests
 	./build/run_tests
 
 # Build and test together
-all: build test
+all: test build
 
 # Clean build files. Should do before pushing
 clean:

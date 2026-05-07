@@ -1,13 +1,13 @@
 #include <gtest/gtest.h>
-#include "../src/features/Color.h"
-#include "../src/features/Light.h"
-#include "../src/features/Material.h"
-#include "../src/features/Sphere.h"
-#include "../src/features/World.h"
-#include "../src/features/Comps.h"
-#include "../src/features/Ray.h"
-#include "../src/features/Transformations.h"
-#include "../src/features/Intersection.h"
+#include "Color.h"
+#include "Light.h"
+#include "Material.h"
+#include "Sphere.h"
+#include "World.h"
+#include "Comps.h"
+#include "Ray.h"
+#include "Transformations.h"
+#include "Intersection.h"
 #include <cmath>
 
 using namespace Math;

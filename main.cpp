@@ -1,11 +1,11 @@
 #include <iostream>
-#include "features/Transformations.h"
-#include "features/Canvas.h"
-#include "features/Sphere.h"
-#include "features/Camera.h"
-#include "features/World.h"
-#include "features/Plane.h"
-#include "features/Light.h"
+#include "Transformations.h"
+#include "Canvas.h"
+#include "Sphere.h"
+#include "Camera.h"
+#include "World.h"
+#include "Plane.h"
+#include "Light.h"
 
 using namespace Math;
 using namespace Rendering;

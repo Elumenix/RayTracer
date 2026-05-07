@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
-#include "../src/features/Canvas.h"
-#include "../src/features/Color.h"
+#include "Canvas.h"
+#include "Color.h"
 
 using namespace Rendering;
 

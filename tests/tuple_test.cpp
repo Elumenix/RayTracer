@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <cmath>
-#include "../src/features/Tuple.h"
-#include "../src/features/Color.h"
+#include "Tuple.h"
+#include "Color.h"
 
 using namespace Math;
 using namespace Rendering;

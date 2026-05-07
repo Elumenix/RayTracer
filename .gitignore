@@ -1,3 +1,6 @@
+# Build Folder (This will make things much easier)
+/build
+
 # Prerequisites
 *.d
 

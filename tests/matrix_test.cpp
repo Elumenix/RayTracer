@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
-#include "../src/features/Matrix.h"
-#include "../src/features/Transformations.h"
-#include "../src/features/Tuple.h"
+#include "Matrix.h"
+#include "Transformations.h"
+#include "Tuple.h"
 #include <math.h>
 
 using namespace Math;

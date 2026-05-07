@@ -1,14 +1,14 @@
 #include <gtest/gtest.h>
-#include "../src/features/World.h"
-#include "../src/features/Camera.h"
-#include "../src/features/Transformations.h"
-#include "../src/features/Sphere.h"
-#include "../src/features/Intersection.h"
-#include "../src/features/IntersectionList.h"
-#include "../src/features/Comps.h"
-#include "../src/features/Light.h"
-#include "../src/features/Ray.h"
-#include "../src/features/Canvas.h"
+#include "World.h"
+#include "Camera.h"
+#include "Transformations.h"
+#include "Sphere.h"
+#include "Intersection.h"
+#include "IntersectionList.h"
+#include "Comps.h"
+#include "Light.h"
+#include "Ray.h"
+#include "Canvas.h"
 
 using namespace Math;
 using namespace Rendering;

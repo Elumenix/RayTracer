@@ -1,11 +1,11 @@
 #include <gtest/gtest.h>
-#include "../src/features/Ray.h"
-#include "../src/features/Sphere.h"
-#include "../src/features/Intersection.h"
-#include "../src/features/IntersectionList.h"
-#include "../src/features/Transformations.h"
-#include "../src/features/Sphere.h"
-#include "../src/features/Comps.h"
+#include "Ray.h"
+#include "Sphere.h"
+#include "Intersection.h"
+#include "IntersectionList.h"
+#include "Transformations.h"
+#include "Sphere.h"
+#include "Comps.h"
 
 using namespace Math;
 using namespace Transformations;

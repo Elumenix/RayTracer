@@ -1,7 +1,7 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "Canvas.h"
 #include "Color.h"
-#include "stb_image_write.h"
+#include "stb_image_write.h" // CMake includes this, it doesn't exist until "make setup" is called
 #include <iostream>
 #include <algorithm>
 #include <sstream>

@@ -1,10 +1,10 @@
 #include <gtest/gtest.h>
 #include <memory>
-#include "../src/features/Pattern.h"
-#include "../src/features/Material.h"
-#include "../src/features/Sphere.h"
-#include "../src/features/Transformations.h"
-#include "../src/features/Light.h"
+#include "Pattern.h"
+#include "Material.h"
+#include "Sphere.h"
+#include "Transformations.h"
+#include <Light.h>
 
 using namespace Math;
 using namespace Rendering;
