@@ -3,6 +3,7 @@
 #include "Light.h"
 #include "Material.h"
 #include "Sphere.h"
+#include "Plane.h"
 #include "World.h"
 #include "Comps.h"
 #include "Ray.h"
@@ -169,3 +170,78 @@ TEST(LightTest, ShadeHitIntersection)
     Color c = w.ShadeHit(comps);
     EXPECT_EQ(c, Color(0.1, 0.1, 0.1));
 }
+
+TEST(LightTest, MaterialDefaultReflectance)
+{
+    Material m;
+    EXPECT_FLOAT_EQ(m.reflective, 0.0);
+}
+
+TEST(LightTest, PrecomputeReflectanceVector)
+{
+    Plane shape;
+    float s2 = sqrtf(2.0f);
+    Ray r(Point(0, 1, -1), Vector(0, -s2 / 2, s2 / 2));
+    Intersection i(s2, &shape);
+    Comps comps = PrepareComputation(i, r);
+
+    EXPECT_EQ(comps.reflect, Vector(0, s2 / 2, s2 / 2));
+}
+
+TEST(LightTest, NonReflectiveMaterialColor)
+{
+    World w = World::Default();
+    Ray r(Point(0, 0, 0), Vector(0, 0, 1));
+    w.shapes[1]->material.ambient = 1;
+    Intersection i(1.0f, w.shapes[1].get());
+    Comps comps = PrepareComputation(i, r);
+    Color color = w.ReflectedColor(comps);
+
+    EXPECT_EQ(color, Color(0, 0, 0));
+}
+
+TEST(LightTest, ReflectiveMaterialColor)
+{
+    World w = World::Default();
+    Plane shape;
+    shape.material.reflective = 0.5;
+    shape.transform = Translation(0, -1, 0);
+    w.Add(std::move(shape));
+    float s2 = sqrtf(2);
+    Ray r(Point(0, 0, -3), Vector(0, -s2 / 2, s2 / 2));
+    Intersection i(s2, w.shapes[2].get());
+    Comps comp = PrepareComputation(i, r);
+    Color color = w.ReflectedColor(comp);
+
+    EXPECT_EQ(color, Color(0.19032, 0.2379, 0.14274));
+}
+
+TEST(LightTest, ReflectiveMaterialShading)
+{
+    World w = World::Default();
+    Plane shape;
+    shape.material.reflective = 0.5;
+    shape.transform = Translation(0, -1, 0);
+    w.Add(std::move(shape));
+    float s2 = sqrtf(2);
+    Ray r(Point(0, 0, -3), Vector(0, -s2 / 2, s2 / 2));
+    Intersection i(s2, w.shapes[2].get());
+    Comps comp = PrepareComputation(i, r);
+    Color color = w.ShadeHit(comp);
+
+    EXPECT_EQ(color, Color(0.87677, 0.92436, 0.82918));
+}
+
+/*TEST(LightTest, MutuallyReflectiveSurfaces)
+{
+    // This test is to make sure infinite recursion isn't possible
+    World w;
+    w.Add(Light(Point(0,0,0),Color(1,1,1)));
+    Plane lower;
+    lower.material.reflective = 1;
+    lower.transform = Translation(0,-1,0);
+    Plane upper = lower;
+    upper.transform = Translation(0,1,0);
+
+    Expect
+}*/

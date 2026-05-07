@@ -29,7 +29,8 @@ namespace Rendering
             comp.isInside = false;
         }
 
-        comp.over_point = comp.point + comp.normal * Scene::EPSILON;
+        comp.overPoint = comp.point + comp.normal * Scene::EPSILON;
+        comp.reflect = Reflect(r.direction, comp.normal);
 
         return comp;
     }

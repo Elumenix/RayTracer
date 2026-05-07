@@ -20,23 +20,16 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(stb)
 
-# Add include directory for all targets (The .h files)
-#include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
-
 # Get all feature files (The .cpp files)
 file(GLOB RAYTRACERLIB "src/*.cpp")
 file(GLOB TESTS "tests/*_test.cpp")
 
+# Set up the header files
+add_library(raytrace_lib ${RAYTRACERLIB}) # Create Library
+target_include_directories(raytrace_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include) 
+target_include_directories(raytrace_lib PUBLIC ${stb_SOURCE_DIR}) 
 
-# Set up the main function
-add_library(raytrace_lib ${RAYTRACERLIB})
-target_include_directories(raytrace_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-target_include_directories(raytrace_lib PUBLIC ${stb_SOURCE_DIR})
-
-# Set up the main function
-#add_library(raytrace_lib ${RAYTRACERLIB})
-#target_include_directories(raytrace_lib PUBLIC ${stb_SOURCE_DIR})
-
+# Setup the main executable and give info to the linker
 add_executable(RayTracer main.cpp)
 target_link_libraries(RayTracer raytrace_lib)
 

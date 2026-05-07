@@ -46,6 +46,7 @@ namespace Scene
         const Rendering::IntersectionList IntersectWorld(const Rendering::Ray &r) const;
         Rendering::Color ShadeHit(const Rendering::Comps &comp) const;
         Rendering::Color ColorAt(const Rendering::Ray &r) const;
+        Rendering::Color ReflectedColor(const Rendering::Comps &comp) const;
         bool IsShadowed(const Math::Point &p, const Scene::Light &light) const;
     };
 }

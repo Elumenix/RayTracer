@@ -13,9 +13,10 @@ namespace Rendering
         float diffuse;
         float specular;
         float shininess;
+        float reflective;
 
         // Regular Constructor
-        Material(Color c_color = Color(1, 1, 1), float c_ambient = 0.1f, float c_diffuse = 0.9f, float c_specular = 0.9f, float c_shininess = 200.0f);
+        Material(Color c_color = Color(1, 1, 1), float c_ambient = 0.1f, float c_diffuse = 0.9f, float c_specular = 0.9f, float c_shininess = 200.0f, float c_reflectiveness = 0.0f);
         Material(const Material &other);            // Copy Constructor
         Material &operator=(const Material &other); // Copy assignment
         Material(Material &&) = default;            // Move constructor

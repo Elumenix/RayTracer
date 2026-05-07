@@ -47,8 +47,10 @@ namespace Scene
 
         for (const Light &light : lights)
         {
-            bool isShadowed = IsShadowed(comp.over_point, light);
-            c += light.Lighting(*comp.object, comp.over_point, comp.eye, comp.normal, isShadowed);
+            bool isShadowed = IsShadowed(comp.overPoint, light);
+            Color surface = light.Lighting(*comp.object, comp.overPoint, comp.eye, comp.normal, isShadowed);
+            Color reflected = ReflectedColor(comp);
+            c += surface + reflected;
         }
 
         return c;
@@ -67,6 +69,19 @@ namespace Scene
         Comps comp = PrepareComputation(*i, r);
         Color c = ShadeHit(comp);
         return c;
+    }
+
+    Rendering::Color World::ReflectedColor(const Rendering::Comps &comp) const
+    {
+        if (comp.object->material.reflective == 0)
+        {
+            return Color(0, 0, 0);
+        }
+
+        Ray reflectRay(comp.overPoint, comp.reflect);
+        Color color = ColorAt(reflectRay);
+
+        return color * comp.object->material.reflective;
     }
 
     bool World::IsShadowed(const Point &p, const Light &light) const

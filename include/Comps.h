@@ -21,7 +21,8 @@ namespace Rendering
         Math::Point point;
         Math::Vector eye;
         Math::Vector normal;
-        Math::Vector over_point;
+        Math::Vector overPoint;
+        Math::Vector reflect;
     };
 
     Comps PrepareComputation(const Intersection &i, const Ray &r);
