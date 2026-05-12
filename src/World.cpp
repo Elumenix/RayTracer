@@ -41,7 +41,7 @@ namespace Scene
         return xs;
     }
 
-    Color World::ShadeHit(const Comps &comp) const
+    Color World::ShadeHit(const Comps &comp, int remaining) const
     {
         Color c = Color(0, 0, 0);
 
@@ -49,14 +49,14 @@ namespace Scene
         {
             bool isShadowed = IsShadowed(comp.overPoint, light);
             Color surface = light.Lighting(*comp.object, comp.overPoint, comp.eye, comp.normal, isShadowed);
-            Color reflected = ReflectedColor(comp);
+            Color reflected = ReflectedColor(comp, remaining);
             c += surface + reflected;
         }
 
         return c;
     }
 
-    Color World::ColorAt(const Ray &r) const
+    Color World::ColorAt(const Ray &r, int remaining) const
     {
         IntersectionList xs = IntersectWorld(r);
         const Intersection *i = xs.Hit();
@@ -67,19 +67,19 @@ namespace Scene
         }
 
         Comps comp = PrepareComputation(*i, r);
-        Color c = ShadeHit(comp);
+        Color c = ShadeHit(comp, remaining);
         return c;
     }
 
-    Rendering::Color World::ReflectedColor(const Rendering::Comps &comp) const
+    Rendering::Color World::ReflectedColor(const Rendering::Comps &comp, int remaining) const
     {
-        if (comp.object->material.reflective == 0)
+        if (comp.object->material.reflective == 0 || remaining <= 0)
         {
             return Color(0, 0, 0);
         }
 
         Ray reflectRay(comp.overPoint, comp.reflect);
-        Color color = ColorAt(reflectRay);
+        Color color = ColorAt(reflectRay, remaining - 1);
 
         return color * comp.object->material.reflective;
     }

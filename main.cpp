@@ -69,6 +69,25 @@ int main()
     left.material.specular = 0.3f;
     world.Add(std::move(left));
 
+    Sphere back;
+    back.transform = Translation(2,1.5,3) * Scaling(1.5,1.5,1.5);
+    back.material.reflective = 1;
+    world.Add(std::move(back));
+
+    // ToDo: This needs to be edited to look better
+    Sphere backLarge;
+    backLarge.transform = Translation(-1.5, 3, 5.5) * Scaling(3,3,3);
+    SolidColor c5 = SolidColor(Color(.7, .3, .9));
+    SolidColor blue(Color(0,0,1));
+    StripePattern sp2(&blue, &SolidWhite); 
+    RadialGradient rg(&SolidBlack, &c5);
+    Blend blend(&sp2, &rg);
+    Perturb perturb(&blend, 1489);
+    backLarge.material.pattern = MakePattern<StripePattern>(&blend, &c5);
+    backLarge.material.pattern->transform = Scaling(.25,.25,.25) * Translation(1.5, 0, 0);
+    //backLarge.material.
+    world.Add(std::move(backLarge));
+
     Camera camera = Camera(640, 480, M_PI / 3);
     // Camera camera = Camera(320, 240, M_PI / 3);
     camera.transform = ViewTransform(Point(0, 1.5, -5), Point(0, 1, 0), Vector(0, 1, 0));

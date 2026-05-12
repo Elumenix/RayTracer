@@ -232,16 +232,35 @@ TEST(LightTest, ReflectiveMaterialShading)
     EXPECT_EQ(color, Color(0.87677, 0.92436, 0.82918));
 }
 
-/*TEST(LightTest, MutuallyReflectiveSurfaces)
+TEST(LightTest, MutuallyReflectiveSurfaces)
 {
     // This test is to make sure infinite recursion isn't possible
     World w;
-    w.Add(Light(Point(0,0,0),Color(1,1,1)));
+    w.Add(Light(Point(0, 0, 0), Color(1, 1, 1)));
     Plane lower;
     lower.material.reflective = 1;
-    lower.transform = Translation(0,-1,0);
+    lower.transform = Translation(0, -1, 0);
     Plane upper = lower;
-    upper.transform = Translation(0,1,0);
+    upper.transform = Translation(0, 1, 0);
+    w.Add(std::move(lower));
+    w.Add(std::move(upper));
+    Ray r = Ray(Point(0, 0, 0), Vector(0, 1, 0));
 
-    Expect
-}*/
+    EXPECT_NO_THROW({ w.ColorAt(r); });
+}
+
+TEST(LightTest, MaxRecursiveDepthColor)
+{
+    World w = World::Default();
+    Plane shape;
+    shape.material.reflective = 0.5;
+    shape.transform = Translation(0, -1, 0);
+    w.Add(std::move(shape));
+    float s2 = sqrtf(2);
+    Ray r(Point(0, 0, -3), Vector(0, -s2 / 2, s2 / 2));
+    Intersection i(s2, w.shapes[2].get());
+    Comps comp = PrepareComputation(i, r);
+    Color color = w.ReflectedColor(comp, 0);
+
+    EXPECT_EQ(color, Color(0, 0, 0));
+}
