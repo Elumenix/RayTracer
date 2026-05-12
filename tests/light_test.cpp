@@ -264,3 +264,10 @@ TEST(LightTest, MaxRecursiveDepthColor)
 
     EXPECT_EQ(color, Color(0, 0, 0));
 }
+
+TEST(LightTest, DefaultRefractive) {
+    Material m;
+    EXPECT_FLOAT_EQ(m.transparency, 0.0f);
+    EXPECT_FLOAT_EQ(m.refractiveIndex, 1.0f);
+}
+

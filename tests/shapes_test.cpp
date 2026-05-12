@@ -136,3 +136,11 @@ TEST(ShapeTest, PlaneIntersectionFromBelow)
     EXPECT_EQ(xs[0]->t, 1);
     EXPECT_EQ(xs[0]->object, &p);
 }
+
+TEST(ShapeTest, GlassySphereHelper) {
+    Sphere s = GlassSphere();
+
+    EXPECT_EQ(s.transform, IdentityMatrix);
+    EXPECT_FLOAT_EQ(s.material.transparency, 1.0f);
+    EXPECT_FLOAT_EQ(s.material.refractiveIndex, 1.5f);
+}
