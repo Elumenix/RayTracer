@@ -3,6 +3,7 @@
 
 namespace Rendering
 {
+    // Returns Intersection with smallest t value greater than 0
     const Intersection *IntersectionList::Hit() const
     {
         const Intersection *result = nullptr;

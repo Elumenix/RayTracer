@@ -9,6 +9,7 @@ namespace Scene
 
 namespace Rendering
 {
+    class IntersectionList;
     class Intersection;
     class Ray;
 
@@ -22,8 +23,12 @@ namespace Rendering
         Math::Vector eye;
         Math::Vector normal;
         Math::Vector overPoint;
+        Math::Vector underPoint;
         Math::Vector reflect;
+        float n1;
+        float n2;
     };
 
     Comps PrepareComputation(const Intersection &i, const Ray &r);
+    Comps PrepareComputation(const Intersection &i, const Ray &r, const IntersectionList &xs);
 }

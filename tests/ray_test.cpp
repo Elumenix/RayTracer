@@ -244,3 +244,44 @@ TEST(RayTest, CompOverPoint)
     EXPECT_TRUE(comps.overPoint.z < -EPSILON / 2);
     EXPECT_TRUE(comps.point.z > comps.overPoint.z);
 }
+
+TEST(RayTest, TransparencyIntersections)
+{
+    Sphere A = GlassSphere();
+    A.transform = Scaling(2, 2, 2);
+    A.material.refractiveIndex = 1.5;
+
+    Sphere B = GlassSphere();
+    B.transform = Translation(0, 0, -0.25);
+    B.material.refractiveIndex = 2.0;
+
+    Sphere C = GlassSphere();
+    C.transform = Translation(0, 0, 0.25);
+    C.material.refractiveIndex = 2.5;
+
+    Ray r = Ray(Point(0, 0, -4), Vector(0, 0, 1));
+    IntersectionList xs = {Intersection(2.0, &A), Intersection(2.75, &B), Intersection(3.25, &C), Intersection(4.75, &B), Intersection(5.25, &C), Intersection(6.0, &A)};
+
+    std::vector<std::pair<float, float>> outputs = {{1.0f, 1.5f}, {1.5f, 2.0f}, {2.0f, 2.5f}, {2.5f, 2.5f}, {2.5f, 1.5f}, {1.5f, 1.0f}};
+
+    for (int i = 0; i < 6; i++)
+    {
+        Comps comp = PrepareComputation(*xs[i], r, xs);
+
+        EXPECT_FLOAT_EQ(comp.n1, outputs[i].first) << "n1 is wrong at index " << i;
+        EXPECT_FLOAT_EQ(comp.n2, outputs[i].second) << "n2 is wrong at index " << i;
+    }
+}
+
+TEST(RayTest, ConfirmUnderPoint)
+{
+    Ray r(Point(0, 0, -5), Vector(0, 0, 1));
+    Sphere s = GlassSphere();
+    s.transform = Translation(0, 0, 1);
+    Intersection i(5, &s);
+    IntersectionList xs({i});
+    Comps comp = PrepareComputation(i, r, xs);
+
+    EXPECT_GT(comp.underPoint.z, EPSILON / 2);
+    EXPECT_LT(comp.point.z, comp.underPoint.z);
+}
