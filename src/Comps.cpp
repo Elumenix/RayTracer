@@ -3,7 +3,6 @@
 #include "IntersectionList.h"
 #include "Ray.h"
 #include "Shape.h"
-#include <unordered_set>
 #include <algorithm>
 
 using namespace Scene;

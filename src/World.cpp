@@ -50,7 +50,8 @@ namespace Scene
             bool isShadowed = IsShadowed(comp.overPoint, light);
             Color surface = light.Lighting(*comp.object, comp.overPoint, comp.eye, comp.normal, isShadowed);
             Color reflected = ReflectedColor(comp, remaining);
-            c += surface + reflected;
+            Color refracted = RefractedColor(comp, remaining);
+            c += surface + reflected + refracted;
         }
 
         return c;
@@ -82,6 +83,35 @@ namespace Scene
         Color color = ColorAt(reflectRay, remaining - 1);
 
         return color * comp.object->material.reflective;
+    }
+
+    Rendering::Color World::RefractedColor(const Rendering::Comps &comp, int remaining) const
+    {
+        if (remaining <= 0 || comp.object->material.transparency == 0)
+        {
+            return Color(0, 0, 0);
+        }
+
+        // Snells law (Angle of refracted ray)
+        float ratio = comp.n1 / comp.n2;
+        float cosI = DotProduct(comp.eye, comp.normal);
+        float sin2T = (ratio * ratio) * (1 - cosI * cosI);
+
+        // There is total internal reflection
+        if (sin2T > 1)
+        {
+            return Color(0, 0, 0);
+        }
+
+        float cosT = sqrtf(1.0 - sin2T);
+        Vector direction = comp.normal * (ratio - cosI - cosT) - comp.eye * ratio;
+
+        // Create new ray to get the refracted color
+        Ray refractRay = Ray(comp.underPoint, direction);
+        Color color = ColorAt(refractRay, remaining - 1);
+
+        // Account for opacity
+        return color * comp.object->material.transparency;
     }
 
     bool World::IsShadowed(const Point &p, const Light &light) const

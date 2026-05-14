@@ -47,6 +47,7 @@ namespace Scene
         Rendering::Color ShadeHit(const Rendering::Comps &comp, int remaining = 4) const;
         Rendering::Color ColorAt(const Rendering::Ray &r, int remaining = 4) const;
         Rendering::Color ReflectedColor(const Rendering::Comps &comp, int remaining = 4) const;
+        Rendering::Color RefractedColor(const Rendering::Comps &comp, int remaining = 4) const;
         bool IsShadowed(const Math::Point &p, const Scene::Light &light) const;
     };
 }

@@ -9,6 +9,7 @@
 #include "Ray.h"
 #include "Transformations.h"
 #include "Intersection.h"
+#include "IntersectionList.h"
 #include <cmath>
 
 using namespace Math;
@@ -26,7 +27,7 @@ TEST(LightTest, LightObject)
     EXPECT_EQ(light.intensity, intensity);
 }
 
-TEST(LightTest, MaterialObject)
+TEST(MaterialTest, MaterialObject)
 {
     Material m;
 
@@ -37,7 +38,7 @@ TEST(LightTest, MaterialObject)
     EXPECT_FLOAT_EQ(m.shininess, 200.0f);
 }
 
-TEST(LightTest, SphereDefaultMaterial)
+TEST(MaterialTest, ShapeDefaultMaterial)
 {
     Sphere s;
     Material m = s.material;
@@ -45,7 +46,7 @@ TEST(LightTest, SphereDefaultMaterial)
     EXPECT_EQ(m, Material());
 }
 
-TEST(LightTest, SphereMaterialAssignment)
+TEST(MaterialTest, ShapeMaterialAssignment)
 {
     Sphere s;
     Material m;
@@ -171,7 +172,7 @@ TEST(LightTest, ShadeHitIntersection)
     EXPECT_EQ(c, Color(0.1, 0.1, 0.1));
 }
 
-TEST(LightTest, MaterialDefaultReflectance)
+TEST(MaterialTest, MaterialDefaultReflectance)
 {
     Material m;
     EXPECT_FLOAT_EQ(m.reflective, 0.0);
@@ -265,9 +266,92 @@ TEST(LightTest, MaxRecursiveDepthColor)
     EXPECT_EQ(color, Color(0, 0, 0));
 }
 
-TEST(LightTest, DefaultRefractive) {
+TEST(MaterialTest, DefaultRefractive)
+{
     Material m;
     EXPECT_FLOAT_EQ(m.transparency, 0.0f);
     EXPECT_FLOAT_EQ(m.refractiveIndex, 1.0f);
 }
 
+TEST(LightTest, OpaqueRefraction)
+{
+    World w = World::Default();
+    Shape *shape = w.shapes[0].get();
+    Ray r(Point(0, 0, -5), Vector(0, 0, 1));
+    IntersectionList xs = {{4, shape}, {6, shape}};
+    Comps comp = PrepareComputation(*xs[0], r, xs);
+    Color c = w.RefractedColor(comp, 5);
+
+    EXPECT_EQ(c, Color(0, 0, 0));
+}
+
+TEST(LightTest, TransparentRefractionNoRecursion)
+{
+    World w = World::Default();
+    Shape *shape = w.shapes[0].get();
+    shape->material.transparency = 1.0f;
+    shape->material.refractiveIndex = 1.5f;
+    Ray r(Point(0, 0, -5), Vector(0, 0, 1));
+    IntersectionList xs = {{4, shape}, {6, shape}};
+    Comps comp = PrepareComputation(*xs[0], r, xs);
+    Color c = w.RefractedColor(comp, 0);
+
+    EXPECT_EQ(c, Color(0, 0, 0));
+}
+
+TEST(LightTest, InternalReflection)
+{
+    World w = World::Default();
+    Shape *shape = w.shapes[0].get();
+    shape->material.transparency = 1.0f;
+    shape->material.refractiveIndex = 1.5f;
+    float s2 = sqrtf(2);
+    Ray r(Point(0, 0, s2 / 2), Vector(0, 1, 0));
+    IntersectionList xs = {{-s2 / 2, shape}, {s2 / 2, shape}};
+    Comps comp = PrepareComputation(*xs[1], r, xs);
+    Color c = w.RefractedColor(comp, 5);
+
+    EXPECT_EQ(c, Color(0, 0, 0));
+}
+
+TEST(LightTest, RefractedColor)
+{
+    World w = World::Default();
+    Shape *A = w.shapes[0].get();
+    A->material.ambient = 1.0;
+    A->material.pattern = MakePattern<TestPattern>();
+    Shape *B = w.shapes[1].get();
+    B->material.transparency = 1.0f;
+    B->material.refractiveIndex = 1.5f;
+    Ray r(Point(0, 0, 1), Vector(0, 1, 0));
+    IntersectionList xs = {{-0.9899, A}, {-0.4899, B}, {0.4899, B}, {0.9899, A}};
+    Comps comp = PrepareComputation(*xs[2], r, xs);
+    Color c = w.RefractedColor(comp, 5);
+
+    EXPECT_EQ(c, Color(0, 0.99888, 0.04725));
+}
+
+TEST(LightTest, TransparentColor)
+{
+    World w = World::Default();
+
+    Plane floor;
+    floor.transform = Translation(0, -1, 0);
+    floor.material.transparency = 0.5;
+    floor.material.refractiveIndex = 1.5;
+    w.Add(std::move(floor));
+
+    Sphere ball;
+    ball.material.color = Color(1, 0, 0);
+    ball.material.ambient = 0.5;
+    ball.transform = Translation(0, -3.5, -0.5);
+    w.Add(std::move(ball));
+
+    float s2 = sqrtf(2);
+    Ray r(Point(0, 0, -3), Vector(0, -s2 / 2, s2 / 2));
+    IntersectionList xs = {{s2, w.shapes[2].get()}};
+    Comps comp = PrepareComputation(*xs[0], r, xs);
+    Color color = w.ShadeHit(comp, 5);
+
+    EXPECT_EQ(color, Color(0.93642, 0.68642, 0.68642));
+}
