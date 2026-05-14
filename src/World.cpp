@@ -51,7 +51,19 @@ namespace Scene
             Color surface = light.Lighting(*comp.object, comp.overPoint, comp.eye, comp.normal, isShadowed);
             Color reflected = ReflectedColor(comp, remaining);
             Color refracted = RefractedColor(comp, remaining);
-            c += surface + reflected + refracted;
+
+            Material mat = comp.object->material;
+
+            // Fresnel needs to be applied if the materail is both reflective and transparent
+            if (mat.reflective > 0 && mat.transparency > 0)
+            {
+                float reflectance = SchlickFresnel(comp);
+                c += surface + reflected * reflectance + refracted * (1 - reflectance);
+            }
+            else
+            {
+                c += surface + reflected + refracted;
+            }
         }
 
         return c;

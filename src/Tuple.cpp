@@ -1,4 +1,5 @@
 #include "Tuple.h"
+#include "Constants.h"
 #include <cmath>
 
 namespace Math
@@ -37,13 +38,13 @@ namespace Math
 
   bool operator==(const Tuple &lhs, const Tuple &rhs)
   {
-    if (abs(lhs.x - rhs.x) >= .0001)
+    if (abs(lhs.x - rhs.x) >= EPSILON)
       return false;
-    if (abs(lhs.y - rhs.y) >= .0001)
+    if (abs(lhs.y - rhs.y) >= EPSILON)
       return false;
-    if (abs(lhs.z - rhs.z) >= .0001)
+    if (abs(lhs.z - rhs.z) >= EPSILON)
       return false;
-    if (abs(lhs.w - rhs.w) >= .0001)
+    if (abs(lhs.w - rhs.w) >= EPSILON)
       return false;
     return true;
   }

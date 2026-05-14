@@ -1,5 +1,6 @@
 #pragma once
 #include "Tuple.h"
+#include "Constants.h"
 #include <cassert>
 
 namespace Math
@@ -49,7 +50,7 @@ namespace Math
         float Determinant() const;
         float Minor(int row, int col) const;
         float Cofactor(int row, int col) const;
-        bool IsInvertible() const { return std::abs(Determinant()) > 0.0001; }
+        bool IsInvertible() const { return std::abs(Determinant()) > EPSILON; }
 
         // Stream Output
         friend std::ostream &operator<<(std::ostream &os, const Matrix<Width, Height> &m)

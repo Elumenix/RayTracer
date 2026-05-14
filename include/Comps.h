@@ -31,4 +31,5 @@ namespace Rendering
 
     Comps PrepareComputation(const Intersection &i, const Ray &r);
     Comps PrepareComputation(const Intersection &i, const Ray &r, const IntersectionList &xs);
+    float SchlickFresnel(const Comps &comp);
 }

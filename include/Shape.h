@@ -10,8 +10,6 @@ namespace Rendering
 
 namespace Scene
 {
-    inline float EPSILON = 0.0001f;
-
     class Shape
     {
     protected:

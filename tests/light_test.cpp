@@ -355,3 +355,64 @@ TEST(LightTest, TransparentColor)
 
     EXPECT_EQ(color, Color(0.93642, 0.68642, 0.68642));
 }
+
+TEST(LightTest, SchlickInternal)
+{
+    Sphere shape = GlassSphere();
+    float s2 = sqrtf(2);
+    Ray r(Point(0, 0, s2 / 2), Vector(0, 1, 0));
+    IntersectionList xs = {{-s2 / 2, &shape}, {s2 / 2, &shape}};
+    Comps comp = PrepareComputation(*xs[1], r, xs);
+    float reflectance = SchlickFresnel(comp);
+
+    EXPECT_FLOAT_EQ(reflectance, 1.0);
+}
+
+TEST(LightTest, PerpendicularSchlick)
+{
+    Sphere shape = GlassSphere();
+    Ray r(Point(0, 0, 0), Vector(0, 1, 0));
+    IntersectionList xs = {{-1, &shape}, {1, &shape}};
+    Comps comp = PrepareComputation(*xs[1], r, xs);
+    float reflectance = SchlickFresnel(comp);
+
+    EXPECT_FLOAT_EQ(reflectance, 0.04);
+}
+
+TEST(LightTest, SchlickSmallAngle)
+{
+    Sphere shape = GlassSphere();
+    Ray r(Point(0.0f, 0.99f, -2.0f), Vector(0.0f, 0.0f, 1.0f));
+    IntersectionList xs = {{1.8589f, &shape}};
+    Comps comp = PrepareComputation(*xs[0], r, xs);
+    float reflectance = SchlickFresnel(comp);
+
+    // Expect float says that 0.4887307 != .48873001, which is a lot more precise than we can reach
+    EXPECT_NEAR(reflectance, 0.48873f, EPSILON);
+}
+
+TEST(LightTest, ShadeHitReflectiveAndTransparent)
+{
+    World w = World::Default();
+    float s2 = sqrtf(2.0f);
+    Ray r(Point(0, 0, -3), Vector(0, -s2 / 2, s2 / 2));
+
+    Plane floor;
+    floor.transform = Translation(0, -1, 0);
+    floor.material.reflective = 0.5;
+    floor.material.transparency = 0.5;
+    floor.material.refractiveIndex = 1.5f;
+    w.Add(std::move(floor));
+
+    Sphere ball;
+    ball.material.color = Color(1, 0, 0);
+    ball.material.ambient = 0.5f;
+    ball.transform = Translation(0, -3.5, -0.5);
+    w.Add(std::move(ball));
+
+    IntersectionList xs = {{s2, w.shapes[2].get()}};
+    Comps comp = PrepareComputation(*xs[0], r, xs);
+    Color color = w.ShadeHit(comp, 5);
+
+    EXPECT_EQ(color, Color(0.93391, 0.69643, 0.69243));
+}
