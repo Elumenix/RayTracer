@@ -116,7 +116,7 @@ namespace Scene
         }
 
         float cosT = sqrtf(1.0 - sin2T);
-        Vector direction = comp.normal * (ratio - cosI - cosT) - comp.eye * ratio;
+        Vector direction = comp.normal * (ratio * cosI - cosT) - comp.eye * ratio;
 
         // Create new ray to get the refracted color
         Ray refractRay = Ray(comp.underPoint, direction);

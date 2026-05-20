@@ -71,7 +71,10 @@ int main()
 
     Sphere back;
     back.transform = Translation(2,1.5,3) * Scaling(1.5,1.5,1.5);
-    back.material.reflective = 1;
+    back.material.reflective = 0;
+    back.material.transparency = 1;
+    back.material.refractiveIndex = 1.5;
+    back.material.ambient = 0;
     world.Add(std::move(back));
 
     // ToDo: This needs to be edited to look better
@@ -87,6 +90,8 @@ int main()
     backLarge.material.pattern->transform = Scaling(.25,.25,.25) * Translation(1.5, 0, 0);
     //backLarge.material.
     world.Add(std::move(backLarge));
+
+
 
     Camera camera = Camera(640, 480, M_PI / 3);
     // Camera camera = Camera(320, 240, M_PI / 3);
