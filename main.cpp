@@ -15,87 +15,45 @@ using namespace Scene;
 int main()
 {
     World world;
-    world.lights.push_back(Light(Point(-10, 10, -10), Color(1, 1, 1)));
+    world.lights.push_back(Light(Point(2, 10, -5), Color(0.9, 0.9, 0.9)));
 
-    Plane floor;
-    floor.transform = Scaling(10, 0.01, 10);
-    floor.material.color = Color(1, 0.9, 0.9);
-    floor.material.pattern = MakePattern<Checker>();
-    floor.material.pattern->transform = Scaling(.05, .05, .05);
-    floor.material.specular = 0;
-    world.Add(std::move(floor));
+    Plane plane;
+    plane.transform = RotationX(1.5708f) * Translation(0, 0, -10);
+    Color c1(0.15,0.15,0.15);
+    Color c2(0.85,0.85,0.85);
+    SolidColor s1(c1);
+    SolidColor s2(c2);
+    plane.material.pattern = MakePattern<Checker>(&s1, &s2);
+    plane.material.ambient = 0.8;
+    plane.material.diffuse = 0.2;
+    plane.material.specular = 0;
+    world.Add(std::move(plane));
 
-    /* Plane leftWall = floor;
-     leftWall.transform = translation(0, 0, 5) *
-                          rotationY(-M_PI_4) * rotationX(M_PI_2) *
-                          scaling(10, 0.01, 10);
-     world.Add(std::move(leftWall));
+    Sphere sphere;
+    sphere.material.color = White;
+    sphere.material.ambient = 0.1;
+    sphere.material.diffuse = 0;
+    sphere.material.specular = 0;
+    sphere.material.shininess = 300;
+    sphere.material.reflective = 0.9;
+    sphere.material.transparency = 0.9;
+    sphere.material.refractiveIndex = 1.5;
+    world.Add(std::move(sphere));
 
-     Plane rightWall = floor;
-     rightWall.transform = translation(0, 0, 5) *
-                           rotationY(M_PI_4) * rotationX(M_PI_2) *
-                           scaling(10, 0.01, 10);
-     world.Add(std::move(rightWall));*/
+    Sphere sphere2;
+    sphere2.material.color = White;
+    sphere2.material.ambient = 0.1;
+    sphere2.material.diffuse = 0;
+    sphere2.material.specular = 0;
+    sphere2.material.shininess = 300;
+    sphere2.material.reflective = 0.9;
+    sphere2.material.transparency = 0.9;
+    sphere2.material.refractiveIndex = 1.0000034;
+    sphere2.transform = Scaling(0.5,0.5,0.5);
+    world.Add(std::move(sphere2));
 
-    Sphere middle;
-    middle.transform = Translation(-0.5, 1, 0.5);
-    middle.material.color = Color(0.1, 1, 0.5);
-    SolidColor c1(Color(0.1, 1, 0.5));
-    RadialGradient smallStripe(&c1, &SolidBlack);
-    middle.material.pattern = MakePattern<RadialGradient>(&smallStripe, &SolidWhite);
-    middle.material.pattern->transform = RotationX(M_PI_2) * Scaling(.3, .3, .3);
-    middle.material.diffuse = 0.7f;
-    middle.material.specular = 0.3f;
-    world.Add(std::move(middle));
-
-    Sphere right;
-    right.transform = Translation(1.5, 0.5, -0.5) * Scaling(0.5, 0.5, 0.5);
-    right.material.color = Color(0.5, 1, 0.1);
-    SolidColor c2(Color(0.5, 1, 0.1));
-    right.material.pattern = MakePattern<Gradient>(&c2, &SolidWhite);
-    right.material.pattern->transform = RotationY(M_PI_4) * Scaling(2, 2, 2) * Translation(.5, 0, 0);
-    right.material.diffuse = 0.7f;
-    right.material.specular = 0.3f;
-    world.Add(std::move(right));
-
-    Sphere left;
-    left.transform = Translation(-1.5, 0.33, -0.75) * Scaling(0.33, 0.33, 0.33);
-    left.material.color = Color(1, 0.8, 0.1);
-    SolidColor c3(Color(1, 0.8, 0.1));
-    StripePattern sp(&c3, &SolidBlack);
-    left.material.pattern = MakePattern<Perturb>(&sp, 1337);
-    left.material.pattern->transform = RotationX(-M_PI_2) * Scaling(.2, .2, .2);
-    left.material.diffuse = 0.7f;
-    left.material.specular = 0.3f;
-    world.Add(std::move(left));
-
-    Sphere back;
-    back.transform = Translation(2,1.5,3) * Scaling(1.5,1.5,1.5);
-    back.material.reflective = 0;
-    back.material.transparency = 1;
-    back.material.refractiveIndex = 1.5;
-    back.material.ambient = 0;
-    world.Add(std::move(back));
-
-    // ToDo: This needs to be edited to look better
-    Sphere backLarge;
-    backLarge.transform = Translation(-1.5, 3, 5.5) * Scaling(3,3,3);
-    SolidColor c5 = SolidColor(Color(.7, .3, .9));
-    SolidColor blue(Color(0,0,1));
-    StripePattern sp2(&blue, &SolidWhite); 
-    RadialGradient rg(&SolidBlack, &c5);
-    Blend blend(&sp2, &rg);
-    Perturb perturb(&blend, 1489);
-    backLarge.material.pattern = MakePattern<StripePattern>(&blend, &c5);
-    backLarge.material.pattern->transform = Scaling(.25,.25,.25) * Translation(1.5, 0, 0);
-    //backLarge.material.
-    world.Add(std::move(backLarge));
-
-
-
-    Camera camera = Camera(640, 480, M_PI / 3);
-    // Camera camera = Camera(320, 240, M_PI / 3);
-    camera.transform = ViewTransform(Point(0, 1.5, -5), Point(0, 1, 0), Vector(0, 1, 0));
+    Camera camera = Camera(300, 300, 0.45);
+    camera.transform = ViewTransform(Point(0,0,-5),Point(0,0,0),Vector(0,1,0));
     Canvas canvas = camera.Render(world);
     canvas.CanvasToPNG();
 }

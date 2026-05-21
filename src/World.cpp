@@ -79,7 +79,7 @@ namespace Scene
             return Color(0, 0, 0);
         }
 
-        Comps comp = PrepareComputation(*i, r);
+        Comps comp = PrepareComputation(*i, r, xs);
         Color c = ShadeHit(comp, remaining);
         return c;
     }
@@ -119,7 +119,7 @@ namespace Scene
         Vector direction = comp.normal * (ratio * cosI - cosT) - comp.eye * ratio;
 
         // Create new ray to get the refracted color
-        Ray refractRay = Ray(comp.underPoint, direction);
+        Ray refractRay = Ray(comp.underPoint, direction.Normalized());
         Color color = ColorAt(refractRay, remaining - 1);
 
         // Account for opacity
@@ -134,8 +134,14 @@ namespace Scene
 
         Ray r = Ray(p, direction);
         IntersectionList intersections = IntersectWorld(r);
-        const Intersection *h = intersections.Hit();
-
-        return h != nullptr && h->t < distance;
+        // Walk all intersections, skip transparent ones
+        for (const Intersection &i : intersections)
+        {
+            if (i.t < 0 || i.t >= distance)
+                continue;
+            if (i.object->material.transparency < 1.0f)
+                return true;
+        }
+        return false;
     }
 }

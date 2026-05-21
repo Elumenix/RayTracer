@@ -10,7 +10,7 @@ namespace Scene
 {
     IntersectionList Plane::CustomIntersects(const Ray &rayOS) const
     {
-        if (abs(rayOS.direction.y) < EPSILON)
+        if (fabs(rayOS.direction.y) < EPSILON)
         {
             return {}; // Technically infinitly intersecting, but better to pretend it missed
         }
