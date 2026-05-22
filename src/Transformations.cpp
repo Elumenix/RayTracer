@@ -78,6 +78,9 @@ namespace Transformations
         Math::Vector left = CrossProduct(forward, up.Normalized());
         Math::Vector trueUp = CrossProduct(left, forward);
 
+        // This should tell the user if they set up the camera wrong. "Matrix can't be inverted" isn't as helpful
+        assert(left.Magnitude() > EPSILON && "Up vector is parallel to forward — ambiguous orientation");
+
         Math::Matrix orientation = Math::Matrix<4, 4>({left.x, left.y, left.z, 0,
                                                        trueUp.x, trueUp.y, trueUp.z, 0,
                                                        -forward.x, -forward.y, -forward.z, 0,

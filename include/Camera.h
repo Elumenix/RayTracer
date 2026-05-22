@@ -34,6 +34,6 @@ namespace Scene
         inline float HalfHeight() { return _halfHeight; }
 
         Rendering::Ray RayForPixel(float px, float py);
-        Rendering::Canvas Render(const World &world);
+        Rendering::Canvas Render(const World &world, int recursionLimit = 4);
     };
 }

@@ -47,7 +47,7 @@ namespace Scene
         return Ray(origin, direction);
     }
 
-    Canvas Camera::Render(const World &world)
+    Canvas Camera::Render(const World &world, int recursionLimit)
     {
         Canvas image(hsize, vsize);
 
@@ -56,7 +56,7 @@ namespace Scene
             for (int x = 0; x < hsize; x++)
             {
                 Ray ray = RayForPixel(x, y);
-                Color color = world.ColorAt(ray);
+                Color color = world.ColorAt(ray, recursionLimit);
                 image.WritePixelAt(x, y, color);
             }
         }
