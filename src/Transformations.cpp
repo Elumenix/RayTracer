@@ -24,8 +24,8 @@ namespace Transformations
 
     Math::Matrix<4, 4> RotationX(float rad)
     {
-        float s = sinf(rad);
-        float c = cosf(rad);
+        float s = std::sin(rad);
+        float c = std::cos(rad);
         Math::Matrix rotation = Math::Matrix<4, 4>{
             1, 0, 0, 0,
             0, c, -s, 0,
@@ -37,8 +37,8 @@ namespace Transformations
 
     Math::Matrix<4, 4> RotationY(float rad)
     {
-        float s = sinf(rad);
-        float c = cosf(rad);
+        float s = std::sin(rad);
+        float c = std::cos(rad);
         Math::Matrix rotation = Math::Matrix<4, 4>{
             c, 0, s, 0,
             0, 1, 0, 0,
@@ -50,8 +50,8 @@ namespace Transformations
 
     Math::Matrix<4, 4> RotationZ(float rad)
     {
-        float s = sinf(rad);
-        float c = cosf(rad);
+        float s = std::sin(rad);
+        float c = std::cos(rad);
         Math::Matrix rotation = Math::Matrix<4, 4>{
             c, -s, 0, 0,
             s, c, 0, 0,

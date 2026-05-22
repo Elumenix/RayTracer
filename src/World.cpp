@@ -115,7 +115,7 @@ namespace Scene
             return Color(0, 0, 0);
         }
 
-        float cosT = sqrtf(1.0 - sin2T);
+        float cosT = std::sqrt(1.0 - sin2T);
         Vector direction = comp.normal * (ratio * cosI - cosT) - comp.eye * ratio;
 
         // Create new ray to get the refracted color
@@ -134,7 +134,12 @@ namespace Scene
 
         Ray r = Ray(p, direction);
         IntersectionList intersections = IntersectWorld(r);
-        // Walk all intersections, skip transparent ones
+        /*const Intersection *h = intersections.Hit();
+
+        return h != nullptr && h->t < distance;*/
+        
+        // Walk all intersections, skip transparent ones. 
+        //Transparent Refractive surfaces would apparently make caustics but that's too complex right now
         for (const Intersection &i : intersections)
         {
             if (i.t < 0 || i.t >= distance)

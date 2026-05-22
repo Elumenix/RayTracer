@@ -35,8 +35,8 @@ namespace Rendering
 
     void Canvas::WritePixelAt(float x, float y, const Color &color)
     {
-        int xInt = roundf32(x);
-        int yInt = roundf32(y);
+        int xInt = std::round(x);
+        int yInt = std::round(y);
         WritePixelAt(xInt, yInt, color);
     }
 
@@ -97,9 +97,9 @@ namespace Rendering
         for (int i = 0; i < length; i++)
         {
             Color currentPixel = pixels[i];
-            activeString += std::to_string(std::clamp((int)round(currentPixel.x * 255), 0, 255)) + " " +
-                            std::to_string(std::clamp((int)round(currentPixel.y * 255), 0, 255)) + " " +
-                            std::to_string(std::clamp((int)round(currentPixel.z * 255), 0, 255)) + " ";
+            activeString += std::to_string(std::clamp((int)std::round(currentPixel.x * 255), 0, 255)) + " " +
+                            std::to_string(std::clamp((int)std::round(currentPixel.y * 255), 0, 255)) + " " +
+                            std::to_string(std::clamp((int)std::round(currentPixel.z * 255), 0, 255)) + " ";
         }
 
         return ppm + FormatWithLineBreaks(activeString);

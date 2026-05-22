@@ -52,7 +52,7 @@ int main()
     sphere2.transform = Scaling(0.5,0.5,0.5);
     world.Add(std::move(sphere2));
 
-    Camera camera = Camera(300, 300, 0.45);
+    Camera camera = Camera(600, 600, 0.45);
     camera.transform = ViewTransform(Point(0,0,-5),Point(0,0,0),Vector(0,1,0));
     Canvas canvas = camera.Render(world);
     canvas.CanvasToPNG();

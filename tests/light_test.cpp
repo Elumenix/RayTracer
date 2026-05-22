@@ -72,7 +72,7 @@ TEST(LightTest, EyeBetweenLightAndSurface)
 TEST(LightTest, LightBetweeenEyeAndSurface)
 {
     Sphere s;
-    Vector eye = Vector(0, sqrtf(2.0f) / 2, -sqrtf(2.0f) / 2);
+    Vector eye = Vector(0, std::sqrt(2.0f) / 2, -std::sqrt(2.0f) / 2);
     Vector normal = Vector(0, 0, -1);
     Light light = Light(Point(0, 0, -10), Color(1, 1, 1));
     Color result = light.Lighting(s, Point(0, 0, 0), eye, normal);
@@ -94,7 +94,7 @@ TEST(LightTest, EyeOppositeSurfaceLightOffset45)
 TEST(LightTest, EyeInPathOfReflectionVector)
 {
     Sphere s;
-    Vector eye = Vector(0, -sqrtf(2.0f) / 2, -sqrtf(2.0f) / 2);
+    Vector eye = Vector(0, -std::sqrt(2.0f) / 2, -std::sqrt(2.0f) / 2);
     Vector normal = Vector(0, 0, -1);
     Light light = Light(Point(0, 10, -10), Color(1, 1, 1));
     Color result = light.Lighting(s, Point(0, 0, 0), eye, normal);
@@ -181,7 +181,7 @@ TEST(MaterialTest, MaterialDefaultReflectance)
 TEST(LightTest, PrecomputeReflectanceVector)
 {
     Plane shape;
-    float s2 = sqrtf(2.0f);
+    float s2 = std::sqrt(2.0f);
     Ray r(Point(0, 1, -1), Vector(0, -s2 / 2, s2 / 2));
     Intersection i(s2, &shape);
     Comps comps = PrepareComputation(i, r);
@@ -208,7 +208,7 @@ TEST(LightTest, ReflectiveMaterialColor)
     shape.material.reflective = 0.5;
     shape.transform = Translation(0, -1, 0);
     w.Add(std::move(shape));
-    float s2 = sqrtf(2);
+    float s2 = std::sqrt(2);
     Ray r(Point(0, 0, -3), Vector(0, -s2 / 2, s2 / 2));
     Intersection i(s2, w.shapes[2].get());
     Comps comp = PrepareComputation(i, r);
@@ -224,7 +224,7 @@ TEST(LightTest, ReflectiveMaterialShading)
     shape.material.reflective = 0.5;
     shape.transform = Translation(0, -1, 0);
     w.Add(std::move(shape));
-    float s2 = sqrtf(2);
+    float s2 = std::sqrt(2);
     Ray r(Point(0, 0, -3), Vector(0, -s2 / 2, s2 / 2));
     Intersection i(s2, w.shapes[2].get());
     Comps comp = PrepareComputation(i, r);
@@ -257,7 +257,7 @@ TEST(LightTest, MaxRecursiveDepthColor)
     shape.material.reflective = 0.5;
     shape.transform = Translation(0, -1, 0);
     w.Add(std::move(shape));
-    float s2 = sqrtf(2);
+    float s2 = std::sqrt(2);
     Ray r(Point(0, 0, -3), Vector(0, -s2 / 2, s2 / 2));
     Intersection i(s2, w.shapes[2].get());
     Comps comp = PrepareComputation(i, r);
@@ -305,7 +305,7 @@ TEST(LightTest, InternalReflection)
     Shape *shape = w.shapes[0].get();
     shape->material.transparency = 1.0f;
     shape->material.refractiveIndex = 1.5f;
-    float s2 = sqrtf(2);
+    float s2 = std::sqrt(2);
     Ray r(Point(0, 0, s2 / 2), Vector(0, 1, 0));
     IntersectionList xs = {{-s2 / 2, shape}, {s2 / 2, shape}};
     Comps comp = PrepareComputation(*xs[1], r, xs);
@@ -323,7 +323,7 @@ TEST(LightTest, RefractedColor)
     Shape *B = w.shapes[1].get();
     B->material.transparency = 1.0f;
     B->material.refractiveIndex = 1.5f;
-    Ray r(Point(0, 0, 1), Vector(0, 1, 0));
+    Ray r(Point(0, 0, 0.1), Vector(0, 1, 0));
     IntersectionList xs = {{-0.9899, A}, {-0.4899, B}, {0.4899, B}, {0.9899, A}};
     Comps comp = PrepareComputation(*xs[2], r, xs);
     Color c = w.RefractedColor(comp, 5);
@@ -347,7 +347,7 @@ TEST(LightTest, TransparentColor)
     ball.transform = Translation(0, -3.5, -0.5);
     w.Add(std::move(ball));
 
-    float s2 = sqrtf(2);
+    float s2 = std::sqrt(2);
     Ray r(Point(0, 0, -3), Vector(0, -s2 / 2, s2 / 2));
     IntersectionList xs = {{s2, w.shapes[2].get()}};
     Comps comp = PrepareComputation(*xs[0], r, xs);
@@ -359,7 +359,7 @@ TEST(LightTest, TransparentColor)
 TEST(LightTest, SchlickInternal)
 {
     Sphere shape = GlassSphere();
-    float s2 = sqrtf(2);
+    float s2 = std::sqrt(2);
     Ray r(Point(0, 0, s2 / 2), Vector(0, 1, 0));
     IntersectionList xs = {{-s2 / 2, &shape}, {s2 / 2, &shape}};
     Comps comp = PrepareComputation(*xs[1], r, xs);
@@ -394,7 +394,7 @@ TEST(LightTest, SchlickSmallAngle)
 TEST(LightTest, ShadeHitReflectiveAndTransparent)
 {
     World w = World::Default();
-    float s2 = sqrtf(2.0f);
+    float s2 = std::sqrt(2.0f);
     Ray r(Point(0, 0, -3), Vector(0, -s2 / 2, s2 / 2));
 
     Plane floor;

@@ -56,16 +56,16 @@ TEST(ShapeTest, SphereNormalZ)
 TEST(ShapeTest, SphereNormalNonaxial)
 {
     Sphere s;
-    Point nonaxialPoint = Point(sqrtf(3.0f) / 3, sqrtf(3.0f) / 3, sqrtf(3.0f) / 3);
+    Point nonaxialPoint = Point(std::sqrt(3.0f) / 3, std::sqrt(3.0f) / 3, std::sqrt(3.0f) / 3);
     Vector n = s.NormalAt(nonaxialPoint);
 
-    EXPECT_EQ(n, Vector(sqrtf(3.0f) / 3, sqrtf(3.0f) / 3, sqrtf(3.0f) / 3));
+    EXPECT_EQ(n, Vector(std::sqrt(3.0f) / 3, std::sqrt(3.0f) / 3, std::sqrt(3.0f) / 3));
 }
 
 TEST(ShapeTest, SphereNormalIsNormalized)
 {
     Sphere s;
-    Vector n = s.NormalAt(Vector(sqrtf(3.0f) / 3, sqrtf(3.0f) / 3, sqrtf(3.0f) / 3));
+    Vector n = s.NormalAt(Vector(std::sqrt(3.0f) / 3, std::sqrt(3.0f) / 3, std::sqrt(3.0f) / 3));
 
     EXPECT_EQ(n, n.Normalized());
 }
@@ -84,7 +84,7 @@ TEST(ShapeTest, SphereTransformed)
     Sphere s;
     Matrix m = Scaling(1, 0.5, 1) * RotationZ(M_PI / 5);
     s.transform = m;
-    Vector n = s.NormalAt(Vector(0, sqrtf(2.0f) / 2, -sqrtf(2.0f) / 2));
+    Vector n = s.NormalAt(Vector(0, std::sqrt(2.0f) / 2, -std::sqrt(2.0f) / 2));
 
     EXPECT_EQ(n, Vector(0, 0.97014, -0.24254));
 }

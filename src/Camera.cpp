@@ -14,7 +14,7 @@ namespace Scene
         transform = Math::IdentityMatrix;
 
         // Half the width of the canvas. adjacent side / forward vector is 1 unit, so halfview is the opposite/canvas
-        float halfView = tanf(fov / 2);
+        float halfView = std::tan(fov / 2);
         float aspectRatio = (float)hsize / vsize;
 
         if (aspectRatio >= 1)

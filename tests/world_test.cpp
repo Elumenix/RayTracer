@@ -149,7 +149,7 @@ TEST(CameraTest, RayWithTransformedCamera)
     c.transform = RotationY(M_PI_4) * Translation(0, -2, 5);
     Ray r = c.RayForPixel(100, 50);
     EXPECT_EQ(r.origin, Point(0, 2, -5));
-    EXPECT_EQ(r.direction, Vector(sqrtf(2) / 2, 0, -sqrtf(2) / 2));
+    EXPECT_EQ(r.direction, Vector(std::sqrt(2) / 2, 0, -std::sqrt(2) / 2));
 }
 
 TEST(CameraTest, CameraRender)

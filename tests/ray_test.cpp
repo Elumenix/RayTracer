@@ -279,8 +279,7 @@ TEST(RayTest, ConfirmUnderPoint)
     Sphere s = GlassSphere();
     s.transform = Translation(0, 0, 1);
     Intersection i(5, &s);
-    IntersectionList xs({i});
-    Comps comp = PrepareComputation(i, r, xs);
+    Comps comp = PrepareComputation(i, r);
 
     EXPECT_GT(comp.underPoint.z, EPSILON / 2);
     EXPECT_LT(comp.point.z, comp.underPoint.z);

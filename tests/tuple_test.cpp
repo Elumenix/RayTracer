@@ -118,10 +118,10 @@ TEST(TupleTest, VectorMagnitude)
     EXPECT_FLOAT_EQ(v3.Magnitude(), 1);
 
     Tuple v4 = Vector(1, 2, 3);
-    EXPECT_FLOAT_EQ(v4.Magnitude(), sqrt(14));
+    EXPECT_FLOAT_EQ(v4.Magnitude(), std::sqrt(14));
 
     Tuple v5 = Vector(-1, -2, -3);
-    EXPECT_FLOAT_EQ(v5.Magnitude(), sqrt(14));
+    EXPECT_FLOAT_EQ(v5.Magnitude(), std::sqrt(14));
 }
 
 TEST(TupleTest, TupleNormalize)
@@ -183,7 +183,7 @@ TEST(TupleTest, Reflection45)
 TEST(TupleTest, ReflectionSlanted)
 {
     Vector v = Vector(0, -1, 0);
-    Vector n = Vector(sqrtf(2.0) / 2, sqrtf(2.0f) / 2, 0);
+    Vector n = Vector(std::sqrt(2.0) / 2, std::sqrt(2.0f) / 2, 0);
     Vector r = Reflect(v, n);
 
     EXPECT_EQ(r, Vector(1, 0, 0));

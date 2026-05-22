@@ -33,7 +33,7 @@ namespace Scene
             float reflectDotEye = DotProduct(reflectionVector, eye);
             if (reflectDotEye > 0)
             {
-                float factor = powf(reflectDotEye, shape.material.shininess);
+                float factor = std::pow(reflectDotEye, shape.material.shininess);
                 specular = intensity * shape.material.specular * factor;
             }
         }

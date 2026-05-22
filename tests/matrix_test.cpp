@@ -318,7 +318,7 @@ TEST(MatrixTransformations, XRotation)
     Matrix halfQuarter = RotationX(M_PI / 4);
     Matrix fullQuarter = RotationX(M_PI / 2);
 
-    EXPECT_EQ(halfQuarter * p, Point(0, sqrtf(2.0f) / 2, sqrtf(2.0f) / 2));
+    EXPECT_EQ(halfQuarter * p, Point(0, std::sqrt(2.0f) / 2, std::sqrt(2.0f) / 2));
     EXPECT_EQ(fullQuarter * p, Point(0, 0, 1));
 }
 
@@ -328,7 +328,7 @@ TEST(MatrixTransformations, XInvRotation)
     Matrix halfQuarter = RotationX(M_PI / 4);
     Matrix inv = halfQuarter.Inverse();
 
-    EXPECT_EQ(inv * p, Point(0, sqrtf(2.0f) / 2, -sqrtf(2.0f) / 2));
+    EXPECT_EQ(inv * p, Point(0, std::sqrt(2.0f) / 2, -std::sqrt(2.0f) / 2));
 }
 
 TEST(MatrixTransformations, YRotation)
@@ -337,7 +337,7 @@ TEST(MatrixTransformations, YRotation)
     Matrix halfQuarter = RotationY(M_PI / 4);
     Matrix fullQuarter = RotationY(M_PI / 2);
 
-    EXPECT_EQ(halfQuarter * p, Point(sqrtf(2.0f) / 2, 0, sqrtf(2.0f) / 2));
+    EXPECT_EQ(halfQuarter * p, Point(std::sqrt(2.0f) / 2, 0, std::sqrt(2.0f) / 2));
     EXPECT_EQ(fullQuarter * p, Point(1, 0, 0));
 }
 
@@ -347,7 +347,7 @@ TEST(MatrixTransformations, ZRotation)
     Matrix halfQuarter = RotationZ(M_PI / 4);
     Matrix fullQuarter = RotationZ(M_PI / 2);
 
-    EXPECT_EQ(halfQuarter * p, Point(-sqrtf(2.0f) / 2, sqrtf(2.0f) / 2, 0));
+    EXPECT_EQ(halfQuarter * p, Point(-std::sqrt(2.0f) / 2, std::sqrt(2.0f) / 2, 0));
     EXPECT_EQ(fullQuarter * p, Point(-1, 0, 0));
 }
 

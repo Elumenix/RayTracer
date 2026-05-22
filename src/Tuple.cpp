@@ -10,7 +10,7 @@ namespace Math
 
   float Tuple::Magnitude()
   {
-    return sqrt(x * x + y * y + z * z + w * w);
+    return std::sqrt(x * x + y * y + z * z + w * w);
   }
 
   Tuple Tuple::Normalized()
@@ -38,13 +38,13 @@ namespace Math
 
   bool operator==(const Tuple &lhs, const Tuple &rhs)
   {
-    if (abs(lhs.x - rhs.x) >= EPSILON)
+    if (std::abs(lhs.x - rhs.x) >= EPSILON)
       return false;
-    if (abs(lhs.y - rhs.y) >= EPSILON)
+    if (std::abs(lhs.y - rhs.y) >= EPSILON)
       return false;
-    if (abs(lhs.z - rhs.z) >= EPSILON)
+    if (std::abs(lhs.z - rhs.z) >= EPSILON)
       return false;
-    if (abs(lhs.w - rhs.w) >= EPSILON)
+    if (std::abs(lhs.w - rhs.w) >= EPSILON)
       return false;
     return true;
   }

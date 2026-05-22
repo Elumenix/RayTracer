@@ -24,7 +24,7 @@ namespace Scene
             return {};
         }
 
-        float discSqrt = sqrtf(discriminant);
+        float discSqrt = std::sqrt(discriminant);
 
         // Get two intersection points wether they are in front of or behind the sphere
         Intersection t1 = Intersection((-b - discSqrt) / (2 * a), this);

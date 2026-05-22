@@ -90,14 +90,14 @@ namespace Rendering
             }
         }
 
-        assert(false); // This should not happen
+        assert(false && "This code should never have been reached. Make sure a i is a reference from the list."); // This should not happen
     }
 
     Comps PrepareComputation(const Intersection &i, const Ray &r)
     {
         Comps comp = CompCreation(i, r);
-        IntersectionList xs; // Empty list if no list is given
-        GetNValues(comp, i, r, xs);
+        IntersectionList xs = {i}; // List only has i
+        GetNValues(comp, *xs[0], r, xs);
         return comp;
     }
 
@@ -121,13 +121,13 @@ namespace Rendering
             if (sin2T > 1.0f)
                 return 1.0f;
 
-            float cosT = sqrtf(1.0f - sin2T);
+            float cosT = std::sqrt(1.0f - sin2T);
             cos = cosT; // n1 > n2, so we'll use cosT
         }
 
         // This is from "Reflections and Refraction in Ray Tracing" by Bram de Greve.
         // Fresnel in my waves project was (1 - dot(normal, viewDir))^5, so I assume this is similar
-        float r0 = powf((comp.n1 - comp.n2) / (comp.n1 + comp.n2), 2.0f);
-        return r0 + (1.0f - r0) * powf(1.0f - cos, 5.0f);
+        float r0 = std::pow((comp.n1 - comp.n2) / (comp.n1 + comp.n2), 2.0f);
+        return r0 + (1.0f - r0) * std::pow(1.0f - cos, 5.0f);
     }
 }
