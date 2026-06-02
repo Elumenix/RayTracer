@@ -27,7 +27,13 @@ namespace Scene
 
     Vector Cube::CustomNormal(const Point &pointOS) const
     {
-        return Math::Vector();
+        float maxSide = std::max({std::abs(pointOS.x), std::abs(pointOS.y), std::abs(pointOS.z)});
+
+        if (maxSide == std::abs(pointOS.x))
+            return Vector(pointOS.x, 0, 0);
+        if (maxSide == std::abs(pointOS.y))
+            return Vector(0, pointOS.y, 0);
+        return Vector(0, 0, pointOS.z);
     }
 
     std::pair<float, float> Cube::CheckAxis(float rayOrigin, float rayDirection) const
