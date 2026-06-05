@@ -28,6 +28,7 @@ namespace Scene
 
         Camera(int hsize, int vsize, float fov);
         ~Camera() = default;
+        Camera &operator=(const Camera &other); // Required for yaml to work
 
         inline float PixelSize() { return _pixelSize; }
         inline float HalfWidth() { return _halfWidth; }

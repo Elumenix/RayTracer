@@ -32,6 +32,18 @@ namespace Scene
         _pixelSize = (_halfWidth * 2) / hsize;
     }
 
+    Camera &Camera::operator=(const Camera &other)
+    {
+        if (this != &other)
+        {
+            const_cast<int &>(hsize) = other.hsize;
+            const_cast<int &>(vsize) = other.vsize;
+            const_cast<float &>(fov) = other.fov;
+            transform = other.transform;
+        }
+        return *this;
+    }
+
     Ray Camera::RayForPixel(float px, float py)
     {
         float xOffset = (px + 0.5) * _pixelSize;
