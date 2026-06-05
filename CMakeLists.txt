@@ -1,33 +1,49 @@
 cmake_minimum_required(VERSION 3.10)
 project(RayTracer)
 
+# We'll be enforcing C++ 20 standards, and nothing should override that
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+enable_testing() # Signal to enable testing features
+include(FetchContent) # Signal that we will be downloading
 
 # Fetch Google Test
-include(FetchContent)
-FetchContent_Declare(
+fetchcontent_declare(
   googletest
   URL https://github.com/google/googletest/archive/release-1.12.1.zip
   DOWNLOAD_EXTRACT_TIMESTAMP true
 )
-FetchContent_MakeAvailable(googletest)
+# For Windows: Prevent overriding the parent project's compiler/linker settings
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+fetchcontent_makeavailable(googletest)
 
 # Fetch stb to allow png images
-FetchContent_Declare(
+fetchcontent_declare(
   stb
   URL https://github.com/nothings/stb/archive/master.zip
   DOWNLOAD_EXTRACT_TIMESTAMP true
 )
-FetchContent_MakeAvailable(stb)
+fetchcontent_makeavailable(stb)
+
+# Fetch yaml-cpp so we can parse yaml files
+fetchcontent_declare(yaml-cpp
+  GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
+  GIT_TAG yaml-cpp-0.9.0
+  DOWNLOAD_EXTRACT_TIMESTAMP true
+)
+fetchcontent_makeavailable(yaml-cpp)
 
 # Get all feature files (The .cpp files)
-file(GLOB RAYTRACERLIB "src/*.cpp")
-file(GLOB TESTS "tests/*_test.cpp")
+file(GLOB_RECURSE RAYTRACERLIB CONFIGURE_DEPENDS "src/*.cpp")
+file(GLOB_RECURSE TESTS CONFIGURE_DEPENDS "tests/*_test.cpp")
 
-# Set up the header files
+# We're creating a a library that everything in the RayTracer will use here
 add_library(raytrace_lib ${RAYTRACERLIB}) # Create Library
-target_include_directories(raytrace_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include) 
-target_include_directories(raytrace_lib PUBLIC ${stb_SOURCE_DIR}) 
+target_include_directories(raytrace_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(raytrace_lib PRIVATE ${stb_SOURCE_DIR})
+target_link_libraries(raytrace_lib PUBLIC yaml-cpp::yaml-cpp)
 
 # Setup the main executable and give info to the linker
 add_executable(RayTracer main.cpp)
@@ -35,10 +51,9 @@ target_link_libraries(RayTracer raytrace_lib)
 
 
 # Set up unit testing with Google Test
+# This will be it's own executable, because testing doesn't need stb 
 add_executable(run_tests ${TESTS})
 target_include_directories(run_tests PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(run_tests raytrace_lib gtest gtest_main)
 
-#target_link_libraries(run_tests raytrace_lib gtest gtest_main)
-enable_testing()
 add_test(NAME AllTests COMMAND run_tests)

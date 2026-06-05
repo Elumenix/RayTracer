@@ -4,7 +4,8 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/include",
-                "${workspaceFolder}/build/_deps/stb-src"
+                "${workspaceFolder}/build/_deps/stb-src",
+                "${workspaceFolder}/build/_deps/yaml-cpp-src/include"
             ],
             "compilerPath": "/usr/bin/g++",
             "cStandard": "c17",
