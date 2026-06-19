@@ -75,7 +75,7 @@ namespace Transformations
     Math::Matrix<4, 4> ViewTransform(Math::Point from, Math::Point to, Math::Vector up)
     {
         Math::Vector forward = (to - from).Normalized();
-        Math::Vector left = CrossProduct(forward, up.Normalized());
+        Math::Vector left = CrossProduct(forward, up.Normalized()).Normalized();
         Math::Vector trueUp = CrossProduct(left, forward);
 
         // This should tell the user if they set up the camera wrong. "Matrix can't be inverted" isn't as helpful
@@ -86,5 +86,24 @@ namespace Transformations
                                                        -forward.x, -forward.y, -forward.z, 0,
                                                        0, 0, 0, 1});
         return orientation * Translation(-from.x, -from.y, -from.z);
+    }
+
+    CameraVectors InvertViewTransform(const Math::Matrix<4, 4> &m)
+    {
+        Math::Vector left = {m[0][0], m[0][1], m[0][2]};
+        Math::Vector trueUp = {m[1][0], m[1][1], m[1][2]};
+        Math::Vector negForward = {m[2][0], m[2][1], m[2][2]};
+        Math::Vector forward = -negForward; // unit, exact
+
+        Math::Vector t = {m[0][3], m[1][3], m[2][3]}; // translation column = -R*from
+
+        // from = -R^T * t
+        Math::Point from;
+        from.x = -(left.x * t.x + trueUp.x * t.y + negForward.x * t.z);
+        from.y = -(left.y * t.x + trueUp.y * t.y + negForward.y * t.z);
+        from.z = -(left.z * t.x + trueUp.z * t.y + negForward.z * t.z);
+
+        Math::Point to = from + forward;
+        return {from, to, trueUp};
     }
 }

@@ -2,6 +2,7 @@
 
 // Can't forward declare because used as a member variable. Need to know class size.
 #include "Matrix.h"
+#include <yaml-cpp/yaml.h>
 
 namespace Rendering
 {
@@ -19,6 +20,10 @@ namespace Scene
         float _pixelSize;
         float _halfWidth;
         float _halfHeight;
+
+        // Only used by yaml, before being read
+        Camera() : hsize(0), vsize(0), fov(0.0f) {}
+        friend struct YAML::as_if<Scene::Camera, void>;  
 
     public:
         const int hsize;

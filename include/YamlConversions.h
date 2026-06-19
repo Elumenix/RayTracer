@@ -1,11 +1,54 @@
 #include <yaml-cpp/node/convert.h>
+#include "Tuple.h"
 #include "Camera.h"
 #include "Matrix.h"
 #include "Transformations.h"
 
 namespace YAML
 {
-    // First, I need to handle matrices as they work weird 
+    template <>
+    struct convert<Math::Vector>
+    {
+        static bool decode(const Node &node, Math::Vector &rhs)
+        {
+            if (!node.IsSequence() || node.size() != 3)
+                return false;
+
+            rhs = Math::Vector(node[0].as<float>(), node[1].as<float>(), node[2].as<float>());
+            return true;
+        }
+    };
+
+    template <>
+    struct convert<Math::Point>
+    {
+        static bool decode(const Node &node, Math::Point &rhs)
+        {
+            if (!node.IsSequence() || node.size() != 3)
+                return false;
+
+            rhs = Math::Point(node[0].as<float>(), node[1].as<float>(), node[2].as<float>());
+            return true;
+        }
+    };
+
+    template <>
+    struct convert<Math::Matrix<4, 4>>
+    {
+        static bool decode(const Node &node, Math::Matrix<4, 4> &rhs)
+        {
+            if (!node.IsSequence() || node.size() != 16)
+                return false;
+
+            rhs = Math::Matrix<4, 4>({node[0].as<float>(), node[1].as<float>(), node[2].as<float>(), node[3].as<float>(),
+                                      node[4].as<float>(), node[5].as<float>(), node[6].as<float>(), node[7].as<float>(),
+                                      node[8].as<float>(), node[9].as<float>(), node[10].as<float>(), node[11].as<float>(),
+                                      node[12].as<float>(), node[13].as<float>(), node[14].as<float>(), node[15].as<float>()});
+            return true;
+        }
+    };
+
+    // First, I need to handle matrices as they work weird
     static Math::Matrix<4, 4> decodeTransform(const Node &node)
     {
         Math::Matrix<4, 4> result = Math::IdentityMatrix;
@@ -46,33 +89,52 @@ namespace YAML
     template <>
     struct convert<Scene::Camera>
     {
+        /*
         static Node encode(const Scene::Camera &rhs)
         {
             Node node;
-            node["hsize"] = rhs.hsize;
-            node["vsize"] = rhs.vsize;
-            node["fov"] = rhs.fov;
+            node["width"] = rhs.hsize;
+            node["height"] = rhs.vsize;
+            node["field-of-view"] = rhs.fov;
+
+            Transformations::CameraVectors cv = Transformations::InvertViewTransform(rhs.transform);
+            node["from"] = cv.from;
+            node["to"] = cv.to;
+            node["up"] = cv.up;
+
             return node;
         }
+        */
 
         static bool decode(const Node &node, Scene::Camera &rhs)
         {
-            if (!node["hsize"] || !node["vsize"] || !node["fov"])
+            if (!node["width"] || !node["height"] || !node["field-of-view"])
                 return false;
 
             rhs = Scene::Camera(
-                node["hsize"].as<int>(),
-                node["vsize"].as<int>(),
-                node["fov"].as<float>());
+                node["width"].as<int>(),
+                node["height"].as<int>(),
+                node["field-of-view"].as<float>());
 
-            if (node["from"] && node["to"] && node["up"])
+            // Some default basis vectors
+            Math::Point from(0, 0, 0);
+            Math::Point to(0, 0, -1);
+            Math::Vector up(0, 1, 0);
+
+            if (node["from"])
             {
-                Math::Vector from = node["from"].as<Math::Vector>();
-                Math::Vector to = node["to"].as<Math::Vector>();
-                Math::Vector up = node["up"].as<Math::Vector>();
-
-                rhs.transform = Transformations::ViewTransform(from, to, up);
+                from = node["from"].as<Math::Point>();
             }
+            if (node["to"])
+            {
+                to = node["to"].as<Math::Point>();
+            }
+            if (node["up"])
+            {
+                up = node["up"].as<Math::Vector>();
+            }
+
+            rhs.transform = Transformations::ViewTransform(from, to, up);
 
             return true;
         }

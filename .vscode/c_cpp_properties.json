@@ -5,7 +5,8 @@
             "includePath": [
                 "${workspaceFolder}/include",
                 "${workspaceFolder}/build/_deps/stb-src",
-                "${workspaceFolder}/build/_deps/yaml-cpp-src/include"
+                "${workspaceFolder}/build/_deps/yaml-cpp-src/include",
+                "${workspaceFolder}/build/_deps/googletest-src/googletest/include"
             ],
             "compilerPath": "/usr/bin/g++",
             "cStandard": "c17",

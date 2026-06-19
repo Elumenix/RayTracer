@@ -1,11 +1,24 @@
+- add: camera
+  width: 250
+  height: 300
+  field-of-view: 0.6
+  from: [-6, 6, -10]
+  to: [6, 0, 6]
+  up: [-0.45, 1, 0]
+
+- add: camera
+  width: 340
+  height: 120
+  field-of-view: 0.485
+
 - add: sphere
   material:
-  color: [0.373, 0.404, 0.550]
-  diffuse: 0.2
-  ambient: 0.0
-  specular: 1.0
-  shininess: 200
-  reflective: 0.7
-  transparency: 0.7
-  refractive-index: 1.5
+    color: [0.373, 0.404, 0.550]
+    diffuse: 0.2
+    ambient: 0.0
+    specular: 1.0
+    shininess: 200
+    reflective: 0.7
+    transparency: 0.7
+    refractive-index: 1.5
   transform:
