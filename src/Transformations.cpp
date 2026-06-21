@@ -88,7 +88,7 @@ namespace Transformations
         return orientation * Translation(-from.x, -from.y, -from.z);
     }
 
-    CameraVectors InvertViewTransform(const Math::Matrix<4, 4> &m)
+    /*CameraVectors InvertViewTransform(const Math::Matrix<4, 4> &m)
     {
         Math::Vector left = {m[0][0], m[0][1], m[0][2]};
         Math::Vector trueUp = {m[1][0], m[1][1], m[1][2]};
@@ -105,5 +105,5 @@ namespace Transformations
 
         Math::Point to = from + forward;
         return {from, to, trueUp};
-    }
+    }*/
 }

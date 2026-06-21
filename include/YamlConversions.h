@@ -1,14 +1,48 @@
+#pragma once
 #include <yaml-cpp/node/convert.h>
 #include "Tuple.h"
+#include "Color.h"
 #include "Camera.h"
 #include "Matrix.h"
 #include "Transformations.h"
+#include "Light.h"
 
 namespace YAML
 {
     template <>
+    struct convert<Math::Point>
+    {
+        static Node encode(const Math::Point &rhs)
+        {
+            Node node;
+            node.push_back(rhs.x);
+            node.push_back(rhs.y);
+            node.push_back(rhs.z);
+            return node;
+        }
+
+        static bool decode(const Node &node, Math::Point &rhs)
+        {
+            if (!node.IsSequence() || node.size() != 3)
+                return false;
+
+            rhs = Math::Point(node[0].as<float>(), node[1].as<float>(), node[2].as<float>());
+            return true;
+        }
+    };
+
+    template <>
     struct convert<Math::Vector>
     {
+        static Node encode(const Math::Vector &rhs)
+        {
+            Node node;
+            node.push_back(rhs.x);
+            node.push_back(rhs.y);
+            node.push_back(rhs.z);
+            return node;
+        }
+
         static bool decode(const Node &node, Math::Vector &rhs)
         {
             if (!node.IsSequence() || node.size() != 3)
@@ -20,18 +54,51 @@ namespace YAML
     };
 
     template <>
-    struct convert<Math::Point>
+    struct convert<Rendering::Color>
     {
-        static bool decode(const Node &node, Math::Point &rhs)
+        static Node encode(const Rendering::Color &rhs)
+        {
+            Node node;
+            node.push_back(rhs.x);
+            node.push_back(rhs.y);
+            node.push_back(rhs.z);
+            return node;
+        }
+
+        static bool decode(const Node &node, Rendering::Color &rhs)
         {
             if (!node.IsSequence() || node.size() != 3)
                 return false;
 
-            rhs = Math::Point(node[0].as<float>(), node[1].as<float>(), node[2].as<float>());
+            rhs = Rendering::Color(node[0].as<float>(), node[1].as<float>(), node[2].as<float>());
             return true;
         }
     };
 
+    template <>
+    struct convert<Scene::Light>
+    {
+        static Node encode(const Scene::Light &rhs)
+        {
+            Node node;
+            node["at"] = rhs.position;
+            node["intensity"] = rhs.intensity;
+            return node;
+        }
+
+        static bool decode(const Node &node, Scene::Light &rhs)
+        {
+            if (!node["at"] || !node["intensity"])
+                return false;
+
+            rhs = Scene::Light(
+                node["at"].as<Math::Point>(),
+                node["intensity"].as<Rendering::Color>());
+            return true;
+        }
+    };
+
+    /*
     template <>
     struct convert<Math::Matrix<4, 4>>
     {
@@ -84,12 +151,13 @@ namespace YAML
         }
 
         return result;
-    }
+    }*/
 
+    /*
     template <>
     struct convert<Scene::Camera>
     {
-        /*
+
         static Node encode(const Scene::Camera &rhs)
         {
             Node node;
@@ -104,7 +172,7 @@ namespace YAML
 
             return node;
         }
-        */
+
 
         static bool decode(const Node &node, Scene::Camera &rhs)
         {
@@ -138,6 +206,6 @@ namespace YAML
 
             return true;
         }
-    };
+    };*/
 
 }

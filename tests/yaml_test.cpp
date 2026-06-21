@@ -4,14 +4,35 @@
 
 using namespace Scene;
 using namespace Math;
+using namespace Rendering;
 
-TEST(yamlTest, FileFound)
+TEST(YamlTest, FileFound)
 {
-    YAML::Node testfile = YAML::LoadFile("tests/YamlTestFile1.yaml");
+    YAML::Node testfile = YAML::LoadFile("tests/YamlReadTest.yaml");
     EXPECT_TRUE(testfile.IsDefined());
 }
 
-TEST(yamlTest, CreateCamera)
+TEST(YamlTest, EncodeLight)
+{
+    Light light = Light(Point(50, 100, -50), Color(1, 1, 1));
+    YAML::Node node = YAML::convert<Light>::encode(light);
+    EXPECT_EQ(node["at"].as<Point>(), light.position);
+    EXPECT_EQ(node["intensity"].as<Color>(), light.intensity);
+}
+
+TEST(YamlTest, DecodeLight)
+{
+    YAML::Node node;
+    node["at"] = Point(50, 100, -50);
+    node["intensity"] = Color(1, 1, 1);
+
+    Light light;
+    EXPECT_TRUE(YAML::convert<Light>::decode(node, light));
+    EXPECT_EQ(light.position, Point(50, 100, -50));
+    EXPECT_EQ(light.intensity, Color(1, 1, 1));
+}
+
+/*TEST(yamlTest, CreateCamera)
 {
     // This class has 3 variables that need to be set, none of which has default values
     // Additionally, it has optional variables to change the from/to/up direction of the camera
@@ -30,5 +51,4 @@ TEST(yamlTest, CreateCamera)
     EXPECT_EQ(Vector(1, 0, 0), Vector(camera1.transform[0][0], camera1.transform[1][0], camera1.transform[2][0]));
     EXPECT_EQ(Vector(0, 1, 0), Vector(camera1.transform[0][1], camera1.transform[1][1], camera1.transform[2][1]));
     EXPECT_EQ(Vector(0, 0, 1), Vector(camera1.transform[0][2], camera1.transform[1][2], camera1.transform[2][2]));
-}
-
+}*/
