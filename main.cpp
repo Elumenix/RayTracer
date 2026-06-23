@@ -18,9 +18,9 @@ int main()
     world.lights.push_back(Light(Point(20, 10, 0), Color(0.7, 0.7, 0.7)));
 
     Plane plane;
-    plane.transform = Translation(0,-10.1,0);
+    plane.transform = Translation(0, -10.1, 0);
     plane.material.pattern = MakePattern<Checker>();
-    plane.material.pattern.get()->transform = Translation(0,0.1,0);
+    plane.material.pattern.get()->transform = Translation(0, 0.1, 0);
     world.Add(std::move(plane));
 
     Sphere sphere;
@@ -37,11 +37,11 @@ int main()
     sphere2.material.reflective = 1;
     sphere2.material.transparency = 1;
     sphere2.material.refractiveIndex = 1.0000034;
-    sphere2.transform = Scaling(0.5,0.5,0.5);
+    sphere2.transform = Scaling(0.5, 0.5, 0.5);
     world.Add(std::move(sphere2));
 
     Camera camera = Camera(1024, 1024, M_PI / 3);
-    camera.transform = ViewTransform(Point(0,2.5,0),Point(0,0,0),Vector(1,0,0));
+    camera.transform = ViewTransform(Point(0, 2.5, 0), Point(0, 0, 0), Vector(1, 0, 0));
     Canvas canvas = camera.Render(world, 5);
     canvas.CanvasToPNG();
 }

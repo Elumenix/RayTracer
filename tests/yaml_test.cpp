@@ -1,10 +1,14 @@
 #include <gtest/gtest.h>
 #include <yaml-cpp/yaml.h>
+#include "YamlParser.h"
 #include "YamlConversions.h"
+#include "World.h"
+#include "Transformations.h"
 
 using namespace Scene;
 using namespace Math;
 using namespace Rendering;
+using namespace std;
 
 TEST(YamlTest, FileFound)
 {
@@ -30,6 +34,42 @@ TEST(YamlTest, DecodeLight)
     EXPECT_TRUE(YAML::convert<Light>::decode(node, light));
     EXPECT_EQ(light.position, Point(50, 100, -50));
     EXPECT_EQ(light.intensity, Color(1, 1, 1));
+}
+
+// TODO: Tests needed, default sphere material/transform, sphere with defined materail, extended materail/transform
+
+TEST(YamlTest, DecodeSphere)
+{
+    const string yaml = R"(
+- define: standard-transform
+  value:
+    - [ translate, 1, -1, 1 ]
+    - [ scale, 0.5, 0.5, 0.5 ]
+
+- define: large-object
+  value:
+    - standard-transform
+    - [ scale, 3.5, 3.5, 3.5 ]
+
+- add: sphere
+  material:
+    color: [ 0.373, 0.404, 0.550 ]
+    diffuse: 0.2
+    ambient: 0.0
+    specular: 1.0
+    shininess: 200
+    reflective: 0.7
+    transparency: 0.7
+    refractive-index: 1.5
+  transform:
+    - large-object
+)";
+
+    World world = YamlParser::getInstance().ParseYaml(yaml);
+    Shape *sphere = world.shapes[0].get();
+
+    EXPECT_EQ(sphere->material, Material(Color(0.373, 0.404, 0.550), 0.0, 0.2, 1.0, 200, 0.7, 0.7, 1.5));
+    EXPECT_EQ(sphere->transform, IdentityMatrix * Transformations::Translation(1, -1, 1) * Transformations::Scaling(0.5, 0.5, 0.5) * Transformations::Scaling(3.5, 3.5, 3.5));
 }
 
 /*TEST(yamlTest, CreateCamera)

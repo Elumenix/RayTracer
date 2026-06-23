@@ -1,12 +1,24 @@
 #pragma once
 #include <yaml-cpp/node/convert.h>
+#include "YamlParser.h"
+
+// Math
 #include "Tuple.h"
+
+// Rendering
 #include "Color.h"
+#include "Material.h"
+
+// Scene
+#include "Light.h"
+#include "Sphere.h"
+
 #include "Camera.h"
 #include "Matrix.h"
 #include "Transformations.h"
-#include "Light.h"
 
+// Because of how this project is designed, the program will only ever be reading Yaml files a user writes by hand not creating them
+// Because of this, we don't need encode functions on anything, so you'll see only the first few objects have them before I realized this
 namespace YAML
 {
     template <>
@@ -98,60 +110,91 @@ namespace YAML
         }
     };
 
-    /*
+    template <>
+    struct convert<Scene::Sphere>
+    {
+        static bool decode(const Node &node, Scene::Sphere &rhs)
+        {
+            rhs = Scene::Sphere();
+
+            // Structure of a decoded sphere is garunteed because the YamlParser enforces it
+            rhs.material = node["material"].as<Rendering::Material>();
+            rhs.transform = node["transform"].as<Math::Matrix<4, 4>>();
+
+            return true;
+        }
+    };
+
+    template <>
+    struct convert<Rendering::Material>
+    {
+        static bool decode(const Node &node, Rendering::Material &rhs)
+        {
+            // Everything on material is optional, so we'll initialize it with default values
+            rhs = Rendering::Material();
+
+            if (node["color"])
+                rhs.color = node["color"].as<Rendering::Color>();
+            if (node["ambient"])
+                rhs.ambient = node["ambient"].as<float>();
+            if (node["diffuse"])
+                rhs.diffuse = node["diffuse"].as<float>();
+            if (node["specular"])
+                rhs.specular = node["specular"].as<float>();
+            if (node["shininess"])
+                rhs.shininess = node["shininess"].as<float>();
+            if (node["reflective"])
+                rhs.reflective = node["reflective"].as<float>();
+            if (node["transparency"])
+                rhs.transparency = node["transparency"].as<float>();
+            if (node["refractive-index"])
+                rhs.refractiveIndex = node["refractive-index"].as<float>();
+
+            return true;
+        }
+    };
+
     template <>
     struct convert<Math::Matrix<4, 4>>
     {
         static bool decode(const Node &node, Math::Matrix<4, 4> &rhs)
         {
-            if (!node.IsSequence() || node.size() != 16)
-                return false;
+            // Everything on a transformation is optional, so we'll initialize it with default values
+            rhs = Math::IdentityMatrix;
 
-            rhs = Math::Matrix<4, 4>({node[0].as<float>(), node[1].as<float>(), node[2].as<float>(), node[3].as<float>(),
-                                      node[4].as<float>(), node[5].as<float>(), node[6].as<float>(), node[7].as<float>(),
-                                      node[8].as<float>(), node[9].as<float>(), node[10].as<float>(), node[11].as<float>(),
-                                      node[12].as<float>(), node[13].as<float>(), node[14].as<float>(), node[15].as<float>()});
+            for (const auto &step : node)
+            {
+                std::string type = step[0].as<std::string>();
+
+                if (type == "rotate-x")
+                    rhs = rhs * Transformations::RotationX(step[1].as<float>());
+                else if (type == "rotate-y")
+                    rhs = rhs * Transformations::RotationY(step[1].as<float>());
+                else if (type == "rotate-z")
+                    rhs = rhs * Transformations::RotationZ(step[1].as<float>());
+                else if (type == "translate")
+                    rhs = rhs * Transformations::Translation(
+                                    step[1].as<float>(),
+                                    step[2].as<float>(),
+                                    step[3].as<float>());
+                else if (type == "scale")
+                    rhs = rhs * Transformations::Scaling(
+                                    step[1].as<float>(),
+                                    step[2].as<float>(),
+                                    step[3].as<float>());
+                else if (type == "shear")
+                    rhs = rhs * Transformations::Shearing(
+                                    step[1].as<float>(),
+                                    step[2].as<float>(),
+                                    step[3].as<float>(),
+                                    step[4].as<float>(),
+                                    step[5].as<float>(),
+                                    step[6].as<float>());
+            }
+
             return true;
         }
     };
-
-    // First, I need to handle matrices as they work weird
-    static Math::Matrix<4, 4> decodeTransform(const Node &node)
-    {
-        Math::Matrix<4, 4> result = Math::IdentityMatrix;
-
-        for (const auto &step : node)
-        {
-            std::string type = step[0].as<std::string>();
-
-            if (type == "rotate-x")
-                result = result * Transformations::RotationX(step[1].as<float>());
-            else if (type == "rotate-y")
-                result = result * Transformations::RotationY(step[1].as<float>());
-            else if (type == "rotate-z")
-                result = result * Transformations::RotationZ(step[1].as<float>());
-            else if (type == "translate")
-                result = result * Transformations::Translation(
-                                      step[1].as<float>(),
-                                      step[2].as<float>(),
-                                      step[3].as<float>());
-            else if (type == "scale")
-                result = result * Transformations::Scaling(
-                                      step[1].as<float>(),
-                                      step[2].as<float>(),
-                                      step[3].as<float>());
-            else if (type == "shear")
-                result = result * Transformations::Shearing(
-                                      step[1].as<float>(),
-                                      step[2].as<float>(),
-                                      step[3].as<float>(),
-                                      step[4].as<float>(),
-                                      step[5].as<float>(),
-                                      step[6].as<float>());
-        }
-
-        return result;
-    }*/
 
     /*
     template <>
@@ -207,5 +250,4 @@ namespace YAML
             return true;
         }
     };*/
-
 }

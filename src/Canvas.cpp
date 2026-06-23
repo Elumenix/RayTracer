@@ -116,7 +116,7 @@ namespace Rendering
             raw[i * 3 + 2] = static_cast<unsigned char>(std::clamp(pixels[i].z, 0.0f, 1.0f) * 255);
         }
 
-        int result = stbi_write_png("/workspaces/RayTracer/Scene.png", width, height, 3, raw.data(), width * 3);
+        int result = stbi_write_png("Scene.png", width, height, 3, raw.data(), width * 3);
 
         if (result == 0)
         {

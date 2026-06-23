@@ -36,7 +36,6 @@ namespace YAML
     // If the transform is in the map, we need to substitute it in
     Node resolveTransform(const Node &node, const unordered_map<string, Node> &defines)
     {
-        // Scalar means that the node is a definition to an object in the map
         if (node.IsScalar())
         {
             string transformName = node.as<string>();
@@ -47,31 +46,30 @@ namespace YAML
                 throw runtime_error("Transform not found: " + transformName);
             }
 
-            return defines.at(transformName);
+            return resolveTransform(defines.at(transformName), defines);
         }
 
-        // Sequence means that the node is a list of transformations
         if (node.IsSequence())
         {
             Node result;
             for (const auto &entry : node)
             {
-                if (entry.IsScalar())
+                if (entry.IsScalar() && defines.count(entry.as<string>()))
                 {
-                    // Another definition to be resolved
-                    result.push_back(resolveTransform(entry, defines));
+                    Node expanded = resolveTransform(defines.at(entry.as<string>()), defines);
+                    for (const auto &subEntry : expanded)
+                    {
+                        result.push_back(subEntry);
+                    }
                 }
                 else
                 {
-                    // Likely a transformation, which would be a sequence node
                     result.push_back(entry);
                 }
             }
-
             return result;
         }
 
-        // If the data is already formatted properly (This should probably never run)
         return node;
     }
 }
@@ -108,7 +106,7 @@ World YamlParser::ParseYaml(const YAML::Node &root)
                 string extendName = item["extend"].as<string>();
 
                 // Make sure the original definition exists
-                if (defines.find(extendName) != defines.end())
+                if (defines.count(extendName))
                 {
                     // Merge the extend value with the existing definition
                     YAML::Node extendedNode = Clone(defines.at(extendName));
