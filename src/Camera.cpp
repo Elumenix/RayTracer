@@ -9,6 +9,10 @@ using namespace Rendering;
 
 namespace Scene
 {
+    Camera::Camera() : hsize(128), vsize(128), fov(M_PI / 3)
+    {
+    }
+
     Camera::Camera(int hsize, int vsize, float fov) : hsize(hsize), vsize(vsize), fov(fov)
     {
         transform = Math::IdentityMatrix;

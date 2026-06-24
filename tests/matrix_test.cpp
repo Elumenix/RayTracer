@@ -457,8 +457,6 @@ TEST(MatrixTransformations, ViewMovesWorld)
     EXPECT_EQ(t, Translation(0, 0, -8));
 }
 
-// This test is no longer accurate as I changed how view ViewTransform works
-/*
 TEST(MatrixTransformations, ArbitraryView)
 {
     Point from = Point(1, 3, 2);
@@ -473,4 +471,3 @@ TEST(MatrixTransformations, ArbitraryView)
 
     EXPECT_EQ(t, expected);
 }
-*/

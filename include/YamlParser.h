@@ -3,6 +3,7 @@
 
 namespace Scene
 {
+    class Camera;
     class World;
 }
 
@@ -26,9 +27,9 @@ public:
         return instance;
     }
 
-    Scene::World ParseFile(const std::string &filename);
-    Scene::World ParseYaml(const std::string &yaml);
-    Scene::World ParseYaml(const YAML::Node &root);
+    std::pair<Scene::Camera, Scene::World> ParseFile(const std::string &filename);
+    std::pair<Scene::Camera, Scene::World> ParseYaml(const std::string &yaml);
+    std::pair<Scene::Camera, Scene::World> ParseYaml(const YAML::Node &root);
 
 private:
     YamlParser() {}

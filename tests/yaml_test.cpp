@@ -12,81 +12,240 @@ using namespace std;
 
 TEST(YamlTest, FileFound)
 {
-    YAML::Node testfile = YAML::LoadFile("tests/YamlReadTest.yaml");
-    EXPECT_TRUE(testfile.IsDefined());
+  YAML::Node testfile = YAML::LoadFile("tests/YamlReadTest.yaml");
+  EXPECT_TRUE(testfile.IsDefined());
+}
+
+// This is the first test because a camera is required for the scene
+TEST(YamlTest, MinimalCamera)
+{
+  const string yaml = R"(
+- add: camera
+  width: 128
+  height: 128
+  field-of-view: 1.0471975511965976
+)";
+
+  pair<Camera, World> result = YamlParser::getInstance().ParseYaml(yaml);
+  Camera camera = result.first;
+
+  EXPECT_EQ(camera.hsize, 128);
+  EXPECT_EQ(camera.vsize, 128);
+  EXPECT_FLOAT_EQ(camera.fov, 1.0471975511965976);
+  EXPECT_EQ(camera.transform, IdentityMatrix /*Transformations::ViewTransform(Point(0, 0, 0), Point(1, 1, 1), Vector(0, 1, 0))*/);
+}
+
+TEST(YamlTest, SceneMissingCamera)
+{
+  const string yaml = R"(
+)";
+
+  EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
+}
+
+TEST(YamlTest, BadCamera1)
+{
+  const string yaml = R"(
+- add: camera
+  width: 1
+  height: 1.3
+  field-of-view: 90 
+)";
+
+  EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
+}
+
+TEST(YamlTest, BadCamera2)
+{
+  const string yaml = R"(
+- add: camera
+  width: 1
+  height: 1
+  field-of-view: [30, 2] 
+)";
+
+  EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
+}
+
+TEST(YamlTest, FullCamera)
+{
+  const string yaml = R"(
+- add: camera
+  width: 1
+  height: 1
+  field-of-view: 90 
+  from: [0, 0, 0]
+  to: [1, 1, 1]
+  up: [0, 1, 0]
+)";
+
+  Camera camera = YamlParser::getInstance().ParseYaml(yaml).first;
+  EXPECT_EQ(camera.transform, Transformations::ViewTransform(Point(0, 0, 0), Point(1, 1, 1), Vector(0, 1, 0)));
+}
+
+TEST(YamlTest, BadCamera3)
+{
+  const string yaml = R"(
+- add: camera
+  width: 1
+  height: 1
+  field-of-view: 90 
+  from: [0, 0, 0]
+  to: [0, 1, 0]
+  up: [0, 1, 0]
+)";
+
+  EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
+}
+
+TEST(YamlTest, BadCamera4)
+{
+  const string yaml = R"(
+- add: camera
+  width: 1
+  height: 1
+  field-of-view: 90 
+  from: [0, 0, 0]
+  to: [1, 1, 1]
+  up: [0, 1]
+)";
+
+  EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
+}
+
+TEST(YamlTest, BadCamera5)
+{
+  const string yaml = R"(
+- add: camera
+  width: 1
+  height: 1
+  field-of-view: 90 
+  from: [0, 0, 0]
+  to: [1, 1, 1]
+  up: [0, 1, 0]
+  back: [0, 0, 1]
+)";
+
+  EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
 }
 
 TEST(YamlTest, EncodeLight)
 {
-    Light light = Light(Point(50, 100, -50), Color(1, 1, 1));
-    YAML::Node node = YAML::convert<Light>::encode(light);
-    EXPECT_EQ(node["at"].as<Point>(), light.position);
-    EXPECT_EQ(node["intensity"].as<Color>(), light.intensity);
+  Light light = Light(Point(50, 100, -50), Color(1, 1, 1));
+  YAML::Node node = YAML::convert<Light>::encode(light);
+  EXPECT_EQ(node["at"].as<Point>(), light.position);
+  EXPECT_EQ(node["intensity"].as<Color>(), light.intensity);
 }
 
 TEST(YamlTest, DecodeLight)
 {
-    const string yaml = R"(
+  const string yaml = R"(
+- add: camera
+  width: 1
+  height: 1
+  field-of-view: 90 
+
 - add: light
   at: [50, 100, -50]
   intensity: [1, 1, 1]
 )";
 
-    World world = YamlParser::getInstance().ParseYaml(yaml);
-    Light *light = &world.lights[0];
+  World world = std::move(YamlParser::getInstance().ParseYaml(yaml).second);
+  Light *light = &world.lights[0];
 
-    EXPECT_EQ(light->position, Point(50, 100, -50));
-    EXPECT_EQ(light->intensity, Color(1, 1, 1));
+  EXPECT_EQ(light->position, Point(50, 100, -50));
+  EXPECT_EQ(light->intensity, Color(1, 1, 1));
 }
 
 TEST(YamlTest, BadLight1)
 {
-    const string yaml = R"(
+  const string yaml = R"(
+- add: camera
+  width: 1
+  height: 1
+  field-of-view: 90 
+
 - add: light
   at: 
   intensity: 
 )";
 
-    EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
+  EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
 }
 
 TEST(YamlTest, BadLight2)
 {
-    const string yaml = R"(
+  const string yaml = R"(
+- add: camera
+  width: 1
+  height: 1
+  field-of-view: 90 
+
 - add: light
   at: [50, 100, -50]
   intenity: [30, 40, 50]
 )";
 
-    EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
+  EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
 }
 
 TEST(YamlTest, BadLight3)
 {
-    const string yaml = R"(
+  const string yaml = R"(
+- add: camera
+  width: 1
+  height: 1
+  field-of-view: 90 
+
 - add: light
   at: 3
   intensity: [30, 40, 50]
 )";
 
-    EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
+  EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
 }
 
 TEST(YamlTest, BadLight4)
 {
-    const string yaml = R"(
+  const string yaml = R"(
+- add: camera
+  width: 1
+  height: 1
+  field-of-view: 90 
+
 - add: light
   at: [50, 100, -50]
   intensity: [30, 40, 50]
   style: 3
 )";
 
-    EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
+  EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
+}
+
+TEST(YamlTest, InvalidAddKey)
+{
+  const string yaml = R"(
+- add: camera
+  width: 1
+  height: 1
+  field-of-view: 90 
+
+- add: Rhombus
+  material: 
+  transform: 
+)";
+
+  EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
 }
 
 TEST(YamlTest, DecodeDirectMaterial)
 {
-    const string yaml = R"(
+  const string yaml = R"(
+- add: camera
+  width: 1
+  height: 1
+  field-of-view: 90 
+
 - add: sphere
   material:
     color: [ 0.373, 0.404, 0.550 ]
@@ -100,15 +259,20 @@ TEST(YamlTest, DecodeDirectMaterial)
   transform:
 )";
 
-    World world = YamlParser::getInstance().ParseYaml(yaml);
-    Shape *sphere = world.shapes[0].get();
+  World world = std::move(YamlParser::getInstance().ParseYaml(yaml).second);
+  Shape *sphere = world.shapes[0].get();
 
-    EXPECT_EQ(sphere->material, Material(Color(0.373, 0.404, 0.550), 0.0, 0.2, 1.0, 200, 0.7, 0.7, 1.5));
+  EXPECT_EQ(sphere->material, Material(Color(0.373, 0.404, 0.550), 0.0, 0.2, 1.0, 200, 0.7, 0.7, 1.5));
 }
 
 TEST(YamlTest, DecodeDefinedMaterial)
 {
-    const string yaml = R"(
+  const string yaml = R"(
+- add: camera
+  width: 1
+  height: 1
+  field-of-view: 90 
+
 - define: my-material
   value:
     color: [ 0.373, 0.404, 0.550 ]
@@ -125,15 +289,20 @@ TEST(YamlTest, DecodeDefinedMaterial)
   transform:
 )";
 
-    World world = YamlParser::getInstance().ParseYaml(yaml);
-    Shape *sphere = world.shapes[0].get();
+  World world = std::move(YamlParser::getInstance().ParseYaml(yaml).second);
+  Shape *sphere = world.shapes[0].get();
 
-    EXPECT_EQ(sphere->material, Material(Color(0.373, 0.404, 0.550), 0.0, 0.2, 1.0, 200, 0.7, 0.7, 1.5));
+  EXPECT_EQ(sphere->material, Material(Color(0.373, 0.404, 0.550), 0.0, 0.2, 1.0, 200, 0.7, 0.7, 1.5));
 }
 
 TEST(YamlTest, DecodeExtendedMaterial)
 {
-    const string yaml = R"(
+  const string yaml = R"(
+- add: camera
+  width: 1
+  height: 1
+  field-of-view: 90 
+
 - define: base-material
   value:
     color: [ 0.373, 0.404, 0.550 ]
@@ -156,15 +325,20 @@ TEST(YamlTest, DecodeExtendedMaterial)
   transform:
 )";
 
-    World world = YamlParser::getInstance().ParseYaml(yaml);
-    Shape *sphere = world.shapes[0].get();
+  World world = std::move(YamlParser::getInstance().ParseYaml(yaml).second);
+  Shape *sphere = world.shapes[0].get();
 
-    EXPECT_EQ(sphere->material, Material(Color(1, 1, 1), 0.0, 0.5, 1.0, 200, 0.7, 0.7, 1.5));
+  EXPECT_EQ(sphere->material, Material(Color(1, 1, 1), 0.0, 0.5, 1.0, 200, 0.7, 0.7, 1.5));
 }
 
 TEST(YamlTest, DecodeDirectTransform)
 {
-    const string yaml = R"(
+  const string yaml = R"(
+- add: camera
+  width: 1
+  height: 1
+  field-of-view: 90 
+
 - add: sphere
   material:
   transform:
@@ -172,15 +346,20 @@ TEST(YamlTest, DecodeDirectTransform)
     - [ scale, 0.5, 0.5, 0.5 ]
 )";
 
-    World world = YamlParser::getInstance().ParseYaml(yaml);
-    Shape *sphere = world.shapes[0].get();
+  World world = std::move(YamlParser::getInstance().ParseYaml(yaml).second);
+  Shape *sphere = world.shapes[0].get();
 
-    EXPECT_EQ(sphere->transform, IdentityMatrix * Transformations::Translation(1, -1, 1) * Transformations::Scaling(0.5, 0.5, 0.5));
+  EXPECT_EQ(sphere->transform, IdentityMatrix * Transformations::Translation(1, -1, 1) * Transformations::Scaling(0.5, 0.5, 0.5));
 }
 
 TEST(YamlTest, DecodeDefinedTransform)
 {
-    const string yaml = R"(
+  const string yaml = R"(
+- add: camera
+  width: 1
+  height: 1
+  field-of-view: 90 
+
 - define: my-transform
   value:
     - [ translate, 1, -1, 1 ]
@@ -191,15 +370,20 @@ TEST(YamlTest, DecodeDefinedTransform)
   transform: my-transform
 )";
 
-    World world = YamlParser::getInstance().ParseYaml(yaml);
-    Shape *sphere = world.shapes[0].get();
+  World world = std::move(YamlParser::getInstance().ParseYaml(yaml).second);
+  Shape *sphere = world.shapes[0].get();
 
-    EXPECT_EQ(sphere->transform, IdentityMatrix * Transformations::Translation(1, -1, 1) * Transformations::Scaling(0.5, 0.5, 0.5));
+  EXPECT_EQ(sphere->transform, IdentityMatrix * Transformations::Translation(1, -1, 1) * Transformations::Scaling(0.5, 0.5, 0.5));
 }
 
 TEST(YamlTest, DecodeExtendedTransform)
 {
-    const string yaml = R"(
+  const string yaml = R"(
+- add: camera
+  width: 1
+  height: 1
+  field-of-view: 90 
+
 - define: base-transform
   value:
     - [ translate, 1, -1, 1 ]
@@ -215,15 +399,20 @@ TEST(YamlTest, DecodeExtendedTransform)
   transform: extended-transform
 )";
 
-    World world = YamlParser::getInstance().ParseYaml(yaml);
-    Shape *sphere = world.shapes[0].get();
+  World world = std::move(YamlParser::getInstance().ParseYaml(yaml).second);
+  Shape *sphere = world.shapes[0].get();
 
-    EXPECT_EQ(sphere->transform, IdentityMatrix * Transformations::Translation(1, -1, 1) * Transformations::Scaling(0.5, 0.5, 0.5) * Transformations::Scaling(2, 2, 2));
+  EXPECT_EQ(sphere->transform, IdentityMatrix * Transformations::Translation(1, -1, 1) * Transformations::Scaling(0.5, 0.5, 0.5) * Transformations::Scaling(2, 2, 2));
 }
 
 TEST(YamlTest, DecodeDefinedTransformTree)
 {
-    const string yaml = R"(
+  const string yaml = R"(
+- add: camera
+  width: 1
+  height: 1
+  field-of-view: 90 
+
 - define: standard-transform
   value:
     - [ translate, 1, -1, 1 ]
@@ -245,15 +434,20 @@ TEST(YamlTest, DecodeDefinedTransformTree)
     - extra-large-object
 )";
 
-    World world = YamlParser::getInstance().ParseYaml(yaml);
-    Shape *sphere = world.shapes[0].get();
+  World world = std::move(YamlParser::getInstance().ParseYaml(yaml).second);
+  Shape *sphere = world.shapes[0].get();
 
-    EXPECT_EQ(sphere->transform, IdentityMatrix * Transformations::Translation(1, -1, 1) * Transformations::Scaling(0.5, 0.5, 0.5) * Transformations::Scaling(3.5, 3.5, 3.5) * Transformations::Scaling(2, 2, 2));
+  EXPECT_EQ(sphere->transform, IdentityMatrix * Transformations::Translation(1, -1, 1) * Transformations::Scaling(0.5, 0.5, 0.5) * Transformations::Scaling(3.5, 3.5, 3.5) * Transformations::Scaling(2, 2, 2));
 }
 
 TEST(YamlTest, DecodeDefinedTransformTreeWithExtendedTransform)
 {
-    const string yaml = R"(
+  const string yaml = R"(
+- add: camera
+  width: 1
+  height: 1
+  field-of-view: 90 
+
 - define: base-transform
   value:
     - [ translate, 1, -1, 1 ]
@@ -280,15 +474,20 @@ TEST(YamlTest, DecodeDefinedTransformTreeWithExtendedTransform)
     - extra-large-object
 )";
 
-    World world = YamlParser::getInstance().ParseYaml(yaml);
-    Shape *sphere = world.shapes[0].get();
+  World world = std::move(YamlParser::getInstance().ParseYaml(yaml).second);
+  Shape *sphere = world.shapes[0].get();
 
-    EXPECT_EQ(sphere->transform, IdentityMatrix * Transformations::Translation(1, -1, 1) * Transformations::Scaling(0.25, 0.25, 0.25) * Transformations::Scaling(2, 2, 2) * Transformations::Scaling(3.5, 3.5, 3.5) * Transformations::Scaling(2.1, 2.1, 2.1));
+  EXPECT_EQ(sphere->transform, IdentityMatrix * Transformations::Translation(1, -1, 1) * Transformations::Scaling(0.25, 0.25, 0.25) * Transformations::Scaling(2, 2, 2) * Transformations::Scaling(3.5, 3.5, 3.5) * Transformations::Scaling(2.1, 2.1, 2.1));
 }
 
 TEST(YamlTest, FailedMaterialExtend)
 {
-    const string yaml = R"(
+  const string yaml = R"(
+- add: camera
+  width: 1
+  height: 1
+  field-of-view: 90 
+
 - define: base-material
   value:
     color: [ 0.373, 0.404, 0.550 ]
@@ -307,12 +506,17 @@ TEST(YamlTest, FailedMaterialExtend)
     diffuse: 0.5
 )";
 
-    EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
+  EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
 }
 
 TEST(YamlTest, FailedTransformExtend)
 {
-    const string yaml = R"(
+  const string yaml = R"(
+- add: camera
+  width: 1
+  height: 1
+  field-of-view: 90
+
 - define: base-transform
   value:
     - [ translate, 1, -1, 1 ]
@@ -324,12 +528,17 @@ TEST(YamlTest, FailedTransformExtend)
     - [ scale, 2, 2, 2 ]
 )";
 
-    EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
+  EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
 }
 
 TEST(YamlTest, ExtendedWrongType1)
 {
-    const string yaml = R"(
+  const string yaml = R"(
+- add: camera
+  width: 1
+  height: 1
+  field-of-view: 90
+
 - define: base-material
   value:
     color: [ 0.373, 0.404, 0.550 ]
@@ -348,12 +557,17 @@ TEST(YamlTest, ExtendedWrongType1)
     - [ scale, 0.5, 0.5, 0.5 ]
 )";
 
-    EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
+  EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
 }
 
 TEST(YamlTest, ExtendedWrongType2)
 {
-    const string yaml = R"(
+  const string yaml = R"(
+- add: camera
+  width: 1
+  height: 1
+  field-of-view: 90
+
 - define: base-transform
   value:
     - [ translate, 1, -1, 1 ]
@@ -366,44 +580,104 @@ TEST(YamlTest, ExtendedWrongType2)
     diffuse: 0.5
 )";
 
-    EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
+  EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
 }
 
 TEST(YamlTest, CatchMissingShapeTags)
 {
-    const string yaml = R"(
+  const string yaml = R"(
+- add: camera
+  width: 1
+  height: 1
+  field-of-view: 90
+
 - add: sphere
   transform:
 )";
 
-    EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
+  EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
 
-    const string yaml1 = R"(
+  const string yaml1 = R"(
+- add: camera
+  width: 1
+  height: 1
+  field-of-view: 90
+
 - add: sphere
   material:
 )";
 
-    EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml1), std::runtime_error);
+  EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml1), std::runtime_error);
 }
 
 TEST(YamlTest, DecodeDefaultSphere)
 {
-    const string yaml = R"(
+  const string yaml = R"(
+- add: camera
+  width: 1
+  height: 1
+  field-of-view: 90
+
 - add: sphere
   material:
   transform:
 )";
 
-    World world = YamlParser::getInstance().ParseYaml(yaml);
-    Shape *sphere = world.shapes[0].get();
+  World world = std::move(YamlParser::getInstance().ParseYaml(yaml).second);
+  Shape *sphere = world.shapes[0].get();
 
-    EXPECT_EQ(sphere->material, Material());
-    EXPECT_EQ(sphere->transform, IdentityMatrix);
+  EXPECT_EQ(sphere->material, Material());
+  EXPECT_EQ(sphere->transform, IdentityMatrix);
+}
+
+TEST(YamlTest, DecodeDefaultCube)
+{
+  const string yaml = R"(
+- add: camera
+  width: 1
+  height: 1
+  field-of-view: 90
+
+- add: cube
+  material:
+  transform:
+)";
+
+  World world = std::move(YamlParser::getInstance().ParseYaml(yaml).second);
+  Shape *cube = world.shapes[0].get();
+
+  EXPECT_EQ(cube->material, Material());
+  EXPECT_EQ(cube->transform, IdentityMatrix);
+}
+
+TEST(YamlTest, DecodeDefaultPlane)
+{
+  const string yaml = R"(
+- add: camera
+  width: 1
+  height: 1
+  field-of-view: 90
+
+- add: plane
+  material:
+  transform:
+)";
+
+  World world = std::move(YamlParser::getInstance().ParseYaml(yaml).second);
+  Shape *plane = world.shapes[0].get();
+
+  EXPECT_EQ(plane->material, Material());
+  EXPECT_EQ(plane->transform, IdentityMatrix);
 }
 
 TEST(YamlTest, BadShapeMaterial1)
 {
-    const string yaml = R"(
+  const string yaml = R"(
+- add: camera
+  width: 1
+  height: 1
+  field-of-view: 90
+
 - define: base-transform
   value:
     - [ translate, 1, -1, 1 ]
@@ -416,12 +690,17 @@ TEST(YamlTest, BadShapeMaterial1)
     - [ scale, 0.5, 0.5, 0.5 ]
 )";
 
-    EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
+  EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
 }
 
 TEST(YamlTest, BadShapeMaterial2)
 {
-    const string yaml = R"(
+  const string yaml = R"(
+- add: camera
+  width: 1
+  height: 1
+  field-of-view: 90
+
 - define: base-material
   value:
     color: [ 0.373, 0.404, 0.550 ]
@@ -438,12 +717,17 @@ TEST(YamlTest, BadShapeMaterial2)
   transform:
 )";
 
-    EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
+  EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
 }
 
 TEST(YamlTest, BadShapeMaterial3)
 {
-    const string yaml = R"(
+  const string yaml = R"(
+- add: camera
+  width: 1
+  height: 1
+  field-of-view: 90
+
 - define: base-material
   value:
     color: [ 0.373, 0.404, 0.550 ]
@@ -455,12 +739,17 @@ TEST(YamlTest, BadShapeMaterial3)
   transform:
 )";
 
-    EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
+  EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
 }
 
 TEST(YamlTest, BadShapeTransform1)
 {
-    const string yaml = R"(
+  const string yaml = R"(
+- add: camera
+  width: 1
+  height: 1
+  field-of-view: 90
+
 - define: base-material
   value:
     color: [ 0.373, 0.404, 0.550 ]
@@ -477,12 +766,17 @@ TEST(YamlTest, BadShapeTransform1)
   transform: base-material
 )";
 
-    EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
+  EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
 }
 
 TEST(YamlTest, BadShapeTransform2)
 {
-    const string yaml = R"(
+  const string yaml = R"(
+- add: camera
+  width: 1
+  height: 1
+  field-of-view: 90
+
 - define: base-transform
   value:
     - [ translate, 1, -1, 1 ]
@@ -493,12 +787,17 @@ TEST(YamlTest, BadShapeTransform2)
   transform: base-transform
 )";
 
-    EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
+  EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
 }
 
 TEST(YamlTest, BadShapeTransform3)
 {
-    const string yaml = R"(
+  const string yaml = R"(
+- add: camera
+  width: 1
+  height: 1
+  field-of-view: 90
+
 - define: base-transform
   value:
     - [ translate, 1, -1, 1 ]
@@ -509,26 +808,5 @@ TEST(YamlTest, BadShapeTransform3)
   transform: base-transform
 )";
 
-    EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
+  EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
 }
-
-/*TEST(yamlTest, CreateCamera)
-{
-    // This class has 3 variables that need to be set, none of which has default values
-    // Additionally, it has optional variables to change the from/to/up direction of the camera
-    YAML::Node root = YAML::LoadFile("tests/YamlTestFile1.yaml");
-
-    Camera camera = root[0].as<Camera>();
-    Camera camera1 = root[1].as<Camera>();
-
-    EXPECT_EQ(Vector(-0.805731, -0.143256, -0.574696), Vector(camera.transform[0][0], camera.transform[1][0], camera.transform[2][0]));
-    EXPECT_EQ(Vector(-0.362579, 0.886548, 0.287348), Vector(camera.transform[0][1], camera.transform[1][1], camera.transform[2][1]));
-    EXPECT_EQ(Vector(0.468331, 0.439898, -0.766261), Vector(camera.transform[0][2], camera.transform[1][2], camera.transform[2][2]));
-
-    EXPECT_EQ(camera1.hsize, 340);
-    EXPECT_EQ(camera1.vsize, 120);
-    EXPECT_FLOAT_EQ(camera1.fov, 0.485);
-    EXPECT_EQ(Vector(1, 0, 0), Vector(camera1.transform[0][0], camera1.transform[1][0], camera1.transform[2][0]));
-    EXPECT_EQ(Vector(0, 1, 0), Vector(camera1.transform[0][1], camera1.transform[1][1], camera1.transform[2][1]));
-    EXPECT_EQ(Vector(0, 0, 1), Vector(camera1.transform[0][2], camera1.transform[1][2], camera1.transform[2][2]));
-}*/

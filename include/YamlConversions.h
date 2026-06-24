@@ -4,24 +4,42 @@
 
 // Math
 #include "Tuple.h"
+#include "Matrix.h"
+#include "Transformations.h" // Technically its own namespace
 
 // Rendering
 #include "Color.h"
 #include "Material.h"
+// TODO: Pattern
 
 // Scene
 #include "Light.h"
 #include "Sphere.h"
-
+#include "Cube.h"
+#include "Plane.h"
 #include "Camera.h"
-#include "Matrix.h"
-#include "Transformations.h"
+
+// Utility
 #include <unordered_set>
 
 // Because of how this project is designed, the program will only ever be reading Yaml files a user writes by hand not creating them
 // Because of this, we don't need encode functions on anything, so you'll see only the first few objects have them before I realized this
 namespace YAML
 {
+    // Utility function to make output for Basic data structures (Like Point, Vector, Color) much easier
+    template <typename T>
+    T safe_as(const YAML::Node &node, const std::string &fieldName, const std::string &objectName)
+    {
+        try
+        {
+            return node.as<T>();
+        }
+        catch (const YAML::Exception &e)
+        {
+            throw std::runtime_error("Value for '" + fieldName + "' on " + objectName + " is invalid");
+        }
+    }
+
     template <>
     struct convert<Math::Point>
     {
@@ -88,19 +106,6 @@ namespace YAML
         }
     };
 
-    template <typename T>
-    T safe_as(const YAML::Node &node, const std::string &fieldName, const std::string &objectName)
-    {
-        try
-        {
-            return node.as<T>();
-        }
-        catch (const YAML::Exception &e)
-        {
-            throw std::runtime_error("Value for '" + fieldName + "' on " + objectName + " is invalid");
-        }
-    }
-
     template <>
     struct convert<Scene::Light>
     {
@@ -139,6 +144,36 @@ namespace YAML
             rhs = Scene::Sphere();
 
             // Structure of a decoded sphere is garunteed because the YamlParser enforces it
+            rhs.material = node["material"].as<Rendering::Material>();
+            rhs.transform = node["transform"].as<Math::Matrix<4, 4>>();
+
+            return true;
+        }
+    };
+
+    template <>
+    struct convert<Scene::Cube>
+    {
+        static bool decode(const Node &node, Scene::Cube &rhs)
+        {
+            rhs = Scene::Cube();
+
+            // Structure of a decoded cube is garunteed because the YamlParser enforces it
+            rhs.material = node["material"].as<Rendering::Material>();
+            rhs.transform = node["transform"].as<Math::Matrix<4, 4>>();
+
+            return true;
+        }
+    };
+
+    template <>
+    struct convert<Scene::Plane>
+    {
+        static bool decode(const Node &node, Scene::Plane &rhs)
+        {
+            rhs = Scene::Plane();
+
+            // Structure of a decoded plane is garunteed because the YamlParser enforces it
             rhs.material = node["material"].as<Rendering::Material>();
             rhs.transform = node["transform"].as<Math::Matrix<4, 4>>();
 
@@ -294,36 +329,41 @@ namespace YAML
         }
     };
 
-    /*
+    // These are all points or vetcors, so we can safely convert them
+    static const std::unordered_set<std::string> cameraKeys = {
+        "add", // Because add was required to create the camera, it is still part of the node
+        "width",
+        "height",
+        "field-of-view",
+        "from",
+        "to",
+        "up",
+    };
+
     template <>
     struct convert<Scene::Camera>
     {
-
-        static Node encode(const Scene::Camera &rhs)
-        {
-            Node node;
-            node["width"] = rhs.hsize;
-            node["height"] = rhs.vsize;
-            node["field-of-view"] = rhs.fov;
-
-            Transformations::CameraVectors cv = Transformations::InvertViewTransform(rhs.transform);
-            node["from"] = cv.from;
-            node["to"] = cv.to;
-            node["up"] = cv.up;
-
-            return node;
-        }
-
-
         static bool decode(const Node &node, Scene::Camera &rhs)
         {
+            // We'll check this at the beginning to make sure theres no funny business going on
+            for (const auto &key : node)
+            {
+                if (!cameraKeys.count(key.first.as<std::string>()))
+                {
+                    throw std::runtime_error("Unknown key on camera: " + key.first.as<std::string>());
+                }
+            }
+
+            // Make sure the required keys are present
             if (!node["width"] || !node["height"] || !node["field-of-view"])
-                return false;
+            {
+                throw std::runtime_error("Camera requires a 'width', 'height', and 'field-of-view' key");
+            }
 
             rhs = Scene::Camera(
-                node["width"].as<int>(),
-                node["height"].as<int>(),
-                node["field-of-view"].as<float>());
+                safe_as<int>(node["width"], "width", "camera"),
+                safe_as<int>(node["height"], "height", "camera"),
+                safe_as<float>(node["field-of-view"], "field-of-view", "camera"));
 
             // Some default basis vectors
             Math::Point from(0, 0, 0);
@@ -332,20 +372,20 @@ namespace YAML
 
             if (node["from"])
             {
-                from = node["from"].as<Math::Point>();
+                from = safe_as<Math::Point>(node["from"], "from", "camera");
             }
             if (node["to"])
             {
-                to = node["to"].as<Math::Point>();
+                to = safe_as<Math::Point>(node["to"], "to", "camera");
             }
             if (node["up"])
             {
-                up = node["up"].as<Math::Vector>();
+                up = safe_as<Math::Vector>(node["up"], "up", "camera");
             }
 
             rhs.transform = Transformations::ViewTransform(from, to, up);
 
             return true;
         }
-    };*/
+    };
 }

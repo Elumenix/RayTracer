@@ -1,13 +1,10 @@
 #include "YamlParser.h"
 #include <yaml-cpp/yaml.h>
-#include <string>
+#include "YamlConversions.h"
 #include <iostream>
 #include <unordered_map>
 #include <stdexcept>
 #include "World.h"
-#include "YamlConversions.h"
-#include "Light.h"
-#include "Sphere.h"
 
 using namespace Scene;
 using namespace std;
@@ -18,14 +15,14 @@ namespace YAML
     {
         if (!item["material"].IsDefined())
         {
-            cerr << "Item " << itemNumber << ": " << shapeType << " must have a material tag" << endl;
-            throw runtime_error(shapeType + " must have a material tag");
+            cerr << "Item " << itemNumber << ": " << shapeType << " must have a material key" << endl;
+            throw runtime_error(shapeType + " must have a material key");
         }
 
         if (!item["transform"].IsDefined())
         {
-            cerr << "Item " << itemNumber << ": " << shapeType << " must have a transform tag" << endl;
-            throw runtime_error(shapeType + " must have a transform tag");
+            cerr << "Item " << itemNumber << ": " << shapeType << " must have a transform key" << endl;
+            throw runtime_error(shapeType + " must have a transform key");
         }
 
         return true;
@@ -111,24 +108,24 @@ namespace YAML
     }
 }
 
-World YamlParser::ParseFile(const string &filename)
+pair<Camera, World> YamlParser::ParseFile(const string &filename)
 {
     YAML::Node root = YAML::LoadFile(filename);
     return ParseYaml(root);
 }
 
-World YamlParser::ParseYaml(const string &yaml)
+pair<Camera, World> YamlParser::ParseYaml(const string &yaml)
 {
     YAML::Node root = YAML::Load(yaml);
     return ParseYaml(root);
 }
 
-World YamlParser::ParseYaml(const YAML::Node &root)
+pair<Camera, World> YamlParser::ParseYaml(const YAML::Node &root)
 {
     World world = World();
     unordered_map<string, YAML::Node> defines; // Material and transform definitions
-
-    // TODO: Camera is also a part of this file. I need to figure out how to also return it
+    Camera camera;
+    bool cameraSet = false;
 
     int itemNumber = 0;
     for (const auto &item : root)
@@ -240,12 +237,14 @@ World YamlParser::ParseYaml(const YAML::Node &root)
                 cerr << "Item " << itemNumber << ": " << e.what() << endl;
                 throw;
             }
+
+            continue;
         }
 
         if (type == "sphere")
         {
             // We need to catch if the user missed a required field
-            if (!CheckShapeFields(item, itemNumber, "Sphere"))
+            if (!CheckShapeFields(item, itemNumber, "sphere"))
             {
                 continue;
             }
@@ -269,8 +268,106 @@ World YamlParser::ParseYaml(const YAML::Node &root)
                 cerr << "Item " << itemNumber << ": " << e.what() << endl;
                 throw;
             }
+
+            continue;
         }
+
+        if (type == "cube")
+        {
+            // We need to catch if the user missed a required field
+            if (!CheckShapeFields(item, itemNumber, "cube"))
+            {
+                continue;
+            }
+
+            // We'll be creating a new node that turns into a cube, since it's ambiguous whether the user
+            // is going to manually define a material/object or use a variable for it
+            YAML::Node expanded;
+            expanded["material"] = YAML::ResolveMaterial(item["material"], defines, itemNumber);
+            expanded["transform"] = YAML::ResolveTransform(item["transform"], defines, itemNumber);
+
+            try
+            {
+                // Cube gets decoded finally
+                Cube cube = expanded.as<Cube>();
+
+                // The world takes ownership of the cube
+                world.Add(move(cube));
+            }
+            catch (const std::exception &e)
+            {
+                cerr << "Item " << itemNumber << ": " << e.what() << endl;
+                throw;
+            }
+
+            continue;
+        }
+
+        if (type == "plane")
+        {
+            // We need to catch if the user missed a required field
+            if (!CheckShapeFields(item, itemNumber, "plane"))
+            {
+                continue;
+            }
+
+            // We'll be creating a new node that turns into a plane, since it's ambiguous whether the user
+            // is going to manually define a material/object or use a variable for it
+            YAML::Node expanded;
+            expanded["material"] = YAML::ResolveMaterial(item["material"], defines, itemNumber);
+            expanded["transform"] = YAML::ResolveTransform(item["transform"], defines, itemNumber);
+
+            try
+            {
+                // Plane gets decoded finally
+                Plane plane = expanded.as<Plane>();
+
+                // The world takes ownership of the plane
+                world.Add(move(plane));
+            }
+            catch (const std::exception &e)
+            {
+                cerr << "Item " << itemNumber << ": " << e.what() << endl;
+                throw;
+            }
+
+            continue;
+        }
+
+        if (type == "camera")
+        {
+            if (cameraSet)
+            {
+                cerr << "Item " << itemNumber << ": Only one camera can be defined" << endl;
+                throw runtime_error("Only one camera can be defined");
+            }
+
+            try
+            {
+                Camera c = item.as<Camera>();
+                camera = std::move(item.as<Camera>());
+            }
+            catch (const std::exception &e)
+            {
+                cerr << "Item " << itemNumber << ": " << e.what() << endl;
+                throw;
+            }
+
+            cameraSet = true;
+            continue;
+        }
+
+        // Getting here means the item is not a valid type
+        cerr << "Item " << itemNumber << ": Invalid add key: " << type << endl;
+        throw runtime_error("Invalid add key: " + type);
     }
 
-    return world;
+    if (!cameraSet)
+    {
+        cerr << "A camera must be defined in the scene" << endl;
+        throw runtime_error("No camera defined");
+    }
+
+    // move is required on world because of the smart pointers it contains.
+    return std::pair<Camera, World>{std::move(camera), std::move(world)};
 }
