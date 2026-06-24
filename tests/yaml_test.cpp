@@ -26,19 +26,202 @@ TEST(YamlTest, EncodeLight)
 
 TEST(YamlTest, DecodeLight)
 {
-    YAML::Node node;
-    node["at"] = Point(50, 100, -50);
-    node["intensity"] = Color(1, 1, 1);
+    const string yaml = R"(
+- add: light
+  at: [50, 100, -50]
+  intensity: [1, 1, 1]
+)";
 
-    Light light;
-    EXPECT_TRUE(YAML::convert<Light>::decode(node, light));
-    EXPECT_EQ(light.position, Point(50, 100, -50));
-    EXPECT_EQ(light.intensity, Color(1, 1, 1));
+    World world = YamlParser::getInstance().ParseYaml(yaml);
+    Light *light = &world.lights[0];
+
+    EXPECT_EQ(light->position, Point(50, 100, -50));
+    EXPECT_EQ(light->intensity, Color(1, 1, 1));
 }
 
-// TODO: Tests needed, default sphere material/transform, sphere with defined materail, extended materail/transform
+TEST(YamlTest, BadLight1)
+{
+    const string yaml = R"(
+- add: light
+  at: 
+  intensity: 
+)";
 
-TEST(YamlTest, DecodeSphere)
+    EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
+}
+
+TEST(YamlTest, BadLight2)
+{
+    const string yaml = R"(
+- add: light
+  at: [50, 100, -50]
+  intenity: [30, 40, 50]
+)";
+
+    EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
+}
+
+TEST(YamlTest, BadLight3)
+{
+    const string yaml = R"(
+- add: light
+  at: 3
+  intensity: [30, 40, 50]
+)";
+
+    EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
+}
+
+TEST(YamlTest, BadLight4)
+{
+    const string yaml = R"(
+- add: light
+  at: [50, 100, -50]
+  intensity: [30, 40, 50]
+  style: 3
+)";
+
+    EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
+}
+
+TEST(YamlTest, DecodeDirectMaterial)
+{
+    const string yaml = R"(
+- add: sphere
+  material:
+    color: [ 0.373, 0.404, 0.550 ]
+    diffuse: 0.2
+    ambient: 0.0
+    specular: 1.0
+    shininess: 200
+    reflective: 0.7
+    transparency: 0.7
+    refractive-index: 1.5
+  transform:
+)";
+
+    World world = YamlParser::getInstance().ParseYaml(yaml);
+    Shape *sphere = world.shapes[0].get();
+
+    EXPECT_EQ(sphere->material, Material(Color(0.373, 0.404, 0.550), 0.0, 0.2, 1.0, 200, 0.7, 0.7, 1.5));
+}
+
+TEST(YamlTest, DecodeDefinedMaterial)
+{
+    const string yaml = R"(
+- define: my-material
+  value:
+    color: [ 0.373, 0.404, 0.550 ]
+    diffuse: 0.2
+    ambient: 0.0
+    specular: 1.0
+    shininess: 200
+    reflective: 0.7
+    transparency: 0.7
+    refractive-index: 1.5
+
+- add: sphere
+  material: my-material
+  transform:
+)";
+
+    World world = YamlParser::getInstance().ParseYaml(yaml);
+    Shape *sphere = world.shapes[0].get();
+
+    EXPECT_EQ(sphere->material, Material(Color(0.373, 0.404, 0.550), 0.0, 0.2, 1.0, 200, 0.7, 0.7, 1.5));
+}
+
+TEST(YamlTest, DecodeExtendedMaterial)
+{
+    const string yaml = R"(
+- define: base-material
+  value:
+    color: [ 0.373, 0.404, 0.550 ]
+    diffuse: 0.2
+    ambient: 0.0
+    specular: 1.0
+    shininess: 200
+    reflective: 0.7
+    transparency: 0.7
+    refractive-index: 1.5
+
+- define: extended-material
+  extend: base-material
+  value:
+    color: [ 1, 1, 1 ]
+    diffuse: 0.5
+
+- add: sphere
+  material: extended-material
+  transform:
+)";
+
+    World world = YamlParser::getInstance().ParseYaml(yaml);
+    Shape *sphere = world.shapes[0].get();
+
+    EXPECT_EQ(sphere->material, Material(Color(1, 1, 1), 0.0, 0.5, 1.0, 200, 0.7, 0.7, 1.5));
+}
+
+TEST(YamlTest, DecodeDirectTransform)
+{
+    const string yaml = R"(
+- add: sphere
+  material:
+  transform:
+    - [ translate, 1, -1, 1 ]
+    - [ scale, 0.5, 0.5, 0.5 ]
+)";
+
+    World world = YamlParser::getInstance().ParseYaml(yaml);
+    Shape *sphere = world.shapes[0].get();
+
+    EXPECT_EQ(sphere->transform, IdentityMatrix * Transformations::Translation(1, -1, 1) * Transformations::Scaling(0.5, 0.5, 0.5));
+}
+
+TEST(YamlTest, DecodeDefinedTransform)
+{
+    const string yaml = R"(
+- define: my-transform
+  value:
+    - [ translate, 1, -1, 1 ]
+    - [ scale, 0.5, 0.5, 0.5 ]
+
+- add: sphere
+  material:
+  transform: my-transform
+)";
+
+    World world = YamlParser::getInstance().ParseYaml(yaml);
+    Shape *sphere = world.shapes[0].get();
+
+    EXPECT_EQ(sphere->transform, IdentityMatrix * Transformations::Translation(1, -1, 1) * Transformations::Scaling(0.5, 0.5, 0.5));
+}
+
+TEST(YamlTest, DecodeExtendedTransform)
+{
+    const string yaml = R"(
+- define: base-transform
+  value:
+    - [ translate, 1, -1, 1 ]
+    - [ scale, 0.5, 0.5, 0.5 ]
+
+- define: extended-transform
+  extend: base-transform
+  value:
+    - [ scale, 2, 2, 2 ]
+
+- add: sphere
+  material:
+  transform: extended-transform
+)";
+
+    World world = YamlParser::getInstance().ParseYaml(yaml);
+    Shape *sphere = world.shapes[0].get();
+
+    EXPECT_EQ(sphere->transform, IdentityMatrix * Transformations::Translation(1, -1, 1) * Transformations::Scaling(0.5, 0.5, 0.5) * Transformations::Scaling(2, 2, 2));
+}
+
+TEST(YamlTest, DecodeDefinedTransformTree)
 {
     const string yaml = R"(
 - define: standard-transform
@@ -51,8 +234,63 @@ TEST(YamlTest, DecodeSphere)
     - standard-transform
     - [ scale, 3.5, 3.5, 3.5 ]
 
+- define: extra-large-object
+  value:
+    - large-object
+    - [ scale, 2, 2, 2 ]
+
 - add: sphere
   material:
+  transform:
+    - extra-large-object
+)";
+
+    World world = YamlParser::getInstance().ParseYaml(yaml);
+    Shape *sphere = world.shapes[0].get();
+
+    EXPECT_EQ(sphere->transform, IdentityMatrix * Transformations::Translation(1, -1, 1) * Transformations::Scaling(0.5, 0.5, 0.5) * Transformations::Scaling(3.5, 3.5, 3.5) * Transformations::Scaling(2, 2, 2));
+}
+
+TEST(YamlTest, DecodeDefinedTransformTreeWithExtendedTransform)
+{
+    const string yaml = R"(
+- define: base-transform
+  value:
+    - [ translate, 1, -1, 1 ]
+    - [ scale, 0.25, 0.25, 0.25 ]
+
+- define: extended-transform
+  extend: base-transform
+  value:
+    - [ scale, 2, 2, 2 ]
+
+- define: large-object
+  value:
+    - extended-transform
+    - [ scale, 3.5, 3.5, 3.5 ]
+
+- define: extra-large-object
+  value:
+    - large-object
+    - [ scale, 2.1, 2.1, 2.1 ]
+
+- add: sphere
+  material:
+  transform:
+    - extra-large-object
+)";
+
+    World world = YamlParser::getInstance().ParseYaml(yaml);
+    Shape *sphere = world.shapes[0].get();
+
+    EXPECT_EQ(sphere->transform, IdentityMatrix * Transformations::Translation(1, -1, 1) * Transformations::Scaling(0.25, 0.25, 0.25) * Transformations::Scaling(2, 2, 2) * Transformations::Scaling(3.5, 3.5, 3.5) * Transformations::Scaling(2.1, 2.1, 2.1));
+}
+
+TEST(YamlTest, FailedMaterialExtend)
+{
+    const string yaml = R"(
+- define: base-material
+  value:
     color: [ 0.373, 0.404, 0.550 ]
     diffuse: 0.2
     ambient: 0.0
@@ -61,15 +299,217 @@ TEST(YamlTest, DecodeSphere)
     reflective: 0.7
     transparency: 0.7
     refractive-index: 1.5
+
+- define: extended-material
+  extend: bae-material
+  value:
+    color: [ 1, 1, 1 ]
+    diffuse: 0.5
+)";
+
+    EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
+}
+
+TEST(YamlTest, FailedTransformExtend)
+{
+    const string yaml = R"(
+- define: base-transform
+  value:
+    - [ translate, 1, -1, 1 ]
+    - [ scale, 0.5, 0.5, 0.5 ]
+
+- define: extended-transform
+  extend: base-transorm
+  value:
+    - [ scale, 2, 2, 2 ]
+)";
+
+    EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
+}
+
+TEST(YamlTest, ExtendedWrongType1)
+{
+    const string yaml = R"(
+- define: base-material
+  value:
+    color: [ 0.373, 0.404, 0.550 ]
+    diffuse: 0.2
+    ambient: 0.0
+    specular: 1.0
+    shininess: 200
+    reflective: 0.7
+    transparency: 0.7
+    refractive-index: 1.5
+
+- define: extended-transform
+  extend: base-material
+  value:
+    - [ translate, 1, -1, 1 ]
+    - [ scale, 0.5, 0.5, 0.5 ]
+)";
+
+    EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
+}
+
+TEST(YamlTest, ExtendedWrongType2)
+{
+    const string yaml = R"(
+- define: base-transform
+  value:
+    - [ translate, 1, -1, 1 ]
+    - [ scale, 0.5, 0.5, 0.5 ]
+
+- define: extended-material
+  extend: base-transform
+  value:
+    color: [ 1, 1, 1 ]
+    diffuse: 0.5
+)";
+
+    EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
+}
+
+TEST(YamlTest, CatchMissingShapeTags)
+{
+    const string yaml = R"(
+- add: sphere
   transform:
-    - large-object
+)";
+
+    EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
+
+    const string yaml1 = R"(
+- add: sphere
+  material:
+)";
+
+    EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml1), std::runtime_error);
+}
+
+TEST(YamlTest, DecodeDefaultSphere)
+{
+    const string yaml = R"(
+- add: sphere
+  material:
+  transform:
 )";
 
     World world = YamlParser::getInstance().ParseYaml(yaml);
     Shape *sphere = world.shapes[0].get();
 
-    EXPECT_EQ(sphere->material, Material(Color(0.373, 0.404, 0.550), 0.0, 0.2, 1.0, 200, 0.7, 0.7, 1.5));
-    EXPECT_EQ(sphere->transform, IdentityMatrix * Transformations::Translation(1, -1, 1) * Transformations::Scaling(0.5, 0.5, 0.5) * Transformations::Scaling(3.5, 3.5, 3.5));
+    EXPECT_EQ(sphere->material, Material());
+    EXPECT_EQ(sphere->transform, IdentityMatrix);
+}
+
+TEST(YamlTest, BadShapeMaterial1)
+{
+    const string yaml = R"(
+- define: base-transform
+  value:
+    - [ translate, 1, -1, 1 ]
+    - [ scale, 0.5, 0.5, 0.5 ]    
+
+- add: sphere
+  material: base-transform
+  transform:
+    - [ translate, 1, -1, 1 ]
+    - [ scale, 0.5, 0.5, 0.5 ]
+)";
+
+    EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
+}
+
+TEST(YamlTest, BadShapeMaterial2)
+{
+    const string yaml = R"(
+- define: base-material
+  value:
+    color: [ 0.373, 0.404, 0.550 ]
+    diffuse: 0.2
+    ambient: 0.0
+    specular: 1.0
+    shininess: [ 200, 200, 150 ]
+    reflective: 0.7
+    transparency: 0.7
+    refractive-index: 1.5
+
+- add: sphere
+  material: base-material
+  transform:
+)";
+
+    EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
+}
+
+TEST(YamlTest, BadShapeMaterial3)
+{
+    const string yaml = R"(
+- define: base-material
+  value:
+    color: [ 0.373, 0.404, 0.550 ]
+    diffue: 0.2
+    refractive-index: 1.5
+
+- add: sphere
+  material: base-material
+  transform:
+)";
+
+    EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
+}
+
+TEST(YamlTest, BadShapeTransform1)
+{
+    const string yaml = R"(
+- define: base-material
+  value:
+    color: [ 0.373, 0.404, 0.550 ]
+    diffuse: 0.2
+    ambient: 0.0
+    specular: 1.0
+    shininess: [ 200, 200, 150 ]
+    reflective: 0.7
+    transparency: 0.7
+    refractive-index: 1.5
+
+- add: sphere
+  material:
+  transform: base-material
+)";
+
+    EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
+}
+
+TEST(YamlTest, BadShapeTransform2)
+{
+    const string yaml = R"(
+- define: base-transform
+  value:
+    - [ translate, 1, -1, 1 ]
+    - [ 1, 0.5, 0.5, 0.5 ]    
+
+- add: sphere
+  material:
+  transform: base-transform
+)";
+
+    EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
+}
+
+TEST(YamlTest, BadShapeTransform3)
+{
+    const string yaml = R"(
+- define: base-transform
+  value:
+    - [ translate, 1, -1, 1 ]
+    - [ scale, 0.5, 0.5 ]    
+
+- add: sphere
+  material:
+  transform: base-transform
+)";
+
+    EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
 }
 
 /*TEST(yamlTest, CreateCamera)

@@ -16,6 +16,7 @@
 #include "Camera.h"
 #include "Matrix.h"
 #include "Transformations.h"
+#include <unordered_set>
 
 // Because of how this project is designed, the program will only ever be reading Yaml files a user writes by hand not creating them
 // Because of this, we don't need encode functions on anything, so you'll see only the first few objects have them before I realized this
@@ -87,6 +88,19 @@ namespace YAML
         }
     };
 
+    template <typename T>
+    T safe_as(const YAML::Node &node, const std::string &fieldName, const std::string &objectName)
+    {
+        try
+        {
+            return node.as<T>();
+        }
+        catch (const YAML::Exception &e)
+        {
+            throw std::runtime_error("Value for '" + fieldName + "' on " + objectName + " is invalid");
+        }
+    }
+
     template <>
     struct convert<Scene::Light>
     {
@@ -101,11 +115,18 @@ namespace YAML
         static bool decode(const Node &node, Scene::Light &rhs)
         {
             if (!node["at"] || !node["intensity"])
-                return false;
+            {
+                throw std::runtime_error("Missing required light fields: 'at' and/or 'intensity'");
+            }
+
+            if (node.size() != 3) // add, at, intensity
+            {
+                throw std::runtime_error("Light must have exactly 2 fields: 'at' and 'intensity'");
+            }
 
             rhs = Scene::Light(
-                node["at"].as<Math::Point>(),
-                node["intensity"].as<Rendering::Color>());
+                safe_as<Math::Point>(node["at"], "at", "light"),
+                safe_as<Rendering::Color>(node["intensity"], "intensity", "light"));
             return true;
         }
     };
@@ -125,6 +146,16 @@ namespace YAML
         }
     };
 
+    static const std::unordered_set<std::string> materialKeys = {
+        "color",
+        "ambient",
+        "diffuse",
+        "specular",
+        "shininess",
+        "reflective",
+        "transparency",
+        "refractive-index"};
+
     template <>
     struct convert<Rendering::Material>
     {
@@ -133,22 +164,49 @@ namespace YAML
             // Everything on material is optional, so we'll initialize it with default values
             rhs = Rendering::Material();
 
-            if (node["color"])
-                rhs.color = node["color"].as<Rendering::Color>();
-            if (node["ambient"])
-                rhs.ambient = node["ambient"].as<float>();
-            if (node["diffuse"])
-                rhs.diffuse = node["diffuse"].as<float>();
-            if (node["specular"])
-                rhs.specular = node["specular"].as<float>();
-            if (node["shininess"])
-                rhs.shininess = node["shininess"].as<float>();
-            if (node["reflective"])
-                rhs.reflective = node["reflective"].as<float>();
-            if (node["transparency"])
-                rhs.transparency = node["transparency"].as<float>();
-            if (node["refractive-index"])
-                rhs.refractiveIndex = node["refractive-index"].as<float>();
+            // We'll iterate through each key-value pair in the node so that we can properly error check
+            // This will, of course, be slightly slower than just checking keys, but we only need to run this code once
+            for (const auto &kv : node)
+            {
+                std::string key = kv.first.as<std::string>();
+
+                // If this is a fake key, we should return a warning to the user
+                if (!materialKeys.count(key))
+                {
+                    throw std::runtime_error("Unknown material key: " + key);
+                }
+
+                if (key == "color")
+                {
+                    if (!kv.second.IsSequence() || kv.second.size() != 3)
+                        throw std::runtime_error("Value for 'color' on material is invalid");
+
+                    rhs.color = kv.second.as<Rendering::Color>();
+                    continue;
+                }
+
+                // Everything else is a float, wo we can check those
+                if (!kv.second.IsScalar())
+                {
+                    throw std::runtime_error("Value for '" + key + "' on material is invalid");
+                }
+
+                float value = kv.second.as<float>();
+                if (key == "ambient")
+                    rhs.ambient = value;
+                else if (key == "diffuse")
+                    rhs.diffuse = value;
+                else if (key == "specular")
+                    rhs.specular = value;
+                else if (key == "shininess")
+                    rhs.shininess = value;
+                else if (key == "reflective")
+                    rhs.reflective = value;
+                else if (key == "transparency")
+                    rhs.transparency = value;
+                else if (key == "refractive-index")
+                    rhs.refractiveIndex = value;
+            }
 
             return true;
         }
@@ -167,22 +225,57 @@ namespace YAML
                 std::string type = step[0].as<std::string>();
 
                 if (type == "rotate-x")
+                {
+                    if (step.size() != 2 || !step[1].IsScalar())
+                    {
+                        throw std::runtime_error("Value for 'rotation-x' on transform is invalid");
+                    }
                     rhs = rhs * Transformations::RotationX(step[1].as<float>());
+                }
                 else if (type == "rotate-y")
+                {
+                    if (step.size() != 2 || !step[1].IsScalar())
+                    {
+                        throw std::runtime_error("Value for 'rotation-y' on transform is invalid");
+                    }
                     rhs = rhs * Transformations::RotationY(step[1].as<float>());
+                }
                 else if (type == "rotate-z")
+                {
+                    if (step.size() != 2 || !step[1].IsScalar())
+                    {
+                        throw std::runtime_error("Value for 'rotation-z' on transform is invalid");
+                    }
                     rhs = rhs * Transformations::RotationZ(step[1].as<float>());
+                }
                 else if (type == "translate")
+                {
+                    if (step.size() != 4 || !step[1].IsScalar() || !step[2].IsScalar() || !step[3].IsScalar())
+                    {
+                        throw std::runtime_error("Value for 'translation' on transform is invalid");
+                    }
                     rhs = rhs * Transformations::Translation(
                                     step[1].as<float>(),
                                     step[2].as<float>(),
                                     step[3].as<float>());
+                }
                 else if (type == "scale")
+                {
+                    if (step.size() != 4 || !step[1].IsScalar() || !step[2].IsScalar() || !step[3].IsScalar())
+                    {
+                        throw std::runtime_error("Value for 'scale' on transform is invalid");
+                    }
                     rhs = rhs * Transformations::Scaling(
                                     step[1].as<float>(),
                                     step[2].as<float>(),
                                     step[3].as<float>());
+                }
                 else if (type == "shear")
+                {
+                    if (step.size() != 7 || !step[1].IsScalar() || !step[2].IsScalar() || !step[3].IsScalar() || !step[4].IsScalar() || !step[5].IsScalar() || !step[6].IsScalar())
+                    {
+                        throw std::runtime_error("Value for 'shear' on transform is invalid");
+                    }
                     rhs = rhs * Transformations::Shearing(
                                     step[1].as<float>(),
                                     step[2].as<float>(),
@@ -190,6 +283,11 @@ namespace YAML
                                     step[4].as<float>(),
                                     step[5].as<float>(),
                                     step[6].as<float>());
+                }
+                else
+                {
+                    throw std::runtime_error("Unknown transform type: " + type);
+                }
             }
 
             return true;

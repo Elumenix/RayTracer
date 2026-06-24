@@ -1,19 +1,25 @@
-.PHONY: setup build test clean
+.PHONY: setup setupDebug setupRelease build test clean
 
 # Create build directory, necessary after clean
 setup:
-	mkdir -p build
-	cd build && cmake ..
+	cmake -S . -B build -DCMAKE_BUILD_TYPE 
+
+setupDebug:
+	cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
+
+setupRelease:
+	cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 
 # Build and run only the main executable
 build:
-	cmake --build build --target RayTracer
+	cmake --build build --target RayTracer -j$(nproc)
 	./build/RayTracer
 
 # Build and run only the tests
+ARGS ?= --gtest_color=yes
 test:
-	cmake --build build --target run_tests
-	./build/run_tests
+	cmake --build build --target run_tests -j$(nproc)
+	./build/run_tests $(ARGS)
 
 # Build and test together
 all: test build
