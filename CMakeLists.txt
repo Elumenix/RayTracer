@@ -9,15 +9,18 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 enable_testing() # Signal to enable testing features
 include(FetchContent) # Signal that we will be downloading
 
-# Fetch Google Test
-fetchcontent_declare(
-  googletest
-  URL https://github.com/google/googletest/archive/release-1.12.1.zip
-  DOWNLOAD_EXTRACT_TIMESTAMP true
-)
-# For Windows: Prevent overriding the parent project's compiler/linker settings
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-fetchcontent_makeavailable(googletest)
+# Fetch Google Test if not web build
+if (NOT EMSCRIPTEN)
+  fetchcontent_declare(
+    googletest
+    URL https://github.com/google/googletest/archive/release-1.12.1.zip
+    DOWNLOAD_EXTRACT_TIMESTAMP true
+  )
+  # For Windows: Prevent overriding the parent project's compiler/linker settings
+  set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+  fetchcontent_makeavailable(googletest)
+endif()
+
 
 # Fetch stb to allow png images
 fetchcontent_declare(
@@ -49,11 +52,27 @@ target_link_libraries(raytrace_lib PUBLIC yaml-cpp::yaml-cpp)
 add_executable(RayTracer main.cpp)
 target_link_libraries(RayTracer raytrace_lib)
 
+# if this is a web build, we need to make a .wasm file, a .js file, and move everything in the web folder to the build directory
+if (EMSCRIPTEN)
+  set_target_properties(RayTracer PROPERTIES 
+  OUTPUT_NAME "raytracer"
+  SUFFIX ".js"
+  )
 
-# Set up unit testing with Google Test
-# This will be it's own executable, because testing doesn't need stb 
-add_executable(run_tests ${TESTS})
-target_include_directories(run_tests PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-target_link_libraries(run_tests raytrace_lib gtest gtest_main)
+  target_link_options(RayTracer PRIVATE 
+    -sALLOW_MEMORY_GROWTH=1
+    #-sEXPORTED_RUNTIME_METHODS=['ccall', 'cwrap']
+  )
+    
+  file(COPY ${CMAKE_SOURCE_DIR}/web/ DESTINATION ${CMAKE_BINARY_DIR})
+endif()
 
-add_test(NAME AllTests COMMAND run_tests)
+# Unit testing if this isn't a web build
+if (NOT EMSCRIPTEN) 
+  # Set up unit testing with Google Test
+  # This will be it's own executable, because testing doesn't need stb 
+  add_executable(run_tests ${TESTS})
+  target_include_directories(run_tests PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+  target_link_libraries(run_tests raytrace_lib gtest gtest_main)
+  add_test(NAME AllTests COMMAND run_tests)
+endif()

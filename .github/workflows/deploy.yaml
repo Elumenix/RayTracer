@@ -1,0 +1,29 @@
+name: Build and Deploy
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # Grab copy of current repository
+      - uses: actions/checkout@v7
+
+      # Get Emscripten so that we can compile the raytracer
+      - name: Install Emscipten
+        uses: emscripten-core/setup-emsdk@v15
+
+      # Configure the CMake build to use Emscripten's compiler
+      - name: Configure
+        run: emcmake cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+
+      # Build the C++ code into .wasm + .js
+      - name: Build
+        run: emmake cmake --build build
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build
