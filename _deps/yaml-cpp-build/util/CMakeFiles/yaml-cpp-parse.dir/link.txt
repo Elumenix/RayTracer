@@ -1,0 +1,1 @@
+/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ -O3 -DNDEBUG "CMakeFiles/yaml-cpp-parse.dir/parse.cpp.o" -o parse.js  ../libyaml-cpp.a

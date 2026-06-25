@@ -1,0 +1,41 @@
+file(REMOVE_RECURSE
+  "CMakeFiles/raytrace_lib.dir/src/Camera.cpp.o"
+  "CMakeFiles/raytrace_lib.dir/src/Camera.cpp.o.d"
+  "CMakeFiles/raytrace_lib.dir/src/Canvas.cpp.o"
+  "CMakeFiles/raytrace_lib.dir/src/Canvas.cpp.o.d"
+  "CMakeFiles/raytrace_lib.dir/src/Comps.cpp.o"
+  "CMakeFiles/raytrace_lib.dir/src/Comps.cpp.o.d"
+  "CMakeFiles/raytrace_lib.dir/src/Cube.cpp.o"
+  "CMakeFiles/raytrace_lib.dir/src/Cube.cpp.o.d"
+  "CMakeFiles/raytrace_lib.dir/src/IntersectionList.cpp.o"
+  "CMakeFiles/raytrace_lib.dir/src/IntersectionList.cpp.o.d"
+  "CMakeFiles/raytrace_lib.dir/src/Light.cpp.o"
+  "CMakeFiles/raytrace_lib.dir/src/Light.cpp.o.d"
+  "CMakeFiles/raytrace_lib.dir/src/Material.cpp.o"
+  "CMakeFiles/raytrace_lib.dir/src/Material.cpp.o.d"
+  "CMakeFiles/raytrace_lib.dir/src/Noise.cpp.o"
+  "CMakeFiles/raytrace_lib.dir/src/Noise.cpp.o.d"
+  "CMakeFiles/raytrace_lib.dir/src/Pattern.cpp.o"
+  "CMakeFiles/raytrace_lib.dir/src/Pattern.cpp.o.d"
+  "CMakeFiles/raytrace_lib.dir/src/Plane.cpp.o"
+  "CMakeFiles/raytrace_lib.dir/src/Plane.cpp.o.d"
+  "CMakeFiles/raytrace_lib.dir/src/Shape.cpp.o"
+  "CMakeFiles/raytrace_lib.dir/src/Shape.cpp.o.d"
+  "CMakeFiles/raytrace_lib.dir/src/Sphere.cpp.o"
+  "CMakeFiles/raytrace_lib.dir/src/Sphere.cpp.o.d"
+  "CMakeFiles/raytrace_lib.dir/src/Transformations.cpp.o"
+  "CMakeFiles/raytrace_lib.dir/src/Transformations.cpp.o.d"
+  "CMakeFiles/raytrace_lib.dir/src/Tuple.cpp.o"
+  "CMakeFiles/raytrace_lib.dir/src/Tuple.cpp.o.d"
+  "CMakeFiles/raytrace_lib.dir/src/World.cpp.o"
+  "CMakeFiles/raytrace_lib.dir/src/World.cpp.o.d"
+  "CMakeFiles/raytrace_lib.dir/src/YamlParser.cpp.o"
+  "CMakeFiles/raytrace_lib.dir/src/YamlParser.cpp.o.d"
+  "libraytrace_lib.a"
+  "libraytrace_lib.pdb"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang CXX)
+  include(CMakeFiles/raytrace_lib.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()
