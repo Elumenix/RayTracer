@@ -76,15 +76,15 @@ CMakeFiles/RayTracer.dir/main.cpp.o: CMakeFiles/RayTracer.dir/flags.make
 CMakeFiles/RayTracer.dir/main.cpp.o: /home/runner/work/RayTracer/RayTracer/main.cpp
 CMakeFiles/RayTracer.dir/main.cpp.o: CMakeFiles/RayTracer.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/runner/work/RayTracer/RayTracer/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/RayTracer.dir/main.cpp.o"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/RayTracer.dir/main.cpp.o -MF CMakeFiles/RayTracer.dir/main.cpp.o.d -o CMakeFiles/RayTracer.dir/main.cpp.o -c /home/runner/work/RayTracer/RayTracer/main.cpp
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/RayTracer.dir/main.cpp.o -MF CMakeFiles/RayTracer.dir/main.cpp.o.d -o CMakeFiles/RayTracer.dir/main.cpp.o -c /home/runner/work/RayTracer/RayTracer/main.cpp
 
 CMakeFiles/RayTracer.dir/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/RayTracer.dir/main.cpp.i"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/runner/work/RayTracer/RayTracer/main.cpp > CMakeFiles/RayTracer.dir/main.cpp.i
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/runner/work/RayTracer/RayTracer/main.cpp > CMakeFiles/RayTracer.dir/main.cpp.i
 
 CMakeFiles/RayTracer.dir/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/RayTracer.dir/main.cpp.s"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/runner/work/RayTracer/RayTracer/main.cpp -o CMakeFiles/RayTracer.dir/main.cpp.s
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/runner/work/RayTracer/RayTracer/main.cpp -o CMakeFiles/RayTracer.dir/main.cpp.s
 
 # Object files for target RayTracer
 RayTracer_OBJECTS = \

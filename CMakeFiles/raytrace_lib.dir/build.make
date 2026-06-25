@@ -76,225 +76,225 @@ CMakeFiles/raytrace_lib.dir/src/Camera.cpp.o: CMakeFiles/raytrace_lib.dir/flags.
 CMakeFiles/raytrace_lib.dir/src/Camera.cpp.o: /home/runner/work/RayTracer/RayTracer/src/Camera.cpp
 CMakeFiles/raytrace_lib.dir/src/Camera.cpp.o: CMakeFiles/raytrace_lib.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/runner/work/RayTracer/RayTracer/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/raytrace_lib.dir/src/Camera.cpp.o"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/raytrace_lib.dir/src/Camera.cpp.o -MF CMakeFiles/raytrace_lib.dir/src/Camera.cpp.o.d -o CMakeFiles/raytrace_lib.dir/src/Camera.cpp.o -c /home/runner/work/RayTracer/RayTracer/src/Camera.cpp
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/raytrace_lib.dir/src/Camera.cpp.o -MF CMakeFiles/raytrace_lib.dir/src/Camera.cpp.o.d -o CMakeFiles/raytrace_lib.dir/src/Camera.cpp.o -c /home/runner/work/RayTracer/RayTracer/src/Camera.cpp
 
 CMakeFiles/raytrace_lib.dir/src/Camera.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/raytrace_lib.dir/src/Camera.cpp.i"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/runner/work/RayTracer/RayTracer/src/Camera.cpp > CMakeFiles/raytrace_lib.dir/src/Camera.cpp.i
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/runner/work/RayTracer/RayTracer/src/Camera.cpp > CMakeFiles/raytrace_lib.dir/src/Camera.cpp.i
 
 CMakeFiles/raytrace_lib.dir/src/Camera.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/raytrace_lib.dir/src/Camera.cpp.s"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/runner/work/RayTracer/RayTracer/src/Camera.cpp -o CMakeFiles/raytrace_lib.dir/src/Camera.cpp.s
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/runner/work/RayTracer/RayTracer/src/Camera.cpp -o CMakeFiles/raytrace_lib.dir/src/Camera.cpp.s
 
 CMakeFiles/raytrace_lib.dir/src/Canvas.cpp.o: CMakeFiles/raytrace_lib.dir/flags.make
 CMakeFiles/raytrace_lib.dir/src/Canvas.cpp.o: /home/runner/work/RayTracer/RayTracer/src/Canvas.cpp
 CMakeFiles/raytrace_lib.dir/src/Canvas.cpp.o: CMakeFiles/raytrace_lib.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/runner/work/RayTracer/RayTracer/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/raytrace_lib.dir/src/Canvas.cpp.o"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/raytrace_lib.dir/src/Canvas.cpp.o -MF CMakeFiles/raytrace_lib.dir/src/Canvas.cpp.o.d -o CMakeFiles/raytrace_lib.dir/src/Canvas.cpp.o -c /home/runner/work/RayTracer/RayTracer/src/Canvas.cpp
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/raytrace_lib.dir/src/Canvas.cpp.o -MF CMakeFiles/raytrace_lib.dir/src/Canvas.cpp.o.d -o CMakeFiles/raytrace_lib.dir/src/Canvas.cpp.o -c /home/runner/work/RayTracer/RayTracer/src/Canvas.cpp
 
 CMakeFiles/raytrace_lib.dir/src/Canvas.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/raytrace_lib.dir/src/Canvas.cpp.i"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/runner/work/RayTracer/RayTracer/src/Canvas.cpp > CMakeFiles/raytrace_lib.dir/src/Canvas.cpp.i
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/runner/work/RayTracer/RayTracer/src/Canvas.cpp > CMakeFiles/raytrace_lib.dir/src/Canvas.cpp.i
 
 CMakeFiles/raytrace_lib.dir/src/Canvas.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/raytrace_lib.dir/src/Canvas.cpp.s"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/runner/work/RayTracer/RayTracer/src/Canvas.cpp -o CMakeFiles/raytrace_lib.dir/src/Canvas.cpp.s
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/runner/work/RayTracer/RayTracer/src/Canvas.cpp -o CMakeFiles/raytrace_lib.dir/src/Canvas.cpp.s
 
 CMakeFiles/raytrace_lib.dir/src/Comps.cpp.o: CMakeFiles/raytrace_lib.dir/flags.make
 CMakeFiles/raytrace_lib.dir/src/Comps.cpp.o: /home/runner/work/RayTracer/RayTracer/src/Comps.cpp
 CMakeFiles/raytrace_lib.dir/src/Comps.cpp.o: CMakeFiles/raytrace_lib.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/runner/work/RayTracer/RayTracer/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/raytrace_lib.dir/src/Comps.cpp.o"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/raytrace_lib.dir/src/Comps.cpp.o -MF CMakeFiles/raytrace_lib.dir/src/Comps.cpp.o.d -o CMakeFiles/raytrace_lib.dir/src/Comps.cpp.o -c /home/runner/work/RayTracer/RayTracer/src/Comps.cpp
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/raytrace_lib.dir/src/Comps.cpp.o -MF CMakeFiles/raytrace_lib.dir/src/Comps.cpp.o.d -o CMakeFiles/raytrace_lib.dir/src/Comps.cpp.o -c /home/runner/work/RayTracer/RayTracer/src/Comps.cpp
 
 CMakeFiles/raytrace_lib.dir/src/Comps.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/raytrace_lib.dir/src/Comps.cpp.i"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/runner/work/RayTracer/RayTracer/src/Comps.cpp > CMakeFiles/raytrace_lib.dir/src/Comps.cpp.i
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/runner/work/RayTracer/RayTracer/src/Comps.cpp > CMakeFiles/raytrace_lib.dir/src/Comps.cpp.i
 
 CMakeFiles/raytrace_lib.dir/src/Comps.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/raytrace_lib.dir/src/Comps.cpp.s"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/runner/work/RayTracer/RayTracer/src/Comps.cpp -o CMakeFiles/raytrace_lib.dir/src/Comps.cpp.s
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/runner/work/RayTracer/RayTracer/src/Comps.cpp -o CMakeFiles/raytrace_lib.dir/src/Comps.cpp.s
 
 CMakeFiles/raytrace_lib.dir/src/Cube.cpp.o: CMakeFiles/raytrace_lib.dir/flags.make
 CMakeFiles/raytrace_lib.dir/src/Cube.cpp.o: /home/runner/work/RayTracer/RayTracer/src/Cube.cpp
 CMakeFiles/raytrace_lib.dir/src/Cube.cpp.o: CMakeFiles/raytrace_lib.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/runner/work/RayTracer/RayTracer/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/raytrace_lib.dir/src/Cube.cpp.o"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/raytrace_lib.dir/src/Cube.cpp.o -MF CMakeFiles/raytrace_lib.dir/src/Cube.cpp.o.d -o CMakeFiles/raytrace_lib.dir/src/Cube.cpp.o -c /home/runner/work/RayTracer/RayTracer/src/Cube.cpp
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/raytrace_lib.dir/src/Cube.cpp.o -MF CMakeFiles/raytrace_lib.dir/src/Cube.cpp.o.d -o CMakeFiles/raytrace_lib.dir/src/Cube.cpp.o -c /home/runner/work/RayTracer/RayTracer/src/Cube.cpp
 
 CMakeFiles/raytrace_lib.dir/src/Cube.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/raytrace_lib.dir/src/Cube.cpp.i"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/runner/work/RayTracer/RayTracer/src/Cube.cpp > CMakeFiles/raytrace_lib.dir/src/Cube.cpp.i
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/runner/work/RayTracer/RayTracer/src/Cube.cpp > CMakeFiles/raytrace_lib.dir/src/Cube.cpp.i
 
 CMakeFiles/raytrace_lib.dir/src/Cube.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/raytrace_lib.dir/src/Cube.cpp.s"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/runner/work/RayTracer/RayTracer/src/Cube.cpp -o CMakeFiles/raytrace_lib.dir/src/Cube.cpp.s
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/runner/work/RayTracer/RayTracer/src/Cube.cpp -o CMakeFiles/raytrace_lib.dir/src/Cube.cpp.s
 
 CMakeFiles/raytrace_lib.dir/src/IntersectionList.cpp.o: CMakeFiles/raytrace_lib.dir/flags.make
 CMakeFiles/raytrace_lib.dir/src/IntersectionList.cpp.o: /home/runner/work/RayTracer/RayTracer/src/IntersectionList.cpp
 CMakeFiles/raytrace_lib.dir/src/IntersectionList.cpp.o: CMakeFiles/raytrace_lib.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/runner/work/RayTracer/RayTracer/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/raytrace_lib.dir/src/IntersectionList.cpp.o"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/raytrace_lib.dir/src/IntersectionList.cpp.o -MF CMakeFiles/raytrace_lib.dir/src/IntersectionList.cpp.o.d -o CMakeFiles/raytrace_lib.dir/src/IntersectionList.cpp.o -c /home/runner/work/RayTracer/RayTracer/src/IntersectionList.cpp
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/raytrace_lib.dir/src/IntersectionList.cpp.o -MF CMakeFiles/raytrace_lib.dir/src/IntersectionList.cpp.o.d -o CMakeFiles/raytrace_lib.dir/src/IntersectionList.cpp.o -c /home/runner/work/RayTracer/RayTracer/src/IntersectionList.cpp
 
 CMakeFiles/raytrace_lib.dir/src/IntersectionList.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/raytrace_lib.dir/src/IntersectionList.cpp.i"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/runner/work/RayTracer/RayTracer/src/IntersectionList.cpp > CMakeFiles/raytrace_lib.dir/src/IntersectionList.cpp.i
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/runner/work/RayTracer/RayTracer/src/IntersectionList.cpp > CMakeFiles/raytrace_lib.dir/src/IntersectionList.cpp.i
 
 CMakeFiles/raytrace_lib.dir/src/IntersectionList.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/raytrace_lib.dir/src/IntersectionList.cpp.s"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/runner/work/RayTracer/RayTracer/src/IntersectionList.cpp -o CMakeFiles/raytrace_lib.dir/src/IntersectionList.cpp.s
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/runner/work/RayTracer/RayTracer/src/IntersectionList.cpp -o CMakeFiles/raytrace_lib.dir/src/IntersectionList.cpp.s
 
 CMakeFiles/raytrace_lib.dir/src/Light.cpp.o: CMakeFiles/raytrace_lib.dir/flags.make
 CMakeFiles/raytrace_lib.dir/src/Light.cpp.o: /home/runner/work/RayTracer/RayTracer/src/Light.cpp
 CMakeFiles/raytrace_lib.dir/src/Light.cpp.o: CMakeFiles/raytrace_lib.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/runner/work/RayTracer/RayTracer/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/raytrace_lib.dir/src/Light.cpp.o"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/raytrace_lib.dir/src/Light.cpp.o -MF CMakeFiles/raytrace_lib.dir/src/Light.cpp.o.d -o CMakeFiles/raytrace_lib.dir/src/Light.cpp.o -c /home/runner/work/RayTracer/RayTracer/src/Light.cpp
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/raytrace_lib.dir/src/Light.cpp.o -MF CMakeFiles/raytrace_lib.dir/src/Light.cpp.o.d -o CMakeFiles/raytrace_lib.dir/src/Light.cpp.o -c /home/runner/work/RayTracer/RayTracer/src/Light.cpp
 
 CMakeFiles/raytrace_lib.dir/src/Light.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/raytrace_lib.dir/src/Light.cpp.i"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/runner/work/RayTracer/RayTracer/src/Light.cpp > CMakeFiles/raytrace_lib.dir/src/Light.cpp.i
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/runner/work/RayTracer/RayTracer/src/Light.cpp > CMakeFiles/raytrace_lib.dir/src/Light.cpp.i
 
 CMakeFiles/raytrace_lib.dir/src/Light.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/raytrace_lib.dir/src/Light.cpp.s"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/runner/work/RayTracer/RayTracer/src/Light.cpp -o CMakeFiles/raytrace_lib.dir/src/Light.cpp.s
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/runner/work/RayTracer/RayTracer/src/Light.cpp -o CMakeFiles/raytrace_lib.dir/src/Light.cpp.s
 
 CMakeFiles/raytrace_lib.dir/src/Material.cpp.o: CMakeFiles/raytrace_lib.dir/flags.make
 CMakeFiles/raytrace_lib.dir/src/Material.cpp.o: /home/runner/work/RayTracer/RayTracer/src/Material.cpp
 CMakeFiles/raytrace_lib.dir/src/Material.cpp.o: CMakeFiles/raytrace_lib.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/runner/work/RayTracer/RayTracer/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/raytrace_lib.dir/src/Material.cpp.o"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/raytrace_lib.dir/src/Material.cpp.o -MF CMakeFiles/raytrace_lib.dir/src/Material.cpp.o.d -o CMakeFiles/raytrace_lib.dir/src/Material.cpp.o -c /home/runner/work/RayTracer/RayTracer/src/Material.cpp
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/raytrace_lib.dir/src/Material.cpp.o -MF CMakeFiles/raytrace_lib.dir/src/Material.cpp.o.d -o CMakeFiles/raytrace_lib.dir/src/Material.cpp.o -c /home/runner/work/RayTracer/RayTracer/src/Material.cpp
 
 CMakeFiles/raytrace_lib.dir/src/Material.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/raytrace_lib.dir/src/Material.cpp.i"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/runner/work/RayTracer/RayTracer/src/Material.cpp > CMakeFiles/raytrace_lib.dir/src/Material.cpp.i
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/runner/work/RayTracer/RayTracer/src/Material.cpp > CMakeFiles/raytrace_lib.dir/src/Material.cpp.i
 
 CMakeFiles/raytrace_lib.dir/src/Material.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/raytrace_lib.dir/src/Material.cpp.s"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/runner/work/RayTracer/RayTracer/src/Material.cpp -o CMakeFiles/raytrace_lib.dir/src/Material.cpp.s
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/runner/work/RayTracer/RayTracer/src/Material.cpp -o CMakeFiles/raytrace_lib.dir/src/Material.cpp.s
 
 CMakeFiles/raytrace_lib.dir/src/Noise.cpp.o: CMakeFiles/raytrace_lib.dir/flags.make
 CMakeFiles/raytrace_lib.dir/src/Noise.cpp.o: /home/runner/work/RayTracer/RayTracer/src/Noise.cpp
 CMakeFiles/raytrace_lib.dir/src/Noise.cpp.o: CMakeFiles/raytrace_lib.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/runner/work/RayTracer/RayTracer/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/raytrace_lib.dir/src/Noise.cpp.o"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/raytrace_lib.dir/src/Noise.cpp.o -MF CMakeFiles/raytrace_lib.dir/src/Noise.cpp.o.d -o CMakeFiles/raytrace_lib.dir/src/Noise.cpp.o -c /home/runner/work/RayTracer/RayTracer/src/Noise.cpp
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/raytrace_lib.dir/src/Noise.cpp.o -MF CMakeFiles/raytrace_lib.dir/src/Noise.cpp.o.d -o CMakeFiles/raytrace_lib.dir/src/Noise.cpp.o -c /home/runner/work/RayTracer/RayTracer/src/Noise.cpp
 
 CMakeFiles/raytrace_lib.dir/src/Noise.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/raytrace_lib.dir/src/Noise.cpp.i"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/runner/work/RayTracer/RayTracer/src/Noise.cpp > CMakeFiles/raytrace_lib.dir/src/Noise.cpp.i
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/runner/work/RayTracer/RayTracer/src/Noise.cpp > CMakeFiles/raytrace_lib.dir/src/Noise.cpp.i
 
 CMakeFiles/raytrace_lib.dir/src/Noise.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/raytrace_lib.dir/src/Noise.cpp.s"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/runner/work/RayTracer/RayTracer/src/Noise.cpp -o CMakeFiles/raytrace_lib.dir/src/Noise.cpp.s
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/runner/work/RayTracer/RayTracer/src/Noise.cpp -o CMakeFiles/raytrace_lib.dir/src/Noise.cpp.s
 
 CMakeFiles/raytrace_lib.dir/src/Pattern.cpp.o: CMakeFiles/raytrace_lib.dir/flags.make
 CMakeFiles/raytrace_lib.dir/src/Pattern.cpp.o: /home/runner/work/RayTracer/RayTracer/src/Pattern.cpp
 CMakeFiles/raytrace_lib.dir/src/Pattern.cpp.o: CMakeFiles/raytrace_lib.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/runner/work/RayTracer/RayTracer/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/raytrace_lib.dir/src/Pattern.cpp.o"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/raytrace_lib.dir/src/Pattern.cpp.o -MF CMakeFiles/raytrace_lib.dir/src/Pattern.cpp.o.d -o CMakeFiles/raytrace_lib.dir/src/Pattern.cpp.o -c /home/runner/work/RayTracer/RayTracer/src/Pattern.cpp
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/raytrace_lib.dir/src/Pattern.cpp.o -MF CMakeFiles/raytrace_lib.dir/src/Pattern.cpp.o.d -o CMakeFiles/raytrace_lib.dir/src/Pattern.cpp.o -c /home/runner/work/RayTracer/RayTracer/src/Pattern.cpp
 
 CMakeFiles/raytrace_lib.dir/src/Pattern.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/raytrace_lib.dir/src/Pattern.cpp.i"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/runner/work/RayTracer/RayTracer/src/Pattern.cpp > CMakeFiles/raytrace_lib.dir/src/Pattern.cpp.i
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/runner/work/RayTracer/RayTracer/src/Pattern.cpp > CMakeFiles/raytrace_lib.dir/src/Pattern.cpp.i
 
 CMakeFiles/raytrace_lib.dir/src/Pattern.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/raytrace_lib.dir/src/Pattern.cpp.s"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/runner/work/RayTracer/RayTracer/src/Pattern.cpp -o CMakeFiles/raytrace_lib.dir/src/Pattern.cpp.s
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/runner/work/RayTracer/RayTracer/src/Pattern.cpp -o CMakeFiles/raytrace_lib.dir/src/Pattern.cpp.s
 
 CMakeFiles/raytrace_lib.dir/src/Plane.cpp.o: CMakeFiles/raytrace_lib.dir/flags.make
 CMakeFiles/raytrace_lib.dir/src/Plane.cpp.o: /home/runner/work/RayTracer/RayTracer/src/Plane.cpp
 CMakeFiles/raytrace_lib.dir/src/Plane.cpp.o: CMakeFiles/raytrace_lib.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/runner/work/RayTracer/RayTracer/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/raytrace_lib.dir/src/Plane.cpp.o"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/raytrace_lib.dir/src/Plane.cpp.o -MF CMakeFiles/raytrace_lib.dir/src/Plane.cpp.o.d -o CMakeFiles/raytrace_lib.dir/src/Plane.cpp.o -c /home/runner/work/RayTracer/RayTracer/src/Plane.cpp
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/raytrace_lib.dir/src/Plane.cpp.o -MF CMakeFiles/raytrace_lib.dir/src/Plane.cpp.o.d -o CMakeFiles/raytrace_lib.dir/src/Plane.cpp.o -c /home/runner/work/RayTracer/RayTracer/src/Plane.cpp
 
 CMakeFiles/raytrace_lib.dir/src/Plane.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/raytrace_lib.dir/src/Plane.cpp.i"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/runner/work/RayTracer/RayTracer/src/Plane.cpp > CMakeFiles/raytrace_lib.dir/src/Plane.cpp.i
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/runner/work/RayTracer/RayTracer/src/Plane.cpp > CMakeFiles/raytrace_lib.dir/src/Plane.cpp.i
 
 CMakeFiles/raytrace_lib.dir/src/Plane.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/raytrace_lib.dir/src/Plane.cpp.s"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/runner/work/RayTracer/RayTracer/src/Plane.cpp -o CMakeFiles/raytrace_lib.dir/src/Plane.cpp.s
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/runner/work/RayTracer/RayTracer/src/Plane.cpp -o CMakeFiles/raytrace_lib.dir/src/Plane.cpp.s
 
 CMakeFiles/raytrace_lib.dir/src/Shape.cpp.o: CMakeFiles/raytrace_lib.dir/flags.make
 CMakeFiles/raytrace_lib.dir/src/Shape.cpp.o: /home/runner/work/RayTracer/RayTracer/src/Shape.cpp
 CMakeFiles/raytrace_lib.dir/src/Shape.cpp.o: CMakeFiles/raytrace_lib.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/runner/work/RayTracer/RayTracer/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/raytrace_lib.dir/src/Shape.cpp.o"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/raytrace_lib.dir/src/Shape.cpp.o -MF CMakeFiles/raytrace_lib.dir/src/Shape.cpp.o.d -o CMakeFiles/raytrace_lib.dir/src/Shape.cpp.o -c /home/runner/work/RayTracer/RayTracer/src/Shape.cpp
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/raytrace_lib.dir/src/Shape.cpp.o -MF CMakeFiles/raytrace_lib.dir/src/Shape.cpp.o.d -o CMakeFiles/raytrace_lib.dir/src/Shape.cpp.o -c /home/runner/work/RayTracer/RayTracer/src/Shape.cpp
 
 CMakeFiles/raytrace_lib.dir/src/Shape.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/raytrace_lib.dir/src/Shape.cpp.i"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/runner/work/RayTracer/RayTracer/src/Shape.cpp > CMakeFiles/raytrace_lib.dir/src/Shape.cpp.i
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/runner/work/RayTracer/RayTracer/src/Shape.cpp > CMakeFiles/raytrace_lib.dir/src/Shape.cpp.i
 
 CMakeFiles/raytrace_lib.dir/src/Shape.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/raytrace_lib.dir/src/Shape.cpp.s"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/runner/work/RayTracer/RayTracer/src/Shape.cpp -o CMakeFiles/raytrace_lib.dir/src/Shape.cpp.s
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/runner/work/RayTracer/RayTracer/src/Shape.cpp -o CMakeFiles/raytrace_lib.dir/src/Shape.cpp.s
 
 CMakeFiles/raytrace_lib.dir/src/Sphere.cpp.o: CMakeFiles/raytrace_lib.dir/flags.make
 CMakeFiles/raytrace_lib.dir/src/Sphere.cpp.o: /home/runner/work/RayTracer/RayTracer/src/Sphere.cpp
 CMakeFiles/raytrace_lib.dir/src/Sphere.cpp.o: CMakeFiles/raytrace_lib.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/runner/work/RayTracer/RayTracer/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/raytrace_lib.dir/src/Sphere.cpp.o"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/raytrace_lib.dir/src/Sphere.cpp.o -MF CMakeFiles/raytrace_lib.dir/src/Sphere.cpp.o.d -o CMakeFiles/raytrace_lib.dir/src/Sphere.cpp.o -c /home/runner/work/RayTracer/RayTracer/src/Sphere.cpp
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/raytrace_lib.dir/src/Sphere.cpp.o -MF CMakeFiles/raytrace_lib.dir/src/Sphere.cpp.o.d -o CMakeFiles/raytrace_lib.dir/src/Sphere.cpp.o -c /home/runner/work/RayTracer/RayTracer/src/Sphere.cpp
 
 CMakeFiles/raytrace_lib.dir/src/Sphere.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/raytrace_lib.dir/src/Sphere.cpp.i"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/runner/work/RayTracer/RayTracer/src/Sphere.cpp > CMakeFiles/raytrace_lib.dir/src/Sphere.cpp.i
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/runner/work/RayTracer/RayTracer/src/Sphere.cpp > CMakeFiles/raytrace_lib.dir/src/Sphere.cpp.i
 
 CMakeFiles/raytrace_lib.dir/src/Sphere.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/raytrace_lib.dir/src/Sphere.cpp.s"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/runner/work/RayTracer/RayTracer/src/Sphere.cpp -o CMakeFiles/raytrace_lib.dir/src/Sphere.cpp.s
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/runner/work/RayTracer/RayTracer/src/Sphere.cpp -o CMakeFiles/raytrace_lib.dir/src/Sphere.cpp.s
 
 CMakeFiles/raytrace_lib.dir/src/Transformations.cpp.o: CMakeFiles/raytrace_lib.dir/flags.make
 CMakeFiles/raytrace_lib.dir/src/Transformations.cpp.o: /home/runner/work/RayTracer/RayTracer/src/Transformations.cpp
 CMakeFiles/raytrace_lib.dir/src/Transformations.cpp.o: CMakeFiles/raytrace_lib.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/runner/work/RayTracer/RayTracer/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/raytrace_lib.dir/src/Transformations.cpp.o"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/raytrace_lib.dir/src/Transformations.cpp.o -MF CMakeFiles/raytrace_lib.dir/src/Transformations.cpp.o.d -o CMakeFiles/raytrace_lib.dir/src/Transformations.cpp.o -c /home/runner/work/RayTracer/RayTracer/src/Transformations.cpp
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/raytrace_lib.dir/src/Transformations.cpp.o -MF CMakeFiles/raytrace_lib.dir/src/Transformations.cpp.o.d -o CMakeFiles/raytrace_lib.dir/src/Transformations.cpp.o -c /home/runner/work/RayTracer/RayTracer/src/Transformations.cpp
 
 CMakeFiles/raytrace_lib.dir/src/Transformations.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/raytrace_lib.dir/src/Transformations.cpp.i"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/runner/work/RayTracer/RayTracer/src/Transformations.cpp > CMakeFiles/raytrace_lib.dir/src/Transformations.cpp.i
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/runner/work/RayTracer/RayTracer/src/Transformations.cpp > CMakeFiles/raytrace_lib.dir/src/Transformations.cpp.i
 
 CMakeFiles/raytrace_lib.dir/src/Transformations.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/raytrace_lib.dir/src/Transformations.cpp.s"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/runner/work/RayTracer/RayTracer/src/Transformations.cpp -o CMakeFiles/raytrace_lib.dir/src/Transformations.cpp.s
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/runner/work/RayTracer/RayTracer/src/Transformations.cpp -o CMakeFiles/raytrace_lib.dir/src/Transformations.cpp.s
 
 CMakeFiles/raytrace_lib.dir/src/Tuple.cpp.o: CMakeFiles/raytrace_lib.dir/flags.make
 CMakeFiles/raytrace_lib.dir/src/Tuple.cpp.o: /home/runner/work/RayTracer/RayTracer/src/Tuple.cpp
 CMakeFiles/raytrace_lib.dir/src/Tuple.cpp.o: CMakeFiles/raytrace_lib.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/runner/work/RayTracer/RayTracer/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/raytrace_lib.dir/src/Tuple.cpp.o"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/raytrace_lib.dir/src/Tuple.cpp.o -MF CMakeFiles/raytrace_lib.dir/src/Tuple.cpp.o.d -o CMakeFiles/raytrace_lib.dir/src/Tuple.cpp.o -c /home/runner/work/RayTracer/RayTracer/src/Tuple.cpp
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/raytrace_lib.dir/src/Tuple.cpp.o -MF CMakeFiles/raytrace_lib.dir/src/Tuple.cpp.o.d -o CMakeFiles/raytrace_lib.dir/src/Tuple.cpp.o -c /home/runner/work/RayTracer/RayTracer/src/Tuple.cpp
 
 CMakeFiles/raytrace_lib.dir/src/Tuple.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/raytrace_lib.dir/src/Tuple.cpp.i"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/runner/work/RayTracer/RayTracer/src/Tuple.cpp > CMakeFiles/raytrace_lib.dir/src/Tuple.cpp.i
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/runner/work/RayTracer/RayTracer/src/Tuple.cpp > CMakeFiles/raytrace_lib.dir/src/Tuple.cpp.i
 
 CMakeFiles/raytrace_lib.dir/src/Tuple.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/raytrace_lib.dir/src/Tuple.cpp.s"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/runner/work/RayTracer/RayTracer/src/Tuple.cpp -o CMakeFiles/raytrace_lib.dir/src/Tuple.cpp.s
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/runner/work/RayTracer/RayTracer/src/Tuple.cpp -o CMakeFiles/raytrace_lib.dir/src/Tuple.cpp.s
 
 CMakeFiles/raytrace_lib.dir/src/World.cpp.o: CMakeFiles/raytrace_lib.dir/flags.make
 CMakeFiles/raytrace_lib.dir/src/World.cpp.o: /home/runner/work/RayTracer/RayTracer/src/World.cpp
 CMakeFiles/raytrace_lib.dir/src/World.cpp.o: CMakeFiles/raytrace_lib.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/runner/work/RayTracer/RayTracer/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object CMakeFiles/raytrace_lib.dir/src/World.cpp.o"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/raytrace_lib.dir/src/World.cpp.o -MF CMakeFiles/raytrace_lib.dir/src/World.cpp.o.d -o CMakeFiles/raytrace_lib.dir/src/World.cpp.o -c /home/runner/work/RayTracer/RayTracer/src/World.cpp
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/raytrace_lib.dir/src/World.cpp.o -MF CMakeFiles/raytrace_lib.dir/src/World.cpp.o.d -o CMakeFiles/raytrace_lib.dir/src/World.cpp.o -c /home/runner/work/RayTracer/RayTracer/src/World.cpp
 
 CMakeFiles/raytrace_lib.dir/src/World.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/raytrace_lib.dir/src/World.cpp.i"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/runner/work/RayTracer/RayTracer/src/World.cpp > CMakeFiles/raytrace_lib.dir/src/World.cpp.i
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/runner/work/RayTracer/RayTracer/src/World.cpp > CMakeFiles/raytrace_lib.dir/src/World.cpp.i
 
 CMakeFiles/raytrace_lib.dir/src/World.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/raytrace_lib.dir/src/World.cpp.s"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/runner/work/RayTracer/RayTracer/src/World.cpp -o CMakeFiles/raytrace_lib.dir/src/World.cpp.s
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/runner/work/RayTracer/RayTracer/src/World.cpp -o CMakeFiles/raytrace_lib.dir/src/World.cpp.s
 
 CMakeFiles/raytrace_lib.dir/src/YamlParser.cpp.o: CMakeFiles/raytrace_lib.dir/flags.make
 CMakeFiles/raytrace_lib.dir/src/YamlParser.cpp.o: /home/runner/work/RayTracer/RayTracer/src/YamlParser.cpp
 CMakeFiles/raytrace_lib.dir/src/YamlParser.cpp.o: CMakeFiles/raytrace_lib.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/runner/work/RayTracer/RayTracer/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/raytrace_lib.dir/src/YamlParser.cpp.o"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/raytrace_lib.dir/src/YamlParser.cpp.o -MF CMakeFiles/raytrace_lib.dir/src/YamlParser.cpp.o.d -o CMakeFiles/raytrace_lib.dir/src/YamlParser.cpp.o -c /home/runner/work/RayTracer/RayTracer/src/YamlParser.cpp
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/raytrace_lib.dir/src/YamlParser.cpp.o -MF CMakeFiles/raytrace_lib.dir/src/YamlParser.cpp.o.d -o CMakeFiles/raytrace_lib.dir/src/YamlParser.cpp.o -c /home/runner/work/RayTracer/RayTracer/src/YamlParser.cpp
 
 CMakeFiles/raytrace_lib.dir/src/YamlParser.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/raytrace_lib.dir/src/YamlParser.cpp.i"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/runner/work/RayTracer/RayTracer/src/YamlParser.cpp > CMakeFiles/raytrace_lib.dir/src/YamlParser.cpp.i
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/runner/work/RayTracer/RayTracer/src/YamlParser.cpp > CMakeFiles/raytrace_lib.dir/src/YamlParser.cpp.i
 
 CMakeFiles/raytrace_lib.dir/src/YamlParser.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/raytrace_lib.dir/src/YamlParser.cpp.s"
-	/home/runner/work/_temp/c8a17d82-eb80-4530-a327-92da4216b095/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/runner/work/RayTracer/RayTracer/src/YamlParser.cpp -o CMakeFiles/raytrace_lib.dir/src/YamlParser.cpp.s
+	/home/runner/work/_temp/adeaab42-43c4-434a-b36c-487b5a5944e0/emsdk-main/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/runner/work/RayTracer/RayTracer/src/YamlParser.cpp -o CMakeFiles/raytrace_lib.dir/src/YamlParser.cpp.s
 
 # Object files for target raytrace_lib
 raytrace_lib_OBJECTS = \
