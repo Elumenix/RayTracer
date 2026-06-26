@@ -64,7 +64,7 @@ if (EMSCRIPTEN)
     #-sEXPORTED_RUNTIME_METHODS=['ccall', 'cwrap']
   )
     
-  file(COPY ${CMAKE_SOURCE_DIR}/web/ DESTINATION ${CMAKE_BINARY_DIR})
+  file(COPY ${CMAKE_SOURCE_DIR}/web/dist/ DESTINATION ${CMAKE_BINARY_DIR})
 endif()
 
 # Unit testing if this isn't a web build

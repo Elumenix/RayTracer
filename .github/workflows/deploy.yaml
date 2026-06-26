@@ -11,8 +11,21 @@ jobs:
       - uses: actions/checkout@v7
 
       # Get Emscripten so that we can compile the raytracer
-      - name: Install Emscipten
+      - name: Install Emscripten
         uses: emscripten-core/setup-emsdk@v15
+
+      # Install node.js so we can download all of the web dependecies
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+      
+      # Builds the web code
+      - name: Build Front End
+        working-directory: ./web
+        run: |
+          npm ci
+          npm run build
 
       # Configure the CMake build to use Emscripten's compiler
       - name: Configure
@@ -28,4 +41,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./build
           enable_jekyll: false
-          exclude_assets: '_deps,CMakeCache.txt,cmake_install.cmake,Makefile,CTestTestfile.cmake'
+          exclude_assets: '_deps,CMakeFiles,CMakeCache.txt,cmake_install.cmake,Makefile,CTestTestfile.cmake'
