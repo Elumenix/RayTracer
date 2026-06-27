@@ -1,10 +1,16 @@
 #ifdef __EMSCRIPTEN__
 #include <emscripten/emscripten.h>
+#include <string>
+#include <cstdint>
 #include "Canvas.h"
+#include "Camera.h"
 #include "YamlParser.h"
 
+
 // canvas and error message will be available to javascript
-static Canvas *g_canvas = nullptr;
+static Rendering::Canvas *g_canvas = nullptr;
+static int g_width = 0;
+static int g_height = 0;
 static std::string g_lastError = "";
 
 extern "C"
@@ -24,16 +30,19 @@ extern "C"
             // Parse yaml
             auto scene = YamlParser::getInstance().ParseYaml(std::string(yamlString));
             printf("Yaml parsing completed\n");
-            Camera camera = std::move(scene.first);
-            World world = std::move(scene.second);
+            Scene::Camera camera = std::move(scene.first);
+            Scene::World world = std::move(scene.second);
+            g_width = camera.hsize;
+            g_height = camera.vsize;
 
             // Render the scene
             printf("Rendering started\n");
-            Canvas canvas = camera.Render(world, maxDepth);
+            Rendering::Canvas canvas = camera.Render(world, maxDepth);
             printf("Rendering completed\n");
             printf("Canvas created\n");
+
             // Store in a buffer that javascript can access
-            g_canvas = new Canvas(std::move(canvas));
+            g_canvas = new Rendering::Canvas(std::move(canvas));
         }
         catch (const std::exception &e)
         {
@@ -50,20 +59,20 @@ extern "C"
     EMSCRIPTEN_KEEPALIVE
     int get_width()
     {
-        return g_canvas ? g_canvas->GetWidth() : 0;
+        return g_width;
     }
 
     EMSCRIPTEN_KEEPALIVE
     int get_height()
     {
-        return g_canvas ? g_canvas->GetHeight() : 0;
+        return g_height;
     }
 
     EMSCRIPTEN_KEEPALIVE
     void copy_to_buffer(uint8_t *buffer)
     {
         if (g_canvas)
-            g_canvas->CopyToBuffer(buffer);
+            g_canvas->CanvasToBuffer(buffer);
     }
 }
 #endif
