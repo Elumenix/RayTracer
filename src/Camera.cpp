@@ -44,6 +44,9 @@ namespace Scene
             const_cast<int &>(vsize) = other.vsize;
             const_cast<float &>(fov) = other.fov;
             transform = other.transform;
+            _halfWidth = other._halfWidth;
+            _halfHeight = other._halfHeight;
+            _pixelSize = other._pixelSize;
         }
         return *this;
     }
