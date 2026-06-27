@@ -349,7 +349,7 @@ TEST(YamlTest, DecodeDirectTransform)
   World world = std::move(YamlParser::getInstance().ParseYaml(yaml).second);
   Shape *sphere = world.shapes[0].get();
 
-  EXPECT_EQ(sphere->transform, IdentityMatrix * Transformations::Translation(1, -1, 1) * Transformations::Scaling(0.5, 0.5, 0.5));
+  EXPECT_EQ(sphere->transform, Transformations::Scaling(0.5, 0.5, 0.5) * Transformations::Translation(1, -1, 1) * IdentityMatrix);
 }
 
 TEST(YamlTest, DecodeDefinedTransform)
@@ -373,7 +373,7 @@ TEST(YamlTest, DecodeDefinedTransform)
   World world = std::move(YamlParser::getInstance().ParseYaml(yaml).second);
   Shape *sphere = world.shapes[0].get();
 
-  EXPECT_EQ(sphere->transform, IdentityMatrix * Transformations::Translation(1, -1, 1) * Transformations::Scaling(0.5, 0.5, 0.5));
+  EXPECT_EQ(sphere->transform, Transformations::Scaling(0.5, 0.5, 0.5) * Transformations::Translation(1, -1, 1) * IdentityMatrix);
 }
 
 TEST(YamlTest, DecodeExtendedTransform)
@@ -402,7 +402,7 @@ TEST(YamlTest, DecodeExtendedTransform)
   World world = std::move(YamlParser::getInstance().ParseYaml(yaml).second);
   Shape *sphere = world.shapes[0].get();
 
-  EXPECT_EQ(sphere->transform, IdentityMatrix * Transformations::Translation(1, -1, 1) * Transformations::Scaling(0.5, 0.5, 0.5) * Transformations::Scaling(2, 2, 2));
+  EXPECT_EQ(sphere->transform, Transformations::Scaling(2, 2, 2) * Transformations::Scaling(0.5, 0.5, 0.5) * Transformations::Translation(1, -1, 1) * IdentityMatrix);
 }
 
 TEST(YamlTest, DecodeDefinedTransformTree)
@@ -437,7 +437,7 @@ TEST(YamlTest, DecodeDefinedTransformTree)
   World world = std::move(YamlParser::getInstance().ParseYaml(yaml).second);
   Shape *sphere = world.shapes[0].get();
 
-  EXPECT_EQ(sphere->transform, IdentityMatrix * Transformations::Translation(1, -1, 1) * Transformations::Scaling(0.5, 0.5, 0.5) * Transformations::Scaling(3.5, 3.5, 3.5) * Transformations::Scaling(2, 2, 2));
+  EXPECT_EQ(sphere->transform, Transformations::Scaling(2, 2, 2) * Transformations::Scaling(3.5, 3.5, 3.5) * Transformations::Scaling(0.5, 0.5, 0.5) * Transformations::Translation(1, -1, 1) * IdentityMatrix);
 }
 
 TEST(YamlTest, DecodeDefinedTransformTreeWithExtendedTransform)
@@ -477,7 +477,7 @@ TEST(YamlTest, DecodeDefinedTransformTreeWithExtendedTransform)
   World world = std::move(YamlParser::getInstance().ParseYaml(yaml).second);
   Shape *sphere = world.shapes[0].get();
 
-  EXPECT_EQ(sphere->transform, IdentityMatrix * Transformations::Translation(1, -1, 1) * Transformations::Scaling(0.25, 0.25, 0.25) * Transformations::Scaling(2, 2, 2) * Transformations::Scaling(3.5, 3.5, 3.5) * Transformations::Scaling(2.1, 2.1, 2.1));
+  EXPECT_EQ(sphere->transform, Transformations::Scaling(2.1, 2.1, 2.1) * Transformations::Scaling(3.5, 3.5, 3.5) * Transformations::Scaling(2, 2, 2) * Transformations::Scaling(0.25, 0.25, 0.25) * Transformations::Translation(1, -1, 1) * IdentityMatrix);
 }
 
 TEST(YamlTest, FailedMaterialExtend)

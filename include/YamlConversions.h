@@ -265,7 +265,7 @@ namespace YAML
                     {
                         throw std::runtime_error("Value for 'rotation-x' on transform is invalid");
                     }
-                    rhs = rhs * Transformations::RotationX(step[1].as<float>());
+                    rhs = Transformations::RotationX(step[1].as<float>()) * rhs;
                 }
                 else if (type == "rotate-y")
                 {
@@ -273,7 +273,7 @@ namespace YAML
                     {
                         throw std::runtime_error("Value for 'rotation-y' on transform is invalid");
                     }
-                    rhs = rhs * Transformations::RotationY(step[1].as<float>());
+                    rhs = Transformations::RotationY(step[1].as<float>()) * rhs;
                 }
                 else if (type == "rotate-z")
                 {
@@ -281,7 +281,7 @@ namespace YAML
                     {
                         throw std::runtime_error("Value for 'rotation-z' on transform is invalid");
                     }
-                    rhs = rhs * Transformations::RotationZ(step[1].as<float>());
+                    rhs = Transformations::RotationZ(step[1].as<float>()) * rhs;
                 }
                 else if (type == "translate")
                 {
@@ -289,10 +289,10 @@ namespace YAML
                     {
                         throw std::runtime_error("Value for 'translation' on transform is invalid");
                     }
-                    rhs = rhs * Transformations::Translation(
+                    rhs = Transformations::Translation(
                                     step[1].as<float>(),
                                     step[2].as<float>(),
-                                    step[3].as<float>());
+                                    step[3].as<float>()) * rhs;
                 }
                 else if (type == "scale")
                 {
@@ -300,10 +300,10 @@ namespace YAML
                     {
                         throw std::runtime_error("Value for 'scale' on transform is invalid");
                     }
-                    rhs = rhs * Transformations::Scaling(
+                    rhs = Transformations::Scaling(
                                     step[1].as<float>(),
                                     step[2].as<float>(),
-                                    step[3].as<float>());
+                                    step[3].as<float>()) * rhs;
                 }
                 else if (type == "shear")
                 {
@@ -311,13 +311,13 @@ namespace YAML
                     {
                         throw std::runtime_error("Value for 'shear' on transform is invalid");
                     }
-                    rhs = rhs * Transformations::Shearing(
+                    rhs = Transformations::Shearing(
                                     step[1].as<float>(),
                                     step[2].as<float>(),
                                     step[3].as<float>(),
                                     step[4].as<float>(),
                                     step[5].as<float>(),
-                                    step[6].as<float>());
+                                    step[6].as<float>()) * rhs;
                 }
                 else
                 {

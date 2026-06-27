@@ -29,7 +29,7 @@ namespace Scene
 
         // Move Constructor
         Shape(Shape &&other) : id(idIterator++), transform(std::move(other.transform)), material(std::move(other.material)) {}
-        Shape &operator=(Shape &&) = default; // Move Assignment
+        Shape &operator=(Shape &&) = delete; // No direct move assignment becuase shapes have a unique id
 
         // Force subclass to make implementations of these
         virtual Rendering::IntersectionList CustomIntersects(const Rendering::Ray &rayOS) const = 0;

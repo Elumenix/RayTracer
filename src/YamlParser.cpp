@@ -261,7 +261,7 @@ pair<Camera, World> YamlParser::ParseYaml(const YAML::Node &root)
                 Sphere sphere = expanded.as<Sphere>();
 
                 // The world takes ownership of the sphere
-                world.Add(move(sphere));
+                world.Add(std::move(sphere));
             }
             catch (const std::exception &e)
             {
@@ -292,7 +292,7 @@ pair<Camera, World> YamlParser::ParseYaml(const YAML::Node &root)
                 Cube cube = expanded.as<Cube>();
 
                 // The world takes ownership of the cube
-                world.Add(move(cube));
+                world.Add(std::move(cube));
             }
             catch (const std::exception &e)
             {
@@ -323,7 +323,7 @@ pair<Camera, World> YamlParser::ParseYaml(const YAML::Node &root)
                 Plane plane = expanded.as<Plane>();
 
                 // The world takes ownership of the plane
-                world.Add(move(plane));
+                world.Add(std::move(plane));
             }
             catch (const std::exception &e)
             {

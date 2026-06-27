@@ -28,6 +28,7 @@ namespace Rendering
         Pattern *b;
         Math::Matrix<4, 4> transform = Math::IdentityMatrix;
 
+        virtual ~Pattern() = default;
         virtual std::unique_ptr<Pattern> Clone() const = 0;
 
         Color SampleAt(const Scene::Shape &object, const Math::Point &worldPoint);
