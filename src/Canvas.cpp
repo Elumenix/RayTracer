@@ -123,4 +123,18 @@ namespace Rendering
             std::cerr << "Failed to write Scene.png" << std::endl;
         }
     }
+
+    void Canvas::CanvasToBuffer(uint8_t *buffer)
+    {
+        int n = width * height;
+
+        // 4 channels per pixel because the browser expects RGBA
+        for (int i = 0; i < n; i++)
+        {
+            buffer[i * 4 + 0] = static_cast<uint8_t>(std::clamp(pixels[i].x, 0.0f, 1.0f) * 255);
+            buffer[i * 4 + 1] = static_cast<uint8_t>(std::clamp(pixels[i].y, 0.0f, 1.0f) * 255);
+            buffer[i * 4 + 2] = static_cast<uint8_t>(std::clamp(pixels[i].z, 0.0f, 1.0f) * 255);
+            buffer[i * 4 + 3] = 255; // Fully opaque
+        }
+    }
 }

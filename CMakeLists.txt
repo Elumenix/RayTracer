@@ -61,7 +61,8 @@ if (EMSCRIPTEN)
 
   target_link_options(RayTracer PRIVATE 
     -sALLOW_MEMORY_GROWTH=1
-    #-sEXPORTED_RUNTIME_METHODS=['ccall', 'cwrap']
+    -sEXPORTED_RUNTIME_METHODS=['ccall', 'cwrap']
+    -sEXPORTED_FUNCTIONS=['_render','_get_width','_get_height','_copy_to_buffer','_get_last_error','_malloc','_free']
   )
     
   file(COPY ${CMAKE_SOURCE_DIR}/web/dist/ DESTINATION ${CMAKE_BINARY_DIR})

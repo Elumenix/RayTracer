@@ -31,6 +31,9 @@ configureMonacoYaml(monaco, {
                     oneOf: [
                         { $ref: '#/definitions/addCamera' },
                         { $ref: '#/definitions/addLight' },
+                        { $ref: '#/definitions/addPlane' },
+                        { $ref: '#/definitions/addSphere' },
+                        { $ref: '#/definitions/addCube' },
                         { $ref: '#/definitions/defineEntry' }
                     ]
                 },
@@ -282,13 +285,29 @@ configureMonacoYaml(monaco, {
                             },
                             material: {
                                 description: 'The material of the plane.',
-                                $ref: '#/definitions/material',
-                                default: {}
+                                oneOf: [
+                                    {
+                                        $ref: '#/definitions/material',
+                                        default: {}
+                                    },
+                                    {
+                                        type: 'string',
+                                        default: 'parent'
+                                    }
+                                ]
                             },
                             transform: {
                                 description: 'The transform of the plane.',
-                                $ref: '#/definitions/transform',
-                                default: {}
+                                oneOf: [
+                                    {
+                                        $ref: '#/definitions/transform',
+                                        default: {}
+                                    },
+                                    {
+                                        type: 'string',
+                                        default: 'parent'
+                                    }
+                                ]
                             }
                         },
                         required: ['add', 'material', 'transform']
@@ -302,13 +321,29 @@ configureMonacoYaml(monaco, {
                             },
                             material: {
                                 description: 'The material of the sphere.',
-                                $ref: '#/definitions/material',
-                                default: {}
+                                oneOf: [
+                                    {
+                                        $ref: '#/definitions/material',
+                                        default: {}
+                                    },
+                                    {
+                                        type: 'string',
+                                        default: 'parent'
+                                    }
+                                ]
                             },
                             transform: {
                                 description: 'The transform of the sphere.',
-                                $ref: '#/definitions/transform',
-                                default: {}
+                                oneOf: [
+                                    {
+                                        $ref: '#/definitions/transform',
+                                        default: {}
+                                    },
+                                    {
+                                        type: 'string',
+                                        default: 'parent'
+                                    }
+                                ]
                             }
                         },
                         required: ['add', 'material', 'transform']
@@ -322,13 +357,29 @@ configureMonacoYaml(monaco, {
                             },
                             material: {
                                 description: 'The material of the cube.',
-                                $ref: '#/definitions/material',
-                                default: {}
+                                oneOf: [
+                                    {
+                                        $ref: '#/definitions/material',
+                                        default: {}
+                                    },
+                                    {
+                                        type: 'string',
+                                        default: 'parent'
+                                    }
+                                ]
                             },
                             transform: {
                                 description: 'The transform of the cube.',
-                                $ref: '#/definitions/transform',
-                                default: {}
+                                oneOf: [
+                                    {
+                                        $ref: '#/definitions/transform',
+                                        default: {}
+                                    },
+                                    {
+                                        type: 'string',
+                                        default: 'parent'
+                                    }
+                                ]
                             }
                         },
                         required: ['add', 'material', 'transform']
@@ -390,3 +441,47 @@ monaco.editor.create(document.getElementById('editor'), {
         strings: true
     }
 })
+
+window.Module = {
+    onRuntimeInitialized() {
+        document.getElementById('render-btn').addEventListener('click', () => {
+            const yaml = editor.getValue()
+            const maxDepth = 4 // TODO: make it so that this isn't hardcoded
+
+            Module.ccall('render', null, ['string', 'number'], [yaml, maxDepth])
+
+            const error = Module.ccall('get_last_error', 'string', [], [])
+            if (error) {
+                document.getElementById('error-box').textContent = error
+                return
+            }
+
+            document.getElementById('error-box').textContent = ''
+
+            const width = Module.ccall('get_width', 'number', [], [])
+            const height = Module.ccall('get_height', 'number', [], [])
+
+            const bufferSize = width * height * 4
+            const bufferPtr = Module._malloc(bufferSize)
+            Module.ccall('copy_to_buffer', null, ['number'], [bufferPtr])
+
+            const canvas = document.getElementById('output')
+            canvas.width = width
+            canvas.height = height
+            const pixels = new Uint8ClampedArray(Module.HEAPU8.buffer, bufferPtr, bufferSize)
+            const imageData = new ImageData(pixels, width, height)
+            canvas.getContext('2d').putImageData(imageData, 0, 0)
+            Module._free(bufferPtr)
+
+            document.getElementById('download-btn').style.display = 'inline'
+        })
+
+        document.getElementById('download-btn').addEventListener('click', () => {
+            const canvas = document.getElementById('output')
+            const link = document.createElement('a')
+            link.download = 'scene.png'
+            link.href = canvas.toDataURL('image/png')
+            link.click()
+        })
+    }
+}

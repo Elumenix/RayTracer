@@ -16,13 +16,13 @@ namespace YAML
         if (!item["material"].IsDefined())
         {
             cerr << "Item " << itemNumber << ": " << shapeType << " must have a material key" << endl;
-            throw runtime_error(shapeType + " must have a material key");
+            throw runtime_error("Item " + to_string(itemNumber) + ": " + shapeType + " must have a material key");
         }
 
         if (!item["transform"].IsDefined())
         {
             cerr << "Item " << itemNumber << ": " << shapeType << " must have a transform key" << endl;
-            throw runtime_error(shapeType + " must have a transform key");
+            throw runtime_error("Item " + to_string(itemNumber) + ": " + shapeType + " must have a transform key");
         }
 
         return true;
@@ -38,13 +38,13 @@ namespace YAML
             if (!defines.count(materialName))
             {
                 cerr << "Item " << itemNumber << ": Material not found: " << materialName << endl;
-                throw runtime_error("Material not found: " + materialName);
+                throw runtime_error("Item " + to_string(itemNumber) + ": Material not found: " + materialName);
             }
 
             if (!defines.at(materialName).IsMap())
             {
                 cerr << "Item " << itemNumber << ": " << materialName << " is not a material" << endl;
-                throw runtime_error(materialName + " is not a material");
+                throw runtime_error("Item " + to_string(itemNumber) + ": " + materialName + " is not a material");
             }
 
             return defines.at(materialName);
@@ -65,13 +65,13 @@ namespace YAML
             if (!defines.count(transformName))
             {
                 cerr << "Item " << itemNumber << ": Transform not found: " << transformName << endl;
-                throw runtime_error("Transform not found: " + transformName);
+                throw runtime_error("Item " + to_string(itemNumber) + ": Transform not found: " + transformName);
             }
 
             if (!defines.at(transformName).IsSequence())
             {
                 cerr << "Item " << itemNumber << ": " << transformName << " is not a transform" << endl;
-                throw runtime_error(transformName + " is not a transform");
+                throw runtime_error("Item " + to_string(itemNumber) + ": " + transformName + " is not a transform");
             }
 
             return ResolveTransform(defines.at(transformName), defines, itemNumber);
@@ -146,7 +146,7 @@ pair<Camera, World> YamlParser::ParseYaml(const YAML::Node &root)
                 if (!defines.count(parentName))
                 {
                     cerr << "Item " << itemNumber << ": Extend failed because of undefined parent: " << parentName << endl;
-                    throw runtime_error("Extend failed because of undefined parent: " + parentName);
+                    throw runtime_error("Item " + to_string(itemNumber) + ": Extend failed because of undefined parent: " + parentName);
                 }
 
                 // Merge the extend value with the existing definition
@@ -156,7 +156,7 @@ pair<Camera, World> YamlParser::ParseYaml(const YAML::Node &root)
                 if (!item["value"])
                 {
                     cerr << "Item " << itemNumber << ": No value field on extended definition: " << name << endl;
-                    throw runtime_error("No value field on extended definition: " + name);
+                    throw runtime_error("Item " + to_string(itemNumber) + ": No value field on extended definition: " + name);
                 }
 
                 // Fill with values, then place on the map
@@ -167,7 +167,7 @@ pair<Camera, World> YamlParser::ParseYaml(const YAML::Node &root)
                     if (!extendedNode.IsMap())
                     {
                         cerr << "Item " << itemNumber << ": " << "(Material) " << name << " cannot extend (Transform) " << parentName << endl;
-                        throw runtime_error(parentName + " is not the same type as " + name);
+                        throw runtime_error("Item " + to_string(itemNumber) + ": " + "(Material) " + name + " cannot extend (Transform) " + parentName);
                     }
 
                     for (const auto &pair : valueNode)
@@ -191,7 +191,7 @@ pair<Camera, World> YamlParser::ParseYaml(const YAML::Node &root)
                     if (!extendedNode.IsSequence())
                     {
                         cerr << "Item " << itemNumber << ": " << "(Transform) " << name << " cannot extend (Material) " << parentName << endl;
-                        throw runtime_error(parentName + " is not the same type as " + name);
+                        throw runtime_error("Item " + to_string(itemNumber) + ": " + "(Transform) " + name + " cannot extend (Material) " + parentName);
                     }
 
                     for (const auto &entry : valueNode)
@@ -202,7 +202,7 @@ pair<Camera, World> YamlParser::ParseYaml(const YAML::Node &root)
                 else
                 {
                     cerr << "Item " << itemNumber << ": Unsupported value field type for extended definition: " << name << endl;
-                    throw runtime_error("Unsupported value field type for extended definition: " + name);
+                    throw runtime_error("Item " + to_string(itemNumber) + ": Unsupported value field type for extended definition: " + name);
                 }
 
                 // Extend node is saved
@@ -214,7 +214,7 @@ pair<Camera, World> YamlParser::ParseYaml(const YAML::Node &root)
             if (!item["value"])
             {
                 cerr << "Item " << itemNumber << ": No value field on extended definition: " << name << endl;
-                throw runtime_error("No value field on extended definition: " + name);
+                throw runtime_error("Item " + to_string(itemNumber) + ": No value field on extended definition: " + name);
             }
 
             // Defined node is saved
@@ -235,7 +235,7 @@ pair<Camera, World> YamlParser::ParseYaml(const YAML::Node &root)
             catch (const std::exception &e)
             {
                 cerr << "Item " << itemNumber << ": " << e.what() << endl;
-                throw;
+                throw runtime_error("Item " + to_string(itemNumber) + ": " + e.what());
             }
 
             continue;
@@ -266,7 +266,7 @@ pair<Camera, World> YamlParser::ParseYaml(const YAML::Node &root)
             catch (const std::exception &e)
             {
                 cerr << "Item " << itemNumber << ": " << e.what() << endl;
-                throw;
+                throw runtime_error("Item " + to_string(itemNumber) + ": " + e.what());
             }
 
             continue;
@@ -297,7 +297,7 @@ pair<Camera, World> YamlParser::ParseYaml(const YAML::Node &root)
             catch (const std::exception &e)
             {
                 cerr << "Item " << itemNumber << ": " << e.what() << endl;
-                throw;
+                throw runtime_error("Item " + to_string(itemNumber) + ": " + e.what());
             }
 
             continue;
@@ -328,7 +328,7 @@ pair<Camera, World> YamlParser::ParseYaml(const YAML::Node &root)
             catch (const std::exception &e)
             {
                 cerr << "Item " << itemNumber << ": " << e.what() << endl;
-                throw;
+                throw runtime_error("Item " + to_string(itemNumber) + ": " + e.what());
             }
 
             continue;
@@ -339,7 +339,7 @@ pair<Camera, World> YamlParser::ParseYaml(const YAML::Node &root)
             if (cameraSet)
             {
                 cerr << "Item " << itemNumber << ": Only one camera can be defined" << endl;
-                throw runtime_error("Only one camera can be defined");
+                throw runtime_error("Item " + to_string(itemNumber) + ": Only one camera can be defined");
             }
 
             try
@@ -350,7 +350,7 @@ pair<Camera, World> YamlParser::ParseYaml(const YAML::Node &root)
             catch (const std::exception &e)
             {
                 cerr << "Item " << itemNumber << ": " << e.what() << endl;
-                throw;
+                throw runtime_error("Item " + to_string(itemNumber) + ": " + e.what());
             }
 
             cameraSet = true;
@@ -359,13 +359,13 @@ pair<Camera, World> YamlParser::ParseYaml(const YAML::Node &root)
 
         // Getting here means the item is not a valid type
         cerr << "Item " << itemNumber << ": Invalid add key: " << type << endl;
-        throw runtime_error("Invalid add key: " + type);
+        throw runtime_error("Item " + to_string(itemNumber) + ": Invalid add key: " + type);
     }
 
     if (!cameraSet)
     {
         cerr << "A camera must be defined in the scene" << endl;
-        throw runtime_error("No camera defined");
+        throw runtime_error("A camera must be defined in the scene");
     }
 
     // move is required on world because of the smart pointers it contains.

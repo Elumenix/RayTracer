@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <cstdint>
 
 namespace Rendering
 {
@@ -25,5 +26,6 @@ namespace Rendering
         void WritePixelAt(float x, float y, const Color &color);
         std::string CanvasToPPM();
         void CanvasToPNG();
+        void CanvasToBuffer(uint8_t *buffer);
     };
 }
