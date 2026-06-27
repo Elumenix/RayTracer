@@ -42,3 +42,7 @@
 
 # debug information files
 *.dwo
+
+# Web build files 
+web/public/raytracer.js
+web/public/raytracer.wasm

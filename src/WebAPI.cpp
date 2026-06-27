@@ -2,6 +2,7 @@
 #include <emscripten/emscripten.h>
 #include <string>
 #include <cstdint>
+#include "World.h"
 #include "Canvas.h"
 #include "Camera.h"
 #include "YamlParser.h"

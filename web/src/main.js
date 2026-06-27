@@ -1,3 +1,4 @@
+console.log('main.js is running')
 // Get monaco packages
 import * as monaco from 'monaco-editor'
 import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
@@ -17,6 +18,9 @@ self.MonacoEnvironment = {
 
     }
 }
+
+console.log('Module exists:', typeof window.Module)
+console.log('raytracer.js loaded:', typeof Module !== 'undefined')
 
 
 configureMonacoYaml(monaco, {
@@ -419,7 +423,7 @@ configureMonacoYaml(monaco, {
 })
 
 // Create the code editor in the DOM
-monaco.editor.create(document.getElementById('editor'), {
+const editor = monaco.editor.create(document.getElementById('editor'), {
     value: '# Write your scene YAML here\n',
     language: 'yaml',
     theme: 'vs-dark',
@@ -442,46 +446,43 @@ monaco.editor.create(document.getElementById('editor'), {
     }
 })
 
-window.Module = {
-    onRuntimeInitialized() {
-        document.getElementById('render-btn').addEventListener('click', () => {
-            const yaml = editor.getValue()
-            const maxDepth = 4 // TODO: make it so that this isn't hardcoded
+document.getElementById('render-btn').addEventListener('click', () => {
+    const yaml = editor.getValue()
+    const maxDepth = 5
 
-            Module.ccall('render', null, ['string', 'number'], [yaml, maxDepth])
+    Module.ccall('render', null, ['string', 'number'], [yaml, maxDepth])
 
-            const error = Module.ccall('get_last_error', 'string', [], [])
-            if (error) {
-                document.getElementById('error-box').textContent = error
-                return
-            }
+    const error = Module.ccall('get_last_error', 'string', [], [])
+    console.log('error:', error)
 
-            document.getElementById('error-box').textContent = ''
+    const width = Module.ccall('get_width', 'number', [], [])
+    const height = Module.ccall('get_height', 'number', [], [])
+    console.log('width:', width, 'height:', height)
 
-            const width = Module.ccall('get_width', 'number', [], [])
-            const height = Module.ccall('get_height', 'number', [], [])
+    const bufferSize = width * height * 4
+    const bufferPtr = Module._malloc(bufferSize)
+    console.log('bufferPtr:', bufferPtr, 'bufferSize:', bufferSize)
 
-            const bufferSize = width * height * 4
-            const bufferPtr = Module._malloc(bufferSize)
-            Module.ccall('copy_to_buffer', null, ['number'], [bufferPtr])
+    Module.ccall('copy_to_buffer', null, ['number'], [bufferPtr])
 
-            const canvas = document.getElementById('output')
-            canvas.width = width
-            canvas.height = height
-            const pixels = new Uint8ClampedArray(Module.HEAPU8.buffer, bufferPtr, bufferSize)
-            const imageData = new ImageData(pixels, width, height)
-            canvas.getContext('2d').putImageData(imageData, 0, 0)
-            Module._free(bufferPtr)
+    const pixels = new Uint8ClampedArray(Module.HEAPU8.buffer, bufferPtr, bufferSize)
+    
+    console.log('first few pixels:', pixels[0], pixels[1], pixels[2], pixels[3])
+    const imageData = new ImageData(pixels, width, height)
+    const outputCanvas = document.getElementById('output')
+    outputCanvas.width = width
+    outputCanvas.height = height
 
-            document.getElementById('download-btn').style.display = 'inline'
-        })
+    outputCanvas.getContext('2d').putImageData(imageData, 0, 0)
+    Module._free(bufferPtr)
 
-        document.getElementById('download-btn').addEventListener('click', () => {
-            const canvas = document.getElementById('output')
-            const link = document.createElement('a')
-            link.download = 'scene.png'
-            link.href = canvas.toDataURL('image/png')
-            link.click()
-        })
-    }
-}
+    document.getElementById('download-btn').style.display = 'inline'
+})
+
+document.getElementById('download-btn').addEventListener('click', () => {
+    const canvas = document.getElementById('output')
+    const link = document.createElement('a')
+    link.download = 'scene.png'
+    link.href = canvas.toDataURL('image/png')
+    link.click()
+})

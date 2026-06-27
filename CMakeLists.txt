@@ -61,11 +61,13 @@ if (EMSCRIPTEN)
 
   target_link_options(RayTracer PRIVATE 
     -sALLOW_MEMORY_GROWTH=1
-    -sEXPORTED_RUNTIME_METHODS=['ccall', 'cwrap']
-    -sEXPORTED_FUNCTIONS=['_render','_get_width','_get_height','_copy_to_buffer','_get_last_error','_malloc','_free']
+    "SHELL:-sEXPORTED_RUNTIME_METHODS=['ccall','cwrap','HEAPU8']"
+    "SHELL:-sEXPORTED_FUNCTIONS=['_render','_get_width','_get_height','_copy_to_buffer','_get_last_error','_malloc','_free']"
   )
-    
-  file(COPY ${CMAKE_SOURCE_DIR}/web/dist/ DESTINATION ${CMAKE_BINARY_DIR})
+  
+  if (EXISTS ${CMAKE_SOURCE_DIR}/web/dist/)
+    file(COPY ${CMAKE_SOURCE_DIR}/web/dist/ DESTINATION ${CMAKE_BINARY_DIR})
+  endif()
 endif()
 
 # Unit testing if this isn't a web build
