@@ -424,13 +424,184 @@ configureMonacoYaml(monaco, {
 
 // Create the code editor in the DOM
 const editor = monaco.editor.create(document.getElementById('editor'), {
-    value: '# Write your scene YAML here\n',
+    value: `# the camera
+# ======================================================
+- add: camera
+  width: 100
+  height: 100
+  field-of-view: 0.785
+  from: [-6, 6, -10]
+  to: [6, 0, 6]
+  up: [-0.45, 1, 0]
+# ======================================================
+# light sources
+# ======================================================
+- add: light
+  at: [50, 100, -50]
+  intensity: [1, 1, 1]
+# an optional second light for additional illumination
+- add: light
+  at: [-400, 50, -10]
+  intensity: [0.2, 0.2, 0.2]
+# ======================================================
+# define some constants to avoid duplication
+# ======================================================
+- define: white-material
+  value:
+    color: [1, 1, 1]
+    diffuse: 0.7
+    ambient: 0.1
+    specular: 0.0
+    reflective: 0.1
+- define: blue-material
+  extend: white-material
+  value:
+    color: [0.537, 0.831, 0.914]
+- define: red-material
+  extend: white-material
+  value:
+    color: [0.941, 0.322, 0.388]
+- define: purple-material
+  extend: white-material
+  value:
+    color: [0.373, 0.404, 0.550]
+- define: standard-transform
+  value:
+    - [translate, 1, -1, 1]
+    - [scale, 0.5, 0.5, 0.5]
+- define: large-object
+  value:
+    - standard-transform
+    - [scale, 3.5, 3.5, 3.5]
+- define: medium-object
+  value:
+    - standard-transform
+    - [scale, 3, 3, 3]
+- define: small-object
+  value:
+    - standard-transform
+    - [scale, 2, 2, 2]
+# ======================================================
+# a white backdrop for the scene
+# ======================================================
+- add: plane
+  material:
+    color: [1, 1, 1]
+    ambient: 1
+    diffuse: 0
+    specular: 0
+  transform:
+    - [rotate-x, 1.5707963267948966] # pi/2
+    - [translate, 0, 0, 500]
+# ======================================================
+# describe the elements of the scene
+# ======================================================
+- add: sphere
+  material:
+    color: [0.373, 0.404, 0.550]
+    diffuse: 0.2
+    ambient: 0.0
+    specular: 1.0
+    shininess: 200
+    reflective: 0.7
+    transparency: 0.7
+    refractive-index: 1.5
+  transform:
+    - large-object
+- add: cube
+  material: white-material
+  transform:
+    - medium-object
+    - [translate, 4, 0, 0]
+- add: cube
+  material: blue-material
+  transform:
+    - large-object
+    - [translate, 8.5, 1.5, -0.5]
+- add: cube
+  material: red-material
+  transform:
+    - large-object
+    - [translate, 0, 0, 4]
+- add: cube
+  material: white-material
+  transform:
+    - small-object
+    - [translate, 4, 0, 4]
+- add: cube
+  material: purple-material
+  transform:
+    - medium-object
+    - [translate, 7.5, 0.5, 4]
+- add: cube
+  material: white-material
+  transform:
+    - medium-object
+    - [translate, -0.25, 0.25, 8]
+- add: cube
+  material: blue-material
+  transform:
+    - large-object
+    - [translate, 4, 1, 7.5]
+- add: cube
+  material: red-material
+  transform:
+    - medium-object
+    - [translate, 10, 2, 7.5]
+- add: cube
+  material: white-material
+  transform:
+    - small-object
+    - [translate, 8, 2, 12]
+- add: cube
+  material: white-material
+  transform:
+    - small-object
+    - [translate, 20, 1, 9]
+- add: cube
+  material: blue-material
+  transform:
+    - large-object
+    - [translate, -0.5, -5, 0.25]
+- add: cube
+  material: red-material
+  transform:
+    - large-object
+    - [translate, 4, -4, 0]
+- add: cube
+  material: white-material
+  transform:
+    - large-object
+    - [translate, 8.5, -4, 0]
+- add: cube
+  material: white-material
+  transform:
+    - large-object
+    - [translate, 0, -4, 4]
+- add: cube
+  material: purple-material
+  transform:
+    - large-object
+    - [translate, -0.5, -4.5, 8]
+- add: cube
+  material: white-material
+  transform:
+    - large-object
+    - [translate, 0, -8, 4]
+- add: cube
+  material: white-material
+  transform:
+    - large-object
+    - [translate, -0.5, -8.5, 8]
+`,
     language: 'yaml',
     theme: 'vs-dark',
     autoIndent: 'full',
     formatOnType: true,
     formatOnPaste: true,
     quickSuggestionsDelay: 0,
+    scrollBeyondLastLine: false,
+    automaticLayout: false,
     suggest: {
         preview: true,
         detailsVisible: true
@@ -446,43 +617,151 @@ const editor = monaco.editor.create(document.getElementById('editor'), {
     }
 })
 
+
+// Variables related to the image display / persistent data
+let scaleImage = true;
+let savedImage = null;
+let debugLetterbox = true;
+const editorDiv = document.getElementById("editor");
+const canvas = document.getElementById("output");
+
+
+
+function drawNativeCentered(ctx, img) {
+    const offsetX = (canvas.width - img.width) / 2;
+    const offsetY = (canvas.height - img.height) / 2;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, offsetX, offsetY);
+}
+
+function drawLetterboxedImage(ctx, img) {
+    const canvasAspect = canvas.width / canvas.height;
+    const imgAspect = img.width / img.height;
+    let drawWidth, drawHeight;
+
+    if (imgAspect > canvasAspect) {
+        // Image is wider; letterbox top/bottom
+        drawWidth = canvas.width;
+        drawHeight = canvas.width / imgAspect;
+    } else {
+        // Image is taller; letterbox left/right
+        drawHeight = canvas.height;
+        drawWidth = canvas.height * imgAspect;
+    }
+
+    // Calculate the offset to center the image
+    const offsetX = (canvas.width - drawWidth) / 2;
+    const offsetY = (canvas.height - drawHeight) / 2;
+
+    // Edit the webpage canvas to show the letterboxed image
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+
+    // Debug visualization
+    if (debugLetterbox) {
+        ctx.fillStyle = "rgba(255,0,0,0.3)"
+        ctx.fillRect(0, 0, canvas.width, offsetY)
+        ctx.fillRect(0, canvas.height - offsetY, canvas.width, offsetY)
+        ctx.fillRect(0, offsetY, offsetX, drawHeight)
+        ctx.fillRect(canvas.width - offsetX, offsetY, offsetX, drawHeight)
+    }
+}
+
+
+// This function is similar to the end of render, we're just changing how to show the image on the canvas
+function drawOutputCanvas() {
+
+    // If we don't have a saved image, don't do anything
+    if (!savedImage) return
+
+    const ctx = canvas.getContext('2d')
+
+    // Set up the webpage canvas to hold the image
+    // Canvas resolution should match it's CSS size (in device pixels)
+    const rect = canvas.getBoundingClientRect()
+    const dpr = window.devicePixelRatio || 1
+    canvas.width = rect.width * dpr
+    canvas.height = rect.height * dpr
+    ctx.setTransform(1, 0, 0, 1, 0, 0)
+    ctx.scale(dpr, dpr)
+
+    if (scaleImage) {
+        drawLetterboxedImage(ctx, savedImage)
+    } else {
+        drawNativeCentered(ctx, savedImage)
+    }
+}
+
+
 document.getElementById('render-btn').addEventListener('click', () => {
     const yaml = editor.getValue()
-    const maxDepth = 5
+    const maxDepth = 5 // Make an option for this eventually
 
+    // Calling the c++ render function
     Module.ccall('render', null, ['string', 'number'], [yaml, maxDepth])
 
+    // Error handling - just outputting a message currently
     const error = Module.ccall('get_last_error', 'string', [], [])
     console.log('error:', error)
 
+    // Retrieve information about the rendered image
     const width = Module.ccall('get_width', 'number', [], [])
     const height = Module.ccall('get_height', 'number', [], [])
-    console.log('width:', width, 'height:', height)
-
     const bufferSize = width * height * 4
     const bufferPtr = Module._malloc(bufferSize)
-    console.log('bufferPtr:', bufferPtr, 'bufferSize:', bufferSize)
-
     Module.ccall('copy_to_buffer', null, ['number'], [bufferPtr])
 
+    // Initialize the image data
     const pixels = new Uint8ClampedArray(Module.HEAPU8.buffer, bufferPtr, bufferSize)
-    
-    console.log('first few pixels:', pixels[0], pixels[1], pixels[2], pixels[3])
     const imageData = new ImageData(pixels, width, height)
-    const outputCanvas = document.getElementById('output')
-    outputCanvas.width = width
-    outputCanvas.height = height
 
-    outputCanvas.getContext('2d').putImageData(imageData, 0, 0)
+    // Create an off-screen canvas to draw the image data
+    savedImage = document.createElement('canvas')
+    savedImage.width = width
+    savedImage.height = height
+    savedImage.getContext('2d').putImageData(imageData, 0, 0)
+
+    // draw the image on the output canvas
+    drawOutputCanvas()
+
+    // Free buffer, and allow image to be downloaded
     Module._free(bufferPtr)
-
-    document.getElementById('download-btn').style.display = 'inline'
+    document.getElementById('download-btn').disabled = false;
 })
+
+
+
+
 
 document.getElementById('download-btn').addEventListener('click', () => {
-    const canvas = document.getElementById('output')
+    // We'll actually use the saved image canvas for downloading because it contains the rendered image
     const link = document.createElement('a')
     link.download = 'scene.png'
-    link.href = canvas.toDataURL('image/png')
+    link.href = savedImage.toDataURL('image/png')
     link.click()
 })
+
+document.getElementById('toggle-fit').addEventListener('click', () => {
+    scaleImage = !scaleImage
+    drawOutputCanvas()
+})
+
+// Match canvas CSS size to editor size
+function resizeCanvasCSS() {
+    const rect = editorDiv.getBoundingClientRect();
+    canvas.style.width = rect.width + "px";
+    canvas.style.height = rect.height + "px";
+    editor.layout();
+}
+
+window.addEventListener('resize', () => {
+    // Resize monaco and the canvas
+    editor.layout()
+    resizeCanvasCSS()
+    drawOutputCanvas()
+})
+
+
+// On page load
+resizeCanvasCSS()

@@ -26,13 +26,16 @@ extern "C"
 
         try
         {
-            printf("Yaml paring started\n");
-
             // Parse yaml
+            printf("Yaml parsing started\n");
             auto scene = YamlParser::getInstance().ParseYaml(std::string(yamlString));
             printf("Yaml parsing completed\n");
+
+            // Extracting isn't necessary, but it makes this so much easier to work with
             Scene::Camera camera = std::move(scene.first);
             Scene::World world = std::move(scene.second);
+
+            // Image size variables. The webpage will read and use these
             g_width = camera.hsize;
             g_height = camera.vsize;
 
@@ -40,13 +43,13 @@ extern "C"
             printf("Rendering started\n");
             Rendering::Canvas canvas = camera.Render(world, maxDepth);
             printf("Rendering completed\n");
-            printf("Canvas created\n");
 
             // Store in a buffer that javascript can access
             g_canvas = new Rendering::Canvas(std::move(canvas));
         }
         catch (const std::exception &e)
         {
+            printf("Error occurred: %s\n", e.what());
             g_lastError = e.what();
         }
     }
