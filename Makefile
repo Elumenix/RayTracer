@@ -3,6 +3,9 @@
 # make setupVite -> make buildVite -> cd web && npm run dev 
 # This is with both cmake and emscripten set up already on the linux environment (I'm using Ubuntu wsl, things may differ on other systems)
 
+# To instead regression test the C++ code: make setupDebug -> make test
+# To run whatever is in the main.cpp file: make setupRelease -> make build
+
 # Clean build files. Should do before pushing
 clean:
 	rm -rf build
