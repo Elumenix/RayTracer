@@ -125,6 +125,9 @@ async function loadDefaultYaml() {
 
 Promise.all([loadYamlSchema(), loadDefaultYaml()])
     .then(([schema, defaultYaml]) => {
+        const schemaUri = new URL('/RayTracer/schemas/ray-tracer-schema.json', window.location.href).toString();
+
+        // Step 1, configure the yaml for monaco using my schema
         configureMonacoYaml(monaco, {
             enableSchemaRequest: true, // For some reason this needs to be true when passing locally and it won't make a web request, despite what documentation says
             completion: true,
@@ -133,39 +136,140 @@ Promise.all([loadYamlSchema(), loadDefaultYaml()])
             format: true,
             schemas: [
                 {
-                    uri: '/RayTracer/schemas/ray-tracer-schema.json', // correct file location, so the user can request it via monacos documentation popups
+                    uri: schemaUri, // correct file location, so the user can request it via monacos documentation popups
                     fileMatch: ['*'],
                     schema: schema
                 }
             ]
         });
 
-        // Set up how the editor looks and behaves
+        // Step 2, register a color provider for the color arrays in the YAML. This should let monaco recognize color fields and place color decorators
+        monaco.languages.registerColorProvider("yaml", {
+            provideDocumentColors(model) {
+                const text = model.getValue();
+                const results = [];
+
+                // Regex to match color arrays in the format: color: [r, g, b]
+                // Honestly, just trust the process. I barely understand how regex works but this seems to work well
+                const regex = /color:\s*\[\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*\]/g;
+
+                let match;
+                while ((match = regex.exec(text))) {
+                    const r = parseFloat(match[1]);
+                    const g = parseFloat(match[2]);
+                    const b = parseFloat(match[3]);
+                    const color = { red: r, green: g, blue: b, alpha: 1 };
+
+                    // We're only using the array part so that the color decorator doesn't insert before color:
+                    const arrayStart = match.index + match[0].indexOf("[");
+                    const arrayEnd = match.index + match[0].lastIndexOf("]") + 1;
+                    const startPos = model.getPositionAt(arrayStart);
+                    const endPos = model.getPositionAt(arrayEnd);
+
+                    // color array and string that represents it
+                    results.push({
+                        color,
+                        range: new monaco.Range(
+                            startPos.lineNumber,
+                            startPos.column,
+                            endPos.lineNumber,
+                            endPos.column
+                        )
+                    });
+                }
+
+                return results;
+            },
+
+            // Step 3: Setup how the color picker will update the text in the editor when a new color is selected
+            provideColorPresentations(model, colorInfo) {
+                const color = colorInfo.color;
+                const range = colorInfo.range;
+
+                const r = color.red.toFixed(3);
+                const g = color.green.toFixed(3);
+                const b = color.blue.toFixed(3);
+
+                // We're essentially editing the string to replace the color with values from the color picker
+                return [
+                    {
+                        label: `[${r}, ${g}, ${b}]`,
+                        textEdit: {
+                            range,
+                            text: `[${r}, ${g}, ${b}]`
+                        }
+                    }
+                ];
+            }
+        });
+
+        // Step 4: Set up how the editor looks and behaves
         const editor = monaco.editor.create(document.getElementById('editor'), {
+            // Basics
             value: defaultYaml,
             language: 'yaml',
             theme: 'vs-dark',
-            automaticLayout: true,
 
+            // Dom Behavior
+            automaticLayout: true,
+            allowOverflow: false,
+
+            // Color Decorator
+            colorDecorators: true,
+            colorDecoratorsActivatedOn: 'click',
+
+            // Indentation (Very important for YAML)
+            tabSize: 2,
+            insertSpaces: true,
+            detectIndentation: false,
             autoIndent: 'full',
+            experimentalWhitespaceRendering: 'off',
+
+            // Active Formatting
+            autoClosingBrackets: 'never',
+            autoClosingComments: 'never',
+            autoClosingDelete: 'never',
+            autoClosingOvertype: 'always',
+            autoClosingQuotes: 'always',
+            autoSurround: 'quotes',
+
+            // Cursor, Copy/Paste, Highlighting, Formatting
+            cursorSurroundingLines: 3,
             formatOnType: true,
             formatOnPaste: true,
-            quickSuggestionsDelay: 0,
+            autoIndentOnPaste: true,
+            autoIndentOnPasteWithinString: false,
+            copyWithSyntaxHighlighting: false,
+            columnSelection: false, // Kinda cool, might consider enabling later
+            roundedSelection: false,
+            cursorBlinking: 'smooth',
+
+            // Visuals
+            minimap: { enabled: false },
+            glyphMargin: true,
+            lineNumbers: 'on',
+            renderWhitespace: 'boundary',
+            renderIndentGuides: true,
+            highlightActiveIndentGuide: true,
+
+            // Behavior
+            wordWrap: 'on',
             scrollBeyondLastLine: false,
-            automaticLayout: false,
-            suggest: {
-                preview: true,
-                detailsVisible: true
-            },
-            hover: {
-                enabled: true,
-                delay: 100
-            },
+            smoothScrolling: true,
+
+            // Suggestions & Hover
             quickSuggestions: {
                 other: true,
                 comments: false,
                 strings: true
-            }
+            },
+            suggestOnTriggerCharacters: true,
+            acceptSuggestionOnEnter: 'smart',
+            hover: { enabled: true },
+            parameterHints: { enabled: true },
+
+            // Miscellaneous
+            codeLens: false,
         });
 
 
@@ -179,7 +283,9 @@ Promise.all([loadYamlSchema(), loadDefaultYaml()])
 
             // Error handling - just outputting a message currently
             const error = Module.ccall('get_last_error', 'string', [], [])
-            console.log('error:', error)
+            if (error !== "") {
+                console.log('error:', error)
+            }
 
             // Retrieve information about the rendered image
             const width = Module.ccall('get_width', 'number', [], [])

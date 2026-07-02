@@ -37,7 +37,10 @@
 
         "material": {
             "description": "Defines what the surface of an object looks like.",
-            "type": "object",
+            "oneOf": [
+                { "type": "object" },
+                { "type": "null" }
+            ],
             "properties": {
                 "color": {
                     "description": "The base color of the surface. Default is white",
@@ -89,13 +92,16 @@
                     "description": "How much light bends when passing through a transparent surface. Some examples: air: 1.0, water: 1.33, glass: 1.5.",
                     "type": "number",
                     "minimum": 0,
-                    "default": 1.0
+                    "default": 1
                 }
             }
         },
         "transform": {
             "description": "Determines the position, rotation, and scale of an object in the scene.\nA transform is essentially a list of transformations to apply to an object.",
-            "type": "array",
+            "oneOf": [
+                { "type": "array" },
+                { "type": "null" }
+            ],
             "items": {
                 "oneOf": [
                     {
