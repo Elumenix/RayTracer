@@ -275,7 +275,7 @@ Promise.all([loadYamlSchema(), loadDefaultYaml()])
             lineNumbers: 'on',
             renderWhitespace: 'boundary',
             highlightActiveIndentGuide: true,
-            padding: { top: 10, bottom: 20 },
+            padding: { top: 20, bottom: 25 },
 
             // Suggestions
             suggest: { // Todo: Look more into this one
