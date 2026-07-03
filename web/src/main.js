@@ -331,7 +331,7 @@ Promise.all([loadYamlSchema(), loadDefaultYaml()])
             Module.ccall('copy_to_buffer', null, ['number'], [bufferPtr])
 
             // Initialize the image data
-            const pixels = new Uint8ClampedArray(Module.HEAPU8.buffer, bufferPtr, bufferSize)
+            const pixels = new Uint8ClampedArray(Module.HEAPU8.buffer, bufferPtr, bufferSize).slice()
             const imageData = new ImageData(pixels, width, height)
 
             // Create an off-screen canvas to draw the image data
