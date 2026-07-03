@@ -151,13 +151,14 @@ Promise.all([loadYamlSchema(), loadDefaultYaml()])
 
                 // Regex to match color arrays in the format: color: [r, g, b]
                 // Honestly, just trust the process. I barely understand how regex works but this seems to work well
-                const regex = /color:\s*\[\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*\]/g;
+                const regex = /(color|intensity):\s*\[\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*\]/g;
 
                 let match;
                 while ((match = regex.exec(text))) {
-                    const r = parseFloat(match[1]);
-                    const g = parseFloat(match[2]);
-                    const b = parseFloat(match[3]);
+                    const fieldName = match[1];
+                    const r = parseFloat(match[2]);
+                    const g = parseFloat(match[3]);
+                    const b = parseFloat(match[4]);
                     const color = { red: r, green: g, blue: b, alpha: 1 };
 
                     // We're only using the array part so that the color decorator doesn't insert before color:
@@ -186,9 +187,9 @@ Promise.all([loadYamlSchema(), loadDefaultYaml()])
                 const color = colorInfo.color;
                 const range = colorInfo.range;
 
-                const r = color.red.toFixed(3);
-                const g = color.green.toFixed(3);
-                const b = color.blue.toFixed(3);
+                const r = parseFloat(color.red.toFixed(3));
+                const g = parseFloat(color.green.toFixed(3));
+                const b = parseFloat(color.blue.toFixed(3));
 
                 // We're essentially editing the string to replace the color with values from the color picker
                 return [
@@ -209,10 +210,25 @@ Promise.all([loadYamlSchema(), loadDefaultYaml()])
             value: defaultYaml,
             language: 'yaml',
             theme: 'vs-dark',
+            placeholder: 'At minimum, you will need to add a camera here.',
 
             // Dom Behavior
             automaticLayout: true,
             allowOverflow: false,
+
+            // Behavior
+            wordWrap: 'on',
+            wordBreak: 'normal',
+            wrappingIndent: 'same',
+            wrappingStrategy: 'simple',
+            scrollBeyondLastLine: false,
+            smoothScrolling: true,
+            stickyScroll: { enabled: true },
+            renderValidationDecorations: 'on',
+            folding: true,
+            unfoldOnClickAfterEndOfLine: true,
+            hover: { enabled: true },
+            trimWhitespaceOnDelete: true,
 
             // Color Decorator
             colorDecorators: true,
@@ -220,10 +236,16 @@ Promise.all([loadYamlSchema(), loadDefaultYaml()])
 
             // Indentation (Very important for YAML)
             tabSize: 2,
+            useTabStops: true,
+            stickyTabStops: true,
             insertSpaces: true,
             detectIndentation: false,
             autoIndent: 'full',
             experimentalWhitespaceRendering: 'off',
+            guides: {
+                indentation: true,
+                highlightActiveIndentation: true,
+            },           
 
             // Active Formatting
             autoClosingBrackets: 'never',
@@ -235,7 +257,7 @@ Promise.all([loadYamlSchema(), loadDefaultYaml()])
 
             // Cursor, Copy/Paste, Highlighting, Formatting
             cursorSurroundingLines: 3,
-            formatOnType: true,
+            formatOnType: false,
             formatOnPaste: true,
             autoIndentOnPaste: true,
             autoIndentOnPasteWithinString: false,
@@ -243,33 +265,47 @@ Promise.all([loadYamlSchema(), loadDefaultYaml()])
             columnSelection: false, // Kinda cool, might consider enabling later
             roundedSelection: false,
             cursorBlinking: 'smooth',
+            multiCursorModifier: 'alt',
+            multiCursorPaste: 'spread',
+            pasteAs: {enabled: false},
 
             // Visuals
             minimap: { enabled: false },
             glyphMargin: true,
             lineNumbers: 'on',
             renderWhitespace: 'boundary',
-            renderIndentGuides: true,
             highlightActiveIndentGuide: true,
+            padding: { top: 10, bottom: 20 },
 
-            // Behavior
-            wordWrap: 'on',
-            scrollBeyondLastLine: false,
-            smoothScrolling: true,
-
-            // Suggestions & Hover
+            // Suggestions
+            suggest: { // Todo: Look more into this one
+                filterGraceful: true,
+                localityBonus: true,
+                preview: true,
+                previewMode: 'prefix',
+                matchOnWordStartOnly: false,
+                sharedSuggestSelections: true,
+                showInlineDetails: true,
+                showSnippets: true,
+                //snippetsPreventQuickSuggestions: false,
+                insertMode: 'insert'
+            },
+            suggestSelection: 'first',
             quickSuggestions: {
                 other: true,
                 comments: false,
                 strings: true
             },
+            snippetSuggestions: 'inline', // Todo: Look more into this one
+            inlineSuggest: { // Todo: Look more into this one
+                enabled: true,
+            },
             suggestOnTriggerCharacters: true,
             acceptSuggestionOnEnter: 'smart',
-            hover: { enabled: true },
-            parameterHints: { enabled: true },
 
-            // Miscellaneous
+            // Miscellaneous : (mostly things that default to enabled that don't work in Yaml)
             codeLens: false,
+            parameterHints: { enabled: false }
         });
 
 
