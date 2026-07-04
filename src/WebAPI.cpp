@@ -57,8 +57,12 @@ extern "C"
         {
             printf("Error occurred: %s\n", e.what());
             g_lastError = e.what();
-
-            EM_ASM({ postMessage({type : "error", error : UTF8ToString($0)}); }, g_lastError.c_str());
+            EM_ASM({
+            var ptr = $0;
+            var len = $1;
+            var bytes = HEAPU8.slice(ptr, ptr + len);
+            var str = new TextDecoder('utf8').decode(bytes);
+            postMessage({ type: "error", error: str }); }, g_lastError.c_str(), g_lastError.length());
         }
     }
 

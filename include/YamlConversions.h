@@ -143,7 +143,7 @@ namespace YAML
         {
             if (node.size() != 2) // material, transform
             {
-                throw std::runtime_error(node.size() + "Sphere must have exactly 2 fields: 'material' and 'transform'");
+                throw std::runtime_error("Sphere must have exactly 2 fields: 'material' and 'transform'");
             }
 
             rhs = Scene::Sphere();
