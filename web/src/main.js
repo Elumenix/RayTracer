@@ -3,12 +3,12 @@ import * as monaco from 'monaco-editor'
 import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
 import { configureMonacoYaml } from 'monaco-yaml'
 import yamlWorker from 'monaco-yaml/yaml.worker?worker'
-const worker = new Worker("/RayTracer/ray_worker.js", { type: "module" });
+let worker; // No point in assigning a worker off the bat, render is forced to make a new one
 
 // Variables related to the image display / persistent data
 let scaleImage = true;
 let savedImage = null;
-let debugLetterbox = true;
+let debugLetterbox = false;
 let currentRenderId = 0;
 const editorDiv = document.getElementById("editor");
 const canvas = document.getElementById("output");
@@ -33,7 +33,15 @@ document.getElementById('toggle-fit-btn').addEventListener('click', () => {
 })
 
 function updateProgressBar(pct) {
-    progressBar.style.width = pct + "%";
+    if (pct === 0) {
+        // Temporarily kill the transition so the reset is instant
+        progressBar.style.transition = "none";
+        progressBar.style.width = "0%";
+        progressBar.offsetHeight;
+        progressBar.style.transition = "";
+    } else {
+        progressBar.style.width = pct + "%";
+    }
     progressContainer.setAttribute("aria-valuenow", pct);
 }
 
@@ -122,9 +130,8 @@ function drawFinalImage(width, height, pixels) {
 }
 
 // This gets the data from the worker and uses it to update the progress bar and draw the canvas
-worker.onmessage = (e) => {
+function handleMessage(e) {
     const { type, progress, total, width, height, pixels } = e.data;
-
 
     if (type === "progress") {
         // height is returned as total when the progress type is sent
@@ -134,6 +141,11 @@ worker.onmessage = (e) => {
     }
 
     if (type === "done") {
+        worker.postMessage({ type: "done" });
+        return;
+    }
+
+    if (type === "stream") {
         drawFinalImage(width, height, pixels);
         updateProgressBar(100);
         hideProgressBar();
@@ -365,6 +377,12 @@ Promise.all([loadYamlSchema(), loadDefaultYaml()])
 
             // Disable if not disabled aready because it's ambiguous what would be downloaded if the user clicks it while a render is in progress
             document.getElementById('download-btn').disabled = true;
+
+            // User specifically wants to render now, so make sure the previous one is cancelled if in progress
+            // Ideally we would have a way to detect if a render is finished already, but events are queued and ways to check stall / slow down things much more
+            if (worker) worker.terminate();
+            worker = new Worker("/RayTracer/ray_worker.js", { type: "module" });
+            worker.onmessage = handleMessage;
 
             // Send a request to the worker to start rendering the scene
             // The worker will send back updates that are handled in the worker.onmessage function above

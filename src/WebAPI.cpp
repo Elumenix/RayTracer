@@ -13,7 +13,6 @@ static int g_width = 0;
 static int g_height = 0;
 static std::string g_lastError = "";
 static int g_progress = 0;
-static bool g_cancel = false;
 
 extern "C"
 {
@@ -24,7 +23,6 @@ extern "C"
         g_lastError = "";
         delete g_canvas;
         g_canvas = nullptr;
-        g_cancel = false;
 
         try
         {
@@ -43,11 +41,17 @@ extern "C"
 
             // Render the scene
             printf("Rendering started\n");
-            Rendering::Canvas canvas = camera.Render(world, maxDepth, &g_progress, &g_cancel);
+            Rendering::Canvas canvas = camera.Render(world, maxDepth, &g_progress);
             printf("Rendering completed\n");
 
             // Store in a buffer that javascript can access
             g_canvas = new Rendering::Canvas(std::move(canvas));
+
+            // Notify main thread so that the main thread can notify the web worker (which will then fetch the buffer from c++)
+            // I don't really know why it goes to main instead of the worker, but it's better to use worker as an intermediate to keep js code clean
+            EM_ASM({
+                postMessage({type : "done"});
+            });
         }
         catch (const std::exception &e)
         {
@@ -78,12 +82,6 @@ extern "C"
     int get_progress()
     {
         return g_progress;
-    }
-
-    EMSCRIPTEN_KEEPALIVE
-    void cancel_render()
-    {
-        g_cancel = true;
     }
 
     EMSCRIPTEN_KEEPALIVE

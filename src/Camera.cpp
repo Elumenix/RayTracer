@@ -5,6 +5,10 @@
 #include "World.h"
 #include <cmath>
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten/emscripten.h>
+#endif
+
 using namespace Rendering;
 
 namespace Scene
@@ -67,20 +71,19 @@ namespace Scene
     }
 
     // Some optional pointers so webassembly can track progress and cancel the render if needed
-    Canvas Camera::Render(const World &world, int recursionLimit, int* progress, bool* cancel)
+    Canvas Camera::Render(const World &world, int recursionLimit, int *progress)
     {
         Canvas image(hsize, vsize);
 
         for (int y = 0; y < vsize; y++)
         {
+#ifdef __EMSCRIPTEN__
             if (progress != nullptr)
             {
                 *progress = y;
+                EM_ASM({ postMessage({type : "progress", progress : $0, total : $1}); }, y, (vsize - 1));
             }
-            if (cancel != nullptr && *cancel)
-            {
-                break;
-            }
+#endif
 
             for (int x = 0; x < hsize; x++)
             {
