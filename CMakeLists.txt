@@ -59,7 +59,12 @@ if (EMSCRIPTEN)
   SUFFIX ".js"
   )
 
+  target_compile_options(RayTracer PRIVATE -fexceptions)
+  target_compile_options(raytrace_lib PRIVATE -fexceptions)
+  target_compile_options(yaml-cpp PRIVATE -fexceptions)
+
   target_link_options(RayTracer PRIVATE 
+    -fexceptions
     -sALLOW_MEMORY_GROWTH=1
     -sEXPORT_ES6=1
     -sMODULARIZE=1

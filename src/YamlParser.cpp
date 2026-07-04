@@ -84,8 +84,16 @@ namespace YAML
             for (const auto &entry : node)
             {
                 // If the entry is a scalar and exists in the defines map, we need to resolve it
-                if (entry.IsScalar() && defines.count(entry.as<string>()))
+                if (entry.IsScalar())
                 {
+                    // If it's a scalar and not in the map, the wrong name was used and we need to check it
+                    string parentTransform = entry.as<string>();
+                    if (!defines.count(parentTransform))
+                    {
+                        cerr << "Item " << itemNumber << ": Referenced transform was not defined: " << parentTransform << endl;
+                        throw runtime_error("Item " + to_string(itemNumber) + ": Referenced transform was not defined: " + parentTransform);
+                    }
+
                     Node expanded = ResolveTransform(defines.at(entry.as<string>()), defines, itemNumber);
                     for (const auto &subEntry : expanded)
                     {
@@ -105,6 +113,59 @@ namespace YAML
 
         // This return statement means that the node was empty
         return node;
+    }
+
+    void CheckDefValidity(const Node &item, const unordered_map<string, Node> &defines, int itemNumber)
+    {
+        // Confirm this is a proper transform
+        if (item["value"].IsSequence())
+        {
+            try
+            {
+                auto node = YAML::ResolveTransform(item["value"], defines, itemNumber);
+
+                try
+                {
+                    auto ret = node.as<Math::Matrix<4, 4>>();
+                }
+                catch (const std::exception &e)
+                {
+                    // This error would be written out by YamlConversions, so we need to add item info
+                    cerr << "Item " << itemNumber << ": " << e.what() << endl;
+                    throw runtime_error("Item " + to_string(itemNumber) + ": " + e.what());
+                }
+            }
+            catch (const std::exception &e)
+            {
+                // This was written out at the source already
+                throw runtime_error(e.what());
+            }
+        }
+
+        // Confirm material is set up correctly
+        if (item["value"].IsMap())
+        {
+            try
+            {
+                auto node = YAML::ResolveMaterial(item["value"], defines, itemNumber);
+
+                try
+                {
+                    auto ret = node.as<Rendering::Material>();
+                }
+                catch (const std::exception &e)
+                {
+                    // This error would be written out by YamlConversions, so we need to add item info
+                    cerr << "Item " << itemNumber << ": " << e.what() << endl;
+                    throw runtime_error("Item " + to_string(itemNumber) + ": " + e.what());
+                }
+            }
+            catch (const std::exception &e)
+            {
+                // This was written out at the source already
+                throw runtime_error(e.what());
+            }
+        }
     }
 }
 
@@ -205,6 +266,8 @@ pair<Camera, World> YamlParser::ParseYaml(const YAML::Node &root)
                     throw runtime_error("Item " + to_string(itemNumber) + ": Unsupported value field type for extended definition: " + name);
                 }
 
+                CheckDefValidity(item, defines, itemNumber);
+
                 // Extend node is saved
                 defines[name] = extendedNode;
                 continue;
@@ -216,6 +279,8 @@ pair<Camera, World> YamlParser::ParseYaml(const YAML::Node &root)
                 cerr << "Item " << itemNumber << ": No value field on extended definition: " << name << endl;
                 throw runtime_error("Item " + to_string(itemNumber) + ": No value field on extended definition: " + name);
             }
+
+            CheckDefValidity(item, defines, itemNumber);
 
             // Defined node is saved
             defines[name] = item["value"];

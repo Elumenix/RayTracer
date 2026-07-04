@@ -480,7 +480,7 @@ TEST(YamlTest, DecodeDefinedTransformTreeWithExtendedTransform)
   EXPECT_EQ(sphere->transform, Transformations::Scaling(2.1, 2.1, 2.1) * Transformations::Scaling(3.5, 3.5, 3.5) * Transformations::Scaling(2, 2, 2) * Transformations::Scaling(0.25, 0.25, 0.25) * Transformations::Translation(1, -1, 1) * IdentityMatrix);
 }
 
-TEST(YamlTest, FailedMaterialExtend)
+TEST(YamlTest, FailedMaterialExtend1)
 {
   const string yaml = R"(
 - add: camera
@@ -509,7 +509,40 @@ TEST(YamlTest, FailedMaterialExtend)
   EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
 }
 
-TEST(YamlTest, FailedTransformExtend)
+TEST(YamlTest, FailedMaterialExtend2) {
+  const string yaml = R"(
+- add: camera
+  width: 100
+  height: 100
+  field-of-view: 0.785
+  from: [-6, 6, -10]
+  to: [6, 0, 6]
+  up: [-0.45, 1, 0]
+- define: white-material
+  value:
+    color: [1, 1, 1]
+    diffuse: 0.7
+    ambient: 0.1
+    specular: 0.0
+    reflective: 0.1
+- define: blue-material
+  extend: white-material
+  value:
+    color: [0.537, 0.831, 0.914]
+- define: red-material
+  extend: white-material
+  value:
+    color: [0.941, 0.322, 0.388]
+- define: purple-material
+  extend: white-material
+  value:
+    color: [0.404, 0.550]
+)";
+
+  EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
+}
+
+TEST(YamlTest, FailedTransformExtend1)
 {
   const string yaml = R"(
 - add: camera
@@ -525,6 +558,28 @@ TEST(YamlTest, FailedTransformExtend)
 - define: extended-transform
   extend: base-transorm
   value:
+    - [ scale, 2, 2, 2 ]
+)";
+
+  EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
+}
+
+TEST(YamlTest, FailedTransformExtend2)
+{
+  const string yaml = R"(
+- add: camera
+  width: 1
+  height: 1
+  field-of-view: 90
+
+- define: base-transform
+  value:
+    - [ translate, 1, -1, 1 ]
+    - [ scale, 0.5, 0.5, 0.5 ]
+
+- define: extended-transform
+  value:
+    - bas-transform
     - [ scale, 2, 2, 2 ]
 )";
 

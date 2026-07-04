@@ -57,6 +57,8 @@ extern "C"
         {
             printf("Error occurred: %s\n", e.what());
             g_lastError = e.what();
+
+            EM_ASM({ postMessage({type : "error", error : UTF8ToString($0)}); }, g_lastError.c_str());
         }
     }
 

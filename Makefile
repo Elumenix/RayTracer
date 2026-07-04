@@ -46,6 +46,8 @@ buildVite:
 	@echo "Now run: cd web && npm run dev"
 
 # Build and run only the tests, ARGS lets me limit it to a specific test
+# As an example: 
+# make test ARGS="--gtest_filter=YamlTest.DecodeSphere --gtest_color=yes"
 ARGS ?= --gtest_color=yes
 test:
 	cmake --build build --target run_tests -j$(nproc)

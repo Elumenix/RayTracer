@@ -14,6 +14,8 @@ const editorDiv = document.getElementById("editor");
 const canvas = document.getElementById("output");
 const progressContainer = document.getElementById("render-progress");
 const progressBar = progressContainer.querySelector(".progress-bar");
+const errorModalBody = document.getElementById("modal-body");
+const errorModal = document.getElementById("error-Modal");
 
 
 // ############################################################################
@@ -131,9 +133,12 @@ function drawFinalImage(width, height, pixels) {
 
 // This gets the data from the worker and uses it to update the progress bar and draw the canvas
 function handleMessage(e) {
-    const { type, progress, total, width, height, pixels } = e.data;
+    const { type, progress, total, width, height, pixels, error } = e.data;
 
     if (type === "progress") {
+        // Progress bar only appears once progress is made, so it doesn't look strange popping up for a few frames if yaml fails to parse
+        showProgressBar(); 
+
         // height is returned as total when the progress type is sent
         const pct = (progress / total) * 100;
         updateProgressBar(pct);
@@ -154,6 +159,15 @@ function handleMessage(e) {
         document.getElementById('download-btn').disabled = false;
         return;
     }
+
+    // Show error popup if incorrect yaml was submitted
+    // This error comes from YamlParser.h in the C++, which has some pretty comprehensive error checking and useful error messages
+    if (type === "error") {
+        errorModalBody.textContent = error;
+        const modal = bootstrap.Modal.getOrCreateInstance(errorModal);
+        modal.show();
+        hideProgressBar();
+    }
 }
 
 // ############################################################################
@@ -169,7 +183,6 @@ self.MonacoEnvironment = {
 
         // Else return the default editor worker
         return new editorWorker();
-
     }
 }
 
@@ -388,7 +401,6 @@ Promise.all([loadYamlSchema(), loadDefaultYaml()])
             // The worker will send back updates that are handled in the worker.onmessage function above
             worker.postMessage({ yaml, maxDepth, renderId: currentRenderId });
             updateProgressBar(0);
-            showProgressBar();
         })
 
         // Match canvas CSS size to editor size

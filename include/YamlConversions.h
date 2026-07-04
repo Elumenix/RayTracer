@@ -141,6 +141,11 @@ namespace YAML
     {
         static bool decode(const Node &node, Scene::Sphere &rhs)
         {
+            if (node.size() != 2) // material, transform
+            {
+                throw std::runtime_error(node.size() + "Sphere must have exactly 2 fields: 'material' and 'transform'");
+            }
+
             rhs = Scene::Sphere();
 
             // Structure of a decoded sphere is garunteed because the YamlParser enforces it
@@ -156,6 +161,11 @@ namespace YAML
     {
         static bool decode(const Node &node, Scene::Cube &rhs)
         {
+            if (node.size() != 2) // material, transform
+            {
+                throw std::runtime_error("Cube must have exactly 2 fields: 'material' and 'transform'");
+            }
+
             rhs = Scene::Cube();
 
             // Structure of a decoded cube is garunteed because the YamlParser enforces it
@@ -171,6 +181,11 @@ namespace YAML
     {
         static bool decode(const Node &node, Scene::Plane &rhs)
         {
+            if (node.size() != 2) // material, transform
+            {
+                throw std::runtime_error("Plane must have exactly 2 fields: 'material' and 'transform'");
+            }
+
             rhs = Scene::Plane();
 
             // Structure of a decoded plane is garunteed because the YamlParser enforces it
@@ -290,9 +305,10 @@ namespace YAML
                         throw std::runtime_error("Value for 'translation' on transform is invalid");
                     }
                     rhs = Transformations::Translation(
-                                    step[1].as<float>(),
-                                    step[2].as<float>(),
-                                    step[3].as<float>()) * rhs;
+                              step[1].as<float>(),
+                              step[2].as<float>(),
+                              step[3].as<float>()) *
+                          rhs;
                 }
                 else if (type == "scale")
                 {
@@ -301,9 +317,10 @@ namespace YAML
                         throw std::runtime_error("Value for 'scale' on transform is invalid");
                     }
                     rhs = Transformations::Scaling(
-                                    step[1].as<float>(),
-                                    step[2].as<float>(),
-                                    step[3].as<float>()) * rhs;
+                              step[1].as<float>(),
+                              step[2].as<float>(),
+                              step[3].as<float>()) *
+                          rhs;
                 }
                 else if (type == "shear")
                 {
@@ -312,12 +329,13 @@ namespace YAML
                         throw std::runtime_error("Value for 'shear' on transform is invalid");
                     }
                     rhs = Transformations::Shearing(
-                                    step[1].as<float>(),
-                                    step[2].as<float>(),
-                                    step[3].as<float>(),
-                                    step[4].as<float>(),
-                                    step[5].as<float>(),
-                                    step[6].as<float>()) * rhs;
+                              step[1].as<float>(),
+                              step[2].as<float>(),
+                              step[3].as<float>(),
+                              step[4].as<float>(),
+                              step[5].as<float>(),
+                              step[6].as<float>()) *
+                          rhs;
                 }
                 else
                 {
