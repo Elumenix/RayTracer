@@ -1,18 +1,19 @@
-console.log('main.js is running')
 // Get monaco packages
 import * as monaco from 'monaco-editor'
 import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
 import { configureMonacoYaml } from 'monaco-yaml'
 import yamlWorker from 'monaco-yaml/yaml.worker?worker'
+const worker = new Worker("/RayTracer/ray_worker.js", { type: "module" });
 
 // Variables related to the image display / persistent data
 let scaleImage = true;
 let savedImage = null;
 let debugLetterbox = true;
+let currentRenderId = 0;
 const editorDiv = document.getElementById("editor");
 const canvas = document.getElementById("output");
-
-
+const progressContainer = document.getElementById("render-progress");
+const progressBar = progressContainer.querySelector(".progress-bar");
 
 
 // ############################################################################
@@ -31,44 +32,56 @@ document.getElementById('toggle-fit-btn').addEventListener('click', () => {
     drawOutputCanvas()
 })
 
-function drawNativeCentered(ctx, img) {
-    const offsetX = (canvas.width - img.width) / 2;
-    const offsetY = (canvas.height - img.height) / 2;
+function updateProgressBar(pct) {
+    progressBar.style.width = pct + "%";
+    progressContainer.setAttribute("aria-valuenow", pct);
+}
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+function showProgressBar() {
+    progressContainer.classList.remove("d-none");
+}
+
+function hideProgressBar() {
+    progressContainer.classList.add("d-none");
+}
+
+function drawNativeCentered(ctx, img, cssWidth, cssHeight) {
+    const offsetX = (cssWidth - img.width) / 2;
+    const offsetY = (cssHeight - img.height) / 2;
+    ctx.clearRect(0, 0, cssWidth, cssHeight);
     ctx.drawImage(img, offsetX, offsetY);
 }
 
-function drawLetterboxedImage(ctx, img) {
-    const canvasAspect = canvas.width / canvas.height;
+function drawLetterboxedImage(ctx, img, cssWidth, cssHeight) {
+    const canvasAspect = cssWidth / cssHeight;
     const imgAspect = img.width / img.height;
     let drawWidth, drawHeight;
 
     if (imgAspect > canvasAspect) {
         // Image is wider; letterbox top/bottom
-        drawWidth = canvas.width;
-        drawHeight = canvas.width / imgAspect;
+        drawWidth = cssWidth;
+        drawHeight = cssWidth / imgAspect;
     } else {
         // Image is taller; letterbox left/right
-        drawHeight = canvas.height;
-        drawWidth = canvas.height * imgAspect;
+        drawHeight = cssHeight;
+        drawWidth = cssHeight * imgAspect;
     }
 
     // Calculate the offset to center the image
-    const offsetX = (canvas.width - drawWidth) / 2;
-    const offsetY = (canvas.height - drawHeight) / 2;
+    const offsetX = (cssWidth - drawWidth) / 2;
+    const offsetY = (cssHeight - drawHeight) / 2;
 
     // Edit the webpage canvas to show the letterboxed image
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, cssWidth, cssHeight);
     ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
 
     // Debug visualization
     if (debugLetterbox) {
         ctx.fillStyle = "rgba(255,0,0,0.3)"
-        ctx.fillRect(0, 0, canvas.width, offsetY)
-        ctx.fillRect(0, canvas.height - offsetY, canvas.width, offsetY)
+        ctx.fillRect(0, 0, cssWidth, offsetY)
+        ctx.fillRect(0, cssHeight - offsetY, cssWidth, offsetY)
         ctx.fillRect(0, offsetY, offsetX, drawHeight)
-        ctx.fillRect(canvas.width - offsetX, offsetY, offsetX, drawHeight)
+        ctx.fillRect(cssWidth - offsetX, offsetY, offsetX, drawHeight)
     }
 }
 
@@ -90,9 +103,44 @@ function drawOutputCanvas() {
     ctx.scale(dpr, dpr)
 
     if (scaleImage) {
-        drawLetterboxedImage(ctx, savedImage)
+        drawLetterboxedImage(ctx, savedImage, rect.width, rect.height)
     } else {
-        drawNativeCentered(ctx, savedImage)
+        drawNativeCentered(ctx, savedImage, rect.width, rect.height)
+    }
+}
+
+function drawFinalImage(width, height, pixels) {
+    savedImage = document.createElement('canvas');
+    savedImage.width = width;
+    savedImage.height = height;
+
+    const ctx = savedImage.getContext('2d');
+    const imageData = new ImageData(pixels, width, height);
+    ctx.putImageData(imageData, 0, 0);
+
+    drawOutputCanvas();
+}
+
+// This gets the data from the worker and uses it to update the progress bar and draw the canvas
+worker.onmessage = (e) => {
+    const { type, progress, total, width, height, pixels } = e.data;
+
+
+    if (type === "progress") {
+        // height is returned as total when the progress type is sent
+        const pct = (progress / total) * 100;
+        updateProgressBar(pct);
+        return;
+    }
+
+    if (type === "done") {
+        drawFinalImage(width, height, pixels);
+        updateProgressBar(100);
+        hideProgressBar();
+
+        // It now makes sense to allow downloading the image
+        document.getElementById('download-btn').disabled = false;
+        return;
     }
 }
 
@@ -245,7 +293,7 @@ Promise.all([loadYamlSchema(), loadDefaultYaml()])
             guides: {
                 indentation: true,
                 highlightActiveIndentation: true,
-            },           
+            },
 
             // Active Formatting
             autoClosingBrackets: 'never',
@@ -267,7 +315,7 @@ Promise.all([loadYamlSchema(), loadDefaultYaml()])
             cursorBlinking: 'smooth',
             multiCursorModifier: 'alt',
             multiCursorPaste: 'spread',
-            pasteAs: {enabled: false},
+            pasteAs: { enabled: false },
 
             // Visuals
             minimap: { enabled: false },
@@ -313,39 +361,16 @@ Promise.all([loadYamlSchema(), loadDefaultYaml()])
         document.getElementById('render-btn').addEventListener('click', () => {
             const yaml = editor.getValue()
             const maxDepth = 5 // Make an option for this eventually
+            currentRenderId++;
 
-            // Calling the c++ render function
-            Module.ccall('render', null, ['string', 'number'], [yaml, maxDepth])
+            // Disable if not disabled aready because it's ambiguous what would be downloaded if the user clicks it while a render is in progress
+            document.getElementById('download-btn').disabled = true;
 
-            // Error handling - just outputting a message currently
-            const error = Module.ccall('get_last_error', 'string', [], [])
-            if (error !== "") {
-                console.log('error:', error)
-            }
-
-            // Retrieve information about the rendered image
-            const width = Module.ccall('get_width', 'number', [], [])
-            const height = Module.ccall('get_height', 'number', [], [])
-            const bufferSize = width * height * 4
-            const bufferPtr = Module._malloc(bufferSize)
-            Module.ccall('copy_to_buffer', null, ['number'], [bufferPtr])
-
-            // Initialize the image data
-            const pixels = new Uint8ClampedArray(Module.HEAPU8.buffer, bufferPtr, bufferSize).slice()
-            const imageData = new ImageData(pixels, width, height)
-
-            // Create an off-screen canvas to draw the image data
-            savedImage = document.createElement('canvas')
-            savedImage.width = width
-            savedImage.height = height
-            savedImage.getContext('2d').putImageData(imageData, 0, 0)
-
-            // draw the image on the output canvas
-            drawOutputCanvas()
-
-            // Free buffer, and allow image to be downloaded
-            Module._free(bufferPtr)
-            document.getElementById('download-btn').disabled = false;
+            // Send a request to the worker to start rendering the scene
+            // The worker will send back updates that are handled in the worker.onmessage function above
+            worker.postMessage({ yaml, maxDepth, renderId: currentRenderId });
+            updateProgressBar(0);
+            showProgressBar();
         })
 
         // Match canvas CSS size to editor size

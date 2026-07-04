@@ -61,8 +61,11 @@ if (EMSCRIPTEN)
 
   target_link_options(RayTracer PRIVATE 
     -sALLOW_MEMORY_GROWTH=1
+    -sEXPORT_ES6=1
+    -sMODULARIZE=1
+    -sENVIRONMENT=worker
     "SHELL:-sEXPORTED_RUNTIME_METHODS=['ccall','cwrap','HEAPU8']"
-    "SHELL:-sEXPORTED_FUNCTIONS=['_render','_get_width','_get_height','_copy_to_buffer','_get_last_error','_malloc','_free']"
+    "SHELL:-sEXPORTED_FUNCTIONS=['_render','_get_width','_get_height','_get_progress','_cancel_render','_copy_to_buffer','_get_last_error','_malloc','_free']"
   )
   
   if (EXISTS ${CMAKE_SOURCE_DIR}/web/dist/)

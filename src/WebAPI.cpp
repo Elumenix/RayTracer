@@ -7,12 +7,13 @@
 #include "Camera.h"
 #include "YamlParser.h"
 
-
 // canvas and error message will be available to javascript
 static Rendering::Canvas *g_canvas = nullptr;
 static int g_width = 0;
 static int g_height = 0;
 static std::string g_lastError = "";
+static int g_progress = 0;
+static bool g_cancel = false;
 
 extern "C"
 {
@@ -23,6 +24,7 @@ extern "C"
         g_lastError = "";
         delete g_canvas;
         g_canvas = nullptr;
+        g_cancel = false;
 
         try
         {
@@ -41,7 +43,7 @@ extern "C"
 
             // Render the scene
             printf("Rendering started\n");
-            Rendering::Canvas canvas = camera.Render(world, maxDepth);
+            Rendering::Canvas canvas = camera.Render(world, maxDepth, &g_progress, &g_cancel);
             printf("Rendering completed\n");
 
             // Store in a buffer that javascript can access
@@ -70,6 +72,18 @@ extern "C"
     int get_height()
     {
         return g_height;
+    }
+
+    EMSCRIPTEN_KEEPALIVE
+    int get_progress()
+    {
+        return g_progress;
+    }
+
+    EMSCRIPTEN_KEEPALIVE
+    void cancel_render()
+    {
+        g_cancel = true;
     }
 
     EMSCRIPTEN_KEEPALIVE

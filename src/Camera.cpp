@@ -66,12 +66,22 @@ namespace Scene
         return Ray(origin, direction);
     }
 
-    Canvas Camera::Render(const World &world, int recursionLimit)
+    // Some optional pointers so webassembly can track progress and cancel the render if needed
+    Canvas Camera::Render(const World &world, int recursionLimit, int* progress, bool* cancel)
     {
         Canvas image(hsize, vsize);
 
         for (int y = 0; y < vsize; y++)
         {
+            if (progress != nullptr)
+            {
+                *progress = y;
+            }
+            if (cancel != nullptr && *cancel)
+            {
+                break;
+            }
+
             for (int x = 0; x < hsize; x++)
             {
                 Ray ray = RayForPixel(x, y);
