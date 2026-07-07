@@ -137,7 +137,7 @@ function handleMessage(e) {
 
     if (type === "progress") {
         // Progress bar only appears once progress is made, so it doesn't look strange popping up for a few frames if yaml fails to parse
-        showProgressBar(); 
+        showProgressBar();
 
         // height is returned as total when the progress type is sent
         const pct = (progress / total) * 100;
@@ -380,7 +380,6 @@ Promise.all([loadYamlSchema(), loadDefaultYaml()])
             codeLens: false,
             parameterHints: { enabled: false }
         });
-
 
         // Render button event. Here because it needs to read from editor
         document.getElementById('render-btn').addEventListener('click', () => {

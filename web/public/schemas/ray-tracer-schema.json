@@ -1,39 +1,260 @@
 { 
     "type": "array",
     "items": {
+        "type": "object",
         "oneOf": [
-            { "$ref": "#/definitions/add" },
-            { "$ref": "#/definitions/addCamera" },
-            { "$ref": "#/definitions/addLight" },
-            { "$ref": "#/definitions/addPlane" },
-            { "$ref": "#/definitions/addSphere" },
-            { "$ref": "#/definitions/addCube" },
-            { "$ref": "#/definitions/defineEntry" }
+            { "$ref": "#/definitions/Camera" },
+            { "$ref": "#/definitions/Light" }
         ]
     },
+
     "definitions": {
-
-        "vec3": {
-            "type": "array",
-            "items": {
-                "type": "number"
+        "Camera": {
+            "type": "object",
+            "doNotSuggest": true,
+            "additionalProperties": false,
+            "properties": {
+                "add": {
+                    "description": "The camera settings for the scene. Controls the direction, fov, and image size generated.\nOnly one camera can be added to a scene.",
+                    "const": "camera",
+                    "doNotSuggest": "true"
+                },
+                "width": {
+                    "description": "The width (in pixels) of the generated image.",
+                    "type": "integer",
+                    "minimum": 1,
+                    "doNotSuggest": "true"
+                },
+                "height": {
+                    "description": "The height (in pixels) of the generated image.",
+                    "type": "integer",
+                    "minimum": 1,
+                    "doNotSuggest": "true"
+                },
+                "field-of-view": {
+                    "description": "The field of view of the camera.",
+                    "type": "number",
+                    "exclusiveMinimum": 0,
+                    "exclusiveMaximum": 3.14159,
+                    "doNotSuggest": "true"
+                },
+                "from": {
+                    "description": "The position of the camera in 3D space.",
+                    "$ref": "#/definitions/Vec3"
+                },
+                "to": {
+                    "description": "The point the camera is looking at in 3D space.",
+                    "$ref": "#/definitions/Vec3"
+                },
+                "up": {
+                    "description": "The up vector of the camera in 3D space.",
+                    "$ref": "#/definitions/Vec3"
+                }
             },
-            "minItems": 3,
-            "maxItems": 3,
-            "default": [0, 0, 0]
+            "required": ["add", "width", "height", "field-of-view"],
+            "defaultSnippets": [
+                {
+                    "label": "Camera",
+                    "sortText": "0_Camera",
+                    "description": "A minimal camera implementation.",
+                    "body": {
+                        "add": "camera",
+                        "width": 128,
+                        "height": 128,
+                        "field-of-view": 1.0472
+                    }
+                },
+                {
+                    "label": "CameraFull",
+                    "sortText": "0_CameraFull",
+                    "description": "A camera with all fields defined.",
+                    "body": {
+                        "add": "camera",
+                        "width": 128,
+                        "height": 128,
+                        "field-of-view": 1.0472,
+                        "from": "[0, 0, 0]",
+                        "to": "[0, 0, -1]",
+                        "up": "[0, 1, 0]"
+                    }
+                }
+            ]
         },
-        "vec3Clamped": {
-            "type": "array",
-            "items": {
-                "type": "number",
-                "minimum": 0,
-                "maximum": 1
+        "Light": {
+            "type": "object",
+            "doNotSuggest": true,
+            "additionalProperties": false,
+            "properties": {
+                "add": {
+                    "description": "A point light that will light up things around it.",
+                    "const": "light",
+                    "doNotSuggest": "true"
+                },
+                "at": {
+                    "description": "The position of the light in 3D space.",
+                    "$ref": "#/definitions/Vec3"
+                },
+                "intensity": {
+                    "description": "The color of the light.",
+                    "$ref": "#/definitions/Color"
+                }
             },
-            "minItems": 3,
-            "maxItems": 3,
-            "default": [1, 1, 1]
+            "required": ["add", "at", "intensity"],
+            "defaultSnippets": [
+                {
+                    "label": "Light",
+                    "sortText": "0_Light",
+                    "description": "A point light that will light up things around it.",
+                    "body": {
+                        "add": "light",
+                        "at": "[0, 0, 0]",
+                        "intensity": "[1, 1, 1]"
+                    }
+                }
+            ]
+        },
+        "Plane": {
+            "type": "object",
+            "doNotSuggest": true,
+            "additionalProperties": false,
+            "properties": {
+                "add": {
+                    "description": "A plane that will be added to the scene.",
+                    "const": "plane"
+                },
+                "material": {
+                    "description": "The material of the plane.",
+                    "oneOf": [
+                        {
+                            "$ref": "#/definitions/material",
+                            "default": {}
+                        },
+                        {
+                            "type": "string",
+                            "default": "parent"
+                        }
+                    ]
+                },
+                "transform": {
+                    "description": "The transform of the plane.",
+                    "oneOf": [
+                        {
+                            "$ref": "#/definitions/transform",
+                            "default": {}
+                        },
+                        {
+                            "type": "string",
+                            "default": "parent"
+                        }
+                    ]
+                }
+            },
+            "required": ["add", "material", "transform"]
+        },
+        "Sphere": {
+            "type": "object",
+            "doNotSuggest": true,
+            "additionalProperties": false,
+            "properties": {
+                "add": {
+                    "description": "A sphere that will be added to the scene.",
+                    "const": "sphere"
+                },
+                "material": {
+                    "description": "The material of the sphere.",
+                    "oneOf": [
+                        {
+                            "$ref": "#/definitions/material",
+                            "default": {}
+                        },
+                        {
+                            "type": "string",
+                            "default": "parent"
+                        }
+                    ]
+                },
+                "transform": {
+                    "description": "The transform of the sphere.",
+                    "oneOf": [
+                        {
+                            "$ref": "#/definitions/transform",
+                            "default": {}
+                        },
+                        {
+                            "type": "string",
+                            "default": "parent"
+                        }
+                    ]
+                }
+            },
+            "required": ["add", "material", "transform"]
+        },
+        "Cube": {
+            "type": "object",
+            "doNotSuggest": true,
+            "additionalProperties": false,
+            "properties": {
+                "add": {
+                    "description": "A cube that will be added to the scene.",
+                    "const": "cube"
+                },
+                "material": {
+                    "description": "The material of the cube.",
+                    "oneOf": [
+                        {
+                            "$ref": "#/definitions/material",
+                            "default": {}
+                        },
+                        {
+                            "type": "string",
+                            "default": "parent"
+                        }
+                    ]
+                },
+                "transform": {
+                    "description": "The transform of the cube.",
+                    "oneOf": [
+                        {
+                            "$ref": "#/definitions/transform",
+                            "default": {}
+                        },
+                        {
+                            "type": "string",
+                            "default": "parent"
+                        }
+                    ]
+                }
+            },
+            "required": ["add", "material", "transform"]
         },
 
+
+        "Define": {
+            "type": "object",
+            "doNotSuggest": true,
+            "additionalProperties": false,
+            "properties": {
+                "define": {
+                    "description": "The name of the new material or transform.",
+                    "type": "string",
+                    "default": "unique-name"
+                },
+                "extend": {
+                    "description": "The name of the material or transform to extend.\nOn a transform, an extend is optional as the name of the extended transform can instead be used as one of the operations in value.",
+                    "type": "string",
+                    "default": "parent-name"
+                },
+                "value": {
+                    "description": "Changes to the material/transform from its base/parent.",
+                    "oneOf": [
+                        { "$ref": "#/definitions/material" },
+                        { "$ref": "#/definitions/transform" }
+                    ],
+                    "default": [] 
+                }
+            },
+            "required": ["define", "value"]
+        },
 
 
         "material": {
@@ -45,7 +266,7 @@
             "properties": {
                 "color": {
                     "description": "The base color of the surface. Default is white",
-                    "$ref": "#/definitions/vec3Clamped",
+                    "$ref": "#/definitions/Color",
                     "default": [1, 1, 1]
                 },
                 "diffuse": {
@@ -215,219 +436,25 @@
         },
 
 
-
-        "add": {
-            "type": "string",
-            "enum": ["camera", "light", "plane", "sphere", "cube"]
-        },
-        "addCamera": {
-            "type": "object",
-            "properties": {
-                "add": {
-                    "description": "The camera settings for the scene. Controls the direction, fov, and image size generated.\nOnly one camera can be added to a scene.",
-                    "const": "camera"
-                },
-                "width": {
-                    "description": "The width (in pixels) of the generated image.",
-                    "type": "integer",
-                    "minimum": 1,
-                    "default": 128
-                },
-                "height": {
-                    "description": "The height (in pixels) of the generated image.",
-                    "type": "integer",
-                    "minimum": 1,
-                    "default": 128
-                },
-                "field-of-view": {
-                    "description": "The field of view of the camera.",
-                    "type": "number",
-                    "exclusiveMinimum": 0,
-                    "exclusiveMaximum": 3.14159,
-                    "default": 1.0472
-                },
-                "from": {
-                    "description": "The position of the camera in 3D space.",
-                    "$ref": "#/definitions/vec3",
-                    "default": [0, 0, 0]
-                },
-                "to": {
-                    "description": "The point the camera is looking at in 3D space.",
-                    "$ref": "#/definitions/vec3",
-                    "default": [0, 0, -1]
-                },
-                "up": {
-                    "description": "The up vector of the camera in 3D space.",
-                    "$ref": "#/definitions/vec3",
-                    "default": [0, 1, 0]
-                }
+        "Vec3": {
+            "type": "array",
+            "doNotSuggest": "true",
+            "items": {
+                "type": "number"
             },
-            "required": ["add", "width", "height", "field-of-view"]
+            "minItems": 3,
+            "maxItems": 3
         },
-        "addLight": {
-            "type": "object",
-            "defaultSnippets": [
-                {
-                    "label": "Point Light",
-                    "description": "A point light that will light up things around it.",
-                    "body": {
-                        "add": "light",
-                        "at": "[0, 0, 0]",
-                        "intensity": "[1, 1, 1]"
-                    }
-                }
-            ],
-            "properties": {
-                "add": {
-                    "description": "A point light that will light up things around it.",
-                    "const": "light"
-                },
-                "at": {
-                    "description": "The position of the light in 3D space.",
-                    "$ref": "#/definitions/vec3",
-                    "default": "[0, 0, 0]"
-                },
-                "intensity": {
-                    "description": "The color of the light.",
-                    "$ref": "#/definitions/vec3Clamped",
-                    "default": "[1, 1, 1]"
-                }
+        "Color": {
+            "type": "array",
+            "doNotSuggest": "true",
+            "items": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
             },
-            "required": ["add", "at", "intensity"]
-        },
-        "addPlane": {
-            "type": "object",
-            "properties": {
-                "add": {
-                    "description": "A plane that will be added to the scene.",
-                    "const": "plane"
-                },
-                "material": {
-                    "description": "The material of the plane.",
-                    "oneOf": [
-                        {
-                            "$ref": "#/definitions/material",
-                            "default": {}
-                        },
-                        {
-                            "type": "string",
-                            "default": "parent"
-                        }
-                    ]
-                },
-                "transform": {
-                    "description": "The transform of the plane.",
-                    "oneOf": [
-                        {
-                            "$ref": "#/definitions/transform",
-                            "default": {}
-                        },
-                        {
-                            "type": "string",
-                            "default": "parent"
-                        }
-                    ]
-                }
-            },
-            "required": ["add", "material", "transform"]
-        },
-        "addSphere": {
-            "type": "object",
-            "properties": {
-                "add": {
-                    "description": "A sphere that will be added to the scene.",
-                    "const": "sphere"
-                },
-                "material": {
-                    "description": "The material of the sphere.",
-                    "oneOf": [
-                        {
-                            "$ref": "#/definitions/material",
-                            "default": {}
-                        },
-                        {
-                            "type": "string",
-                            "default": "parent"
-                        }
-                    ]
-                },
-                "transform": {
-                    "description": "The transform of the sphere.",
-                    "oneOf": [
-                        {
-                            "$ref": "#/definitions/transform",
-                            "default": {}
-                        },
-                        {
-                            "type": "string",
-                            "default": "parent"
-                        }
-                    ]
-                }
-            },
-            "required": ["add", "material", "transform"]
-        },
-        "addCube": {
-            "type": "object",
-            "properties": {
-                "add": {
-                    "description": "A cube that will be added to the scene.",
-                    "const": "cube"
-                },
-                "material": {
-                    "description": "The material of the cube.",
-                    "oneOf": [
-                        {
-                            "$ref": "#/definitions/material",
-                            "default": {}
-                        },
-                        {
-                            "type": "string",
-                            "default": "parent"
-                        }
-                    ]
-                },
-                "transform": {
-                    "description": "The transform of the cube.",
-                    "oneOf": [
-                        {
-                            "$ref": "#/definitions/transform",
-                            "default": {}
-                        },
-                        {
-                            "type": "string",
-                            "default": "parent"
-                        }
-                    ]
-                }
-            },
-            "required": ["add", "material", "transform"]
-        },
-
-
-        "defineEntry": {
-            "type": "object",
-            "properties": {
-                "define": {
-                    "description": "The name of the new material or transform.",
-                    "type": "string",
-                    "default": "unique-name"
-                },
-                "extend": {
-                    "description": "The name of the material or transform to extend.\nOn a transform, an extend is optional as the name of the extended transform can instead be used as one of the operations in value.",
-                    "type": "string",
-                    "default": "parent-name"
-                },
-                "value": {
-                    "description": "Changes to the material/transform from its base/parent.",
-                    "oneOf": [
-                        { "$ref": "#/definitions/material" },
-                        { "$ref": "#/definitions/transform" }
-                    ],
-                    "default": [] 
-                }
-            },
-            "required": ["define", "value"]
+            "minItems": 3,
+            "maxItems": 3
         }
     }
 }
