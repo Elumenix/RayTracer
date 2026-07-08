@@ -4,7 +4,11 @@
         "type": "object",
         "oneOf": [
             { "$ref": "#/definitions/Camera" },
-            { "$ref": "#/definitions/Light" }
+            { "$ref": "#/definitions/Light" },
+            { "$ref": "#/definitions/Plane" },
+            { "$ref": "#/definitions/Sphere" },
+            { "$ref": "#/definitions/Cube" },
+            { "$ref": "#/definitions/Define" }
         ]
     },
 
@@ -17,26 +21,26 @@
                 "add": {
                     "description": "The camera settings for the scene. Controls the direction, fov, and image size generated.\nOnly one camera can be added to a scene.",
                     "const": "camera",
-                    "doNotSuggest": "true"
+                    "doNotSuggest": true
                 },
                 "width": {
                     "description": "The width (in pixels) of the generated image.",
                     "type": "integer",
                     "minimum": 1,
-                    "doNotSuggest": "true"
+                    "doNotSuggest": true
                 },
                 "height": {
                     "description": "The height (in pixels) of the generated image.",
                     "type": "integer",
                     "minimum": 1,
-                    "doNotSuggest": "true"
+                    "doNotSuggest": true
                 },
                 "field-of-view": {
                     "description": "The field of view of the camera.",
                     "type": "number",
                     "exclusiveMinimum": 0,
                     "exclusiveMaximum": 3.14159,
-                    "doNotSuggest": "true"
+                    "doNotSuggest": true
                 },
                 "from": {
                     "description": "The position of the camera in 3D space.",
@@ -55,7 +59,7 @@
             "defaultSnippets": [
                 {
                     "label": "Camera",
-                    "sortText": "0_Camera",
+                    "sortText": "1_Camera",
                     "description": "A minimal camera implementation.",
                     "body": {
                         "add": "camera",
@@ -65,8 +69,8 @@
                     }
                 },
                 {
-                    "label": "CameraFull",
-                    "sortText": "0_CameraFull",
+                    "label": "Camera (Expanded)",
+                    "sortText": "1_CameraFull",
                     "description": "A camera with all fields defined.",
                     "body": {
                         "add": "camera",
@@ -88,7 +92,7 @@
                 "add": {
                     "description": "A point light that will light up things around it.",
                     "const": "light",
-                    "doNotSuggest": "true"
+                    "doNotSuggest": true
                 },
                 "at": {
                     "description": "The position of the light in 3D space.",
@@ -103,7 +107,7 @@
             "defaultSnippets": [
                 {
                     "label": "Light",
-                    "sortText": "0_Light",
+                    "sortText": "1_Light",
                     "description": "A point light that will light up things around it.",
                     "body": {
                         "add": "light",
@@ -120,36 +124,47 @@
             "properties": {
                 "add": {
                     "description": "A plane that will be added to the scene.",
-                    "const": "plane"
+                    "const": "plane",
+                    "doNotSuggest": true
                 },
                 "material": {
                     "description": "The material of the plane.",
+                    "doNotSuggest": true,
                     "oneOf": [
                         {
-                            "$ref": "#/definitions/material",
-                            "default": {}
+                            "$ref": "#/definitions/Material"
                         },
                         {
-                            "type": "string",
-                            "default": "parent"
+                            "type": "string"
                         }
                     ]
                 },
                 "transform": {
                     "description": "The transform of the plane.",
+                    "doNotSuggest": true,
                     "oneOf": [
                         {
-                            "$ref": "#/definitions/transform",
-                            "default": {}
+                            "$ref": "#/definitions/Transform"
                         },
                         {
-                            "type": "string",
-                            "default": "parent"
+                            "type": "string"
                         }
                     ]
                 }
             },
-            "required": ["add", "material", "transform"]
+            "required": ["add", "material", "transform"],
+            "defaultSnippets": [
+                {
+                    "label": "Plane",
+                    "sortText": "2_Plane",
+                    "description": "A plane that will be added to the scene.",
+                    "body": {
+                        "add": "plane",
+                        "material": {},
+                        "transform": {}
+                    }
+                }
+            ]
         },
         "Sphere": {
             "type": "object",
@@ -158,36 +173,47 @@
             "properties": {
                 "add": {
                     "description": "A sphere that will be added to the scene.",
-                    "const": "sphere"
+                    "const": "sphere",
+                    "doNotSuggest": true
                 },
                 "material": {
                     "description": "The material of the sphere.",
+                    "doNotSuggest": true,
                     "oneOf": [
                         {
-                            "$ref": "#/definitions/material",
-                            "default": {}
+                            "$ref": "#/definitions/Material"
                         },
                         {
-                            "type": "string",
-                            "default": "parent"
+                            "type": "string"
                         }
                     ]
                 },
                 "transform": {
                     "description": "The transform of the sphere.",
+                    "doNotSuggest": true,
                     "oneOf": [
                         {
-                            "$ref": "#/definitions/transform",
-                            "default": {}
+                            "$ref": "#/definitions/Transform"
                         },
                         {
-                            "type": "string",
-                            "default": "parent"
+                            "type": "string"
                         }
                     ]
                 }
             },
-            "required": ["add", "material", "transform"]
+            "required": ["add", "material", "transform"],
+            "defaultSnippets": [
+                {
+                    "label": "Sphere",
+                    "sortText": "2_Sphere",
+                    "description": "A sphere that will be added to the scene.",
+                    "body": {
+                        "add": "sphere",
+                        "material": {},
+                        "transform": {}
+                    }
+                }
+            ]
         },
         "Cube": {
             "type": "object",
@@ -196,36 +222,47 @@
             "properties": {
                 "add": {
                     "description": "A cube that will be added to the scene.",
-                    "const": "cube"
+                    "const": "cube",
+                    "doNotSuggest": true
                 },
                 "material": {
                     "description": "The material of the cube.",
+                    "doNotSuggest": true,
                     "oneOf": [
                         {
-                            "$ref": "#/definitions/material",
-                            "default": {}
+                            "$ref": "#/definitions/Material"
                         },
                         {
-                            "type": "string",
-                            "default": "parent"
+                            "type": "string"
                         }
                     ]
                 },
                 "transform": {
                     "description": "The transform of the cube.",
+                    "doNotSuggest": true,
                     "oneOf": [
                         {
-                            "$ref": "#/definitions/transform",
-                            "default": {}
+                            "$ref": "#/definitions/Transform"
                         },
                         {
-                            "type": "string",
-                            "default": "parent"
+                            "type": "string"
                         }
                     ]
                 }
             },
-            "required": ["add", "material", "transform"]
+            "required": ["add", "material", "transform"],
+            "defaultSnippets": [
+                {
+                    "label": "Cube",
+                    "sortText": "2_Cube",
+                    "description": "A cube that will be added to the scene.",
+                    "body": {
+                        "add": "cube",
+                        "material": {},
+                        "transform": {}
+                    }
+                }
+            ]
         },
 
 
@@ -237,31 +274,54 @@
                 "define": {
                     "description": "The name of the new material or transform.",
                     "type": "string",
-                    "default": "unique-name"
+                    "default": "unique-name",
+                    "doNotSuggest": true
                 },
                 "extend": {
-                    "description": "The name of the material or transform to extend.\nOn a transform, an extend is optional as the name of the extended transform can instead be used as one of the operations in value.",
+                    "description": "The name of the material or transform to extend.",
                     "type": "string",
-                    "default": "parent-name"
+                    "default": "parent-name",
+                    "doNotSuggest": true
                 },
                 "value": {
                     "description": "Changes to the material/transform from its base/parent.",
+                    "doNotSuggest": true,
                     "oneOf": [
-                        { "$ref": "#/definitions/material" },
-                        { "$ref": "#/definitions/transform" }
-                    ],
-                    "default": [] 
+                        { "$ref": "#/definitions/Material" },
+                        { "$ref": "#/definitions/Transform" }
+                    ]
                 }
             },
-            "required": ["define", "value"]
+            "required": ["define", "value"],
+            "defaultSnippets": [
+                {
+                    "label": "Define",
+                    "sortText": "0_Define",
+                    "description": "Create a reusable variable that can be applied to objects.",
+                    "body": {
+                        "define": "unique-name",
+                        "value": {}
+                    }
+                },
+                {
+                    "label": "Extend",
+                    "sortText": "0_Extend",
+                    "description": "Create a new reusable variable that builds upon a previously defined one.",
+                    "body": {
+                        "define": "unique-name",
+                        "extend": "parent-name",
+                        "value": {}
+                    }
+                }
+            ]
         },
 
 
-        "material": {
+        "Material": {
             "description": "Defines what the surface of an object looks like.",
             "oneOf": [
                 { "type": "object" },
-                { "type": "null" }
+                { "type": "null", "doNotSuggest": true }
             ],
             "properties": {
                 "color": {
@@ -316,44 +376,40 @@
                     "minimum": 0,
                     "default": 1
                 }
-            }
+            },
+            "defaultSnippets": [
+                {
+                    "label": "Full Material",
+                    "sortText": "0_FullMaterial",
+                    "description": "A material with all fields exposed to their default values",
+                    "body": {
+                        "color": "[1,1,1]",
+                        "ambient": 0.1,
+                        "diffuse": 0.9,
+                        "specular": 0.9,
+                        "shininess": 200,
+                        "reflective": 0,
+                        "transparency": 0,
+                        "refractive-index": 1
+                    }
+                }
+            ]
         },
-        "transform": {
+        "Transform": {
             "description": "Determines the position, rotation, and scale of an object in the scene.\nA transform is essentially a list of transformations to apply to an object.",
             "oneOf": [
                 { "type": "array" },
-                { "type": "null" }
-            ],
-            "defaultSnippets": [
-                {
-                "label": "Translate",
-                "description": "Move the object in 3D space.",
-                "body": "[translate, 0, 0, 0]"
-                },
-                {
-                "label": "Scale",
-                "description": "Multiply the object's scale.",
-                "body": "[scale, 1, 1, 1]"
-                },
-                {
-                "label": "Rotate X",
-                "description": "Rotate around the world's X axis.",
-                "body": "[rotate-x, 0]"
-                },
-                {
-                "label": "Rotate Y",
-                "description": "Rotate around the world's Y axis.",
-                "body": "[rotate-y, 0]"
-                },
-                {
-                "label": "Rotate Z",
-                "description": "Rotate around the world's Z axis.",
-                "body": "[rotate-z, 0]"
-                },
-                {
-                "label": "Shear",
-                "description": "Shear the object along the specified axes.",
-                "body": "[shear, 0, 0, 0, 0, 0, 0]"
+                { 
+                    "type": "null", 
+                    "doNotSuggest": true,
+                    "defaultSnippets": [
+                        {
+                            "label": "Transform",
+                            "sortText": "0_Transform",
+                            "description": "Create a transformation to determine the orientation of the object.",
+                            "bodyText": "\n-"
+                        }
+                    ]
                 }
             ],
             "items": {
@@ -365,6 +421,7 @@
                     {
                         "description": "Move the position of the object in 3D space.",
                         "type": "array",
+                        "doNotSuggest": true,
                         "items": [
                             { "const": "translate" },
                             { "type": "number", "description": "x" },
@@ -372,11 +429,20 @@
                             { "type": "number", "description": "z" }
                         ],
                         "minItems": 4,
-                        "maxItems": 4
+                        "maxItems": 4,
+                        "defaultSnippets": [
+                            {
+                            "label": "Translate",
+                            "sortText": "0_Translate",
+                            "description": "Move the object in 3D space.",
+                            "bodyText": "[translate, 0, 0, 0]"
+                            }
+                        ]
                     },
                     {
                         "description": "Multiply the scale of the object.",
                         "type": "array",
+                        "doNotSuggest": true,
                         "items": [
                             { "const": "scale" },
                             { "type": "number", "description": "x" },
@@ -384,41 +450,77 @@
                             { "type": "number", "description": "z" }
                         ],
                         "minItems": 4,
-                        "maxItems": 4
+                        "maxItems": 4,
+                        "defaultSnippets": [
+                            {
+                            "label": "Scale",
+                            "sortText": "1_Scale",
+                            "description": "Multiply the object's scale.",
+                            "bodyText": "[scale, 1, 1, 1]"
+                            }
+                        ]
                     },
                     {
                         "description": "Rotate the object around the world's X axis.",
                         "type": "array",
+                        "doNotSuggest": true,
                         "items": [
                             { "const": "rotate-x" },
                             { "type": "number", "description": "radians" }
                         ],
                         "minItems": 2,
-                        "maxItems": 2
+                        "maxItems": 2,
+                        "defaultSnippets": [
+                            {
+                            "label": "Rotate X",
+                            "sortText": "2_RotateX",
+                            "description": "Rotate around the world's X axis.",
+                            "bodyText": "[rotate-x, 0]"
+                            }
+                        ]
                     },
                     {
                         "description": "Rotate the object around the world's Y axis.",
                         "type": "array",
+                        "doNotSuggest": true,
                         "items": [
                             { "const": "rotate-y" },
                             { "type": "number", "description": "radians" }
                         ],
                         "minItems": 2,
-                        "maxItems": 2
+                        "maxItems": 2,
+                        "defaultSnippets": [
+                            {
+                            "label": "Rotate Y",
+                            "sortText": "2_RotateY",
+                            "description": "Rotate around the world's Y axis.",
+                            "bodyText": "[rotate-y, 0]"
+                            }
+                        ]
                     },
                     {
                         "description": "Rotate the object around the world's Z axis.",
                         "type": "array",
+                        "doNotSuggest": true,
                         "items": [
                             { "const": "rotate-z" },
                             { "type": "number", "description": "radians" }
                         ],
                         "minItems": 2,
-                        "maxItems": 2
+                        "maxItems": 2,
+                        "defaultSnippets": [
+                            {
+                            "label": "Rotate Z",
+                            "sortText": "2_RotateZ",
+                            "description": "Rotate around the world's Z axis.",
+                            "bodyText": "[rotate-z, 0]"
+                            }
+                        ]
                     },
                     {
                         "description": "Shear the object along the specified axes.",
                         "type": "array",
+                        "doNotSuggest": true,
                         "items": [
                             { "const": "shear" },
                             { "type": "number", "description": "xy" },
@@ -429,7 +531,15 @@
                             { "type": "number", "description": "zy" }
                         ],
                         "minItems": 7,
-                        "maxItems": 7
+                        "maxItems": 7,
+                        "defaultSnippets": [
+                            {
+                            "label": "Shear",
+                            "sortText": "3_Shear",
+                            "description": "Shear the object along the specified axes.",
+                            "bodyText": "[shear, 0, 0, 0, 0, 0, 0]"
+                            }
+                        ]
                     }
                 ]
             }
@@ -438,7 +548,7 @@
 
         "Vec3": {
             "type": "array",
-            "doNotSuggest": "true",
+            "doNotSuggest": true,
             "items": {
                 "type": "number"
             },
@@ -447,7 +557,7 @@
         },
         "Color": {
             "type": "array",
-            "doNotSuggest": "true",
+            "doNotSuggest": true,
             "items": {
                 "type": "number",
                 "minimum": 0,
