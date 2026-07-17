@@ -122,7 +122,7 @@ namespace YAML
         {
             try
             {
-                auto node = YAML::ResolveTransform(item["value"], defines, itemNumber);
+                auto node = ResolveTransform(item["value"], defines, itemNumber);
 
                 try
                 {
@@ -147,7 +147,7 @@ namespace YAML
         {
             try
             {
-                auto node = YAML::ResolveMaterial(item["value"], defines, itemNumber);
+                auto node = ResolveMaterial(item["value"], defines, itemNumber);
 
                 try
                 {
@@ -166,6 +166,192 @@ namespace YAML
                 throw runtime_error(e.what());
             }
         }
+    }
+
+    void ExtendItem(const Node &item, const unordered_map<string, Node> &defines, int itemNumber, const string &name, Node &extendedNode)
+    {
+        string parentName = item["extend"].as<string>();
+
+        // Make sure the original definition exists
+        if (!defines.count(parentName))
+        {
+            cerr << "Item " << itemNumber << ": Extend failed because of undefined parent: " << parentName << endl;
+            throw runtime_error("Item " + to_string(itemNumber) + ": Extend failed because of undefined parent: " + parentName);
+        }
+
+        // Merge the extend value with the existing definition
+        extendedNode = Clone(defines.at(parentName));
+
+        // Fill with values, then place on the map
+        const Node &valueNode = item["value"];
+        if (valueNode.IsMap()) // Material Map
+        {
+            // In case we tried to extend a transform instead of a material
+            if (!extendedNode.IsMap())
+            {
+                cerr << "Item " << itemNumber << ": " << "(Material) " << name << " cannot extend (Transform) " << parentName << endl;
+                throw runtime_error("Item " + to_string(itemNumber) + ": " + "(Material) " + name + " cannot extend (Transform) " + parentName);
+            }
+
+            for (const auto &pair : valueNode)
+            {
+                string key = pair.first.as<string>();
+
+                // If this is an original field, we'll update it
+                if (extendedNode[key].IsDefined())
+                {
+                    extendedNode[key] = pair.second;
+                    continue;
+                }
+
+                // If this is a new field, we'll add it
+                extendedNode.push_back(pair);
+            }
+        }
+        else if (valueNode.IsSequence()) // Transform Sequence
+        {
+            // In case we tried to extend a material instead of a transform
+            if (!extendedNode.IsSequence())
+            {
+                cerr << "Item " << itemNumber << ": " << "(Transform) " << name << " cannot extend (Material) " << parentName << endl;
+                throw runtime_error("Item " + to_string(itemNumber) + ": " + "(Transform) " + name + " cannot extend (Material) " + parentName);
+            }
+
+            for (const auto &entry : valueNode)
+            {
+                extendedNode.push_back(entry);
+            }
+        }
+        else
+        {
+            cerr << "Item " << itemNumber << ": Unsupported value field type for extended definition: " << name << endl;
+            throw runtime_error("Item " + to_string(itemNumber) + ": Unsupported value field type for extended definition: " + name);
+        }
+    }
+
+    bool AddItem(const Node &item, const unordered_map<string, Node> &defines, int itemNumber, World &world, Camera &camera) {
+        // Item Type
+        string type = item["add"].as<string>();
+
+        if (type == "light")
+        {
+            try
+            {
+                Light light = item.as<Light>();
+                world.Add(light);
+            }
+            catch (const std::exception &e)
+            {
+                cerr << "Item " << itemNumber << ": " << e.what() << endl;
+                throw runtime_error("Item " + to_string(itemNumber) + ": " + e.what());
+            }
+
+            return false;
+        }
+
+        if (type == "sphere")
+        {
+            // We need to catch if the user missed a required field
+            CheckShapeFields(item, itemNumber, "sphere");
+
+            // We'll be creating a new node that turns into a sphere, since it's ambiguous whether the user
+            // is going to manually define a material/object or use a variable for it
+            Node expanded;
+            expanded["material"] = ResolveMaterial(item["material"], defines, itemNumber);
+            expanded["transform"] = ResolveTransform(item["transform"], defines, itemNumber);
+
+            try
+            {
+                // Sphere gets decoded finally
+                Sphere sphere = expanded.as<Sphere>();
+
+                // The world takes ownership of the sphere
+                world.Add(std::move(sphere));
+            }
+            catch (const std::exception &e)
+            {
+                cerr << "Item " << itemNumber << ": " << e.what() << endl;
+                throw runtime_error("Item " + to_string(itemNumber) + ": " + e.what());
+            }
+
+            return false;
+        }
+
+        if (type == "cube")
+        {
+            // We need to catch if the user missed a required field
+            CheckShapeFields(item, itemNumber, "cube");
+
+            // We'll be creating a new node that turns into a cube, since it's ambiguous whether the user
+            // is going to manually define a material/object or use a variable for it
+            Node expanded;
+            expanded["material"] = ResolveMaterial(item["material"], defines, itemNumber);
+            expanded["transform"] = ResolveTransform(item["transform"], defines, itemNumber);
+
+            try
+            {
+                // Cube gets decoded finally
+                Cube cube = expanded.as<Cube>();
+
+                // The world takes ownership of the cube
+                world.Add(std::move(cube));
+            }
+            catch (const std::exception &e)
+            {
+                cerr << "Item " << itemNumber << ": " << e.what() << endl;
+                throw runtime_error("Item " + to_string(itemNumber) + ": " + e.what());
+            }
+
+            return false;
+        }
+
+        if (type == "plane")
+        {
+            // We need to catch if the user missed a required field
+            CheckShapeFields(item, itemNumber, "plane");
+
+            // We'll be creating a new node that turns into a plane, since it's ambiguous whether the user
+            // is going to manually define a material/object or use a variable for it
+            Node expanded;
+            expanded["material"] = ResolveMaterial(item["material"], defines, itemNumber);
+            expanded["transform"] = ResolveTransform(item["transform"], defines, itemNumber);
+
+            try
+            {
+                // Plane gets decoded finally
+                Plane plane = expanded.as<Plane>();
+
+                // The world takes ownership of the plane
+                world.Add(std::move(plane));
+            }
+            catch (const std::exception &e)
+            {
+                cerr << "Item " << itemNumber << ": " << e.what() << endl;
+                throw runtime_error("Item " + to_string(itemNumber) + ": " + e.what());
+            }
+
+            return false;
+        }
+
+        if (type == "camera")
+        {
+            try
+            {
+                Camera c = item.as<Camera>();
+                camera = std::move(item.as<Camera>());
+            }
+            catch (const std::exception &e)
+            {
+                cerr << "Item " << itemNumber << ": " << e.what() << endl;
+                throw runtime_error("Item " + to_string(itemNumber) + ": " + e.what());
+            }
+
+            return true;
+        }
+
+        // Getting here means the item is not a valid type
+        cerr << "Item " << itemNumber << ": Invalid add key: " << type << endl;
+        throw runtime_error("Item " + to_string(itemNumber) + ": Invalid add key: " + type);
     }
 }
 
@@ -198,81 +384,6 @@ pair<Camera, World> YamlParser::ParseYaml(const YAML::Node &root)
         {
             string name = item["define"].as<string>();
 
-            // If the item has an extend, we are making a new material or transform that builds on top of one in the map
-            if (item["extend"])
-            {
-                string parentName = item["extend"].as<string>();
-
-                // Make sure the original definition exists
-                if (!defines.count(parentName))
-                {
-                    cerr << "Item " << itemNumber << ": Extend failed because of undefined parent: " << parentName << endl;
-                    throw runtime_error("Item " + to_string(itemNumber) + ": Extend failed because of undefined parent: " + parentName);
-                }
-
-                // Merge the extend value with the existing definition
-                YAML::Node extendedNode = Clone(defines.at(parentName));
-
-                // value should be a required field, even if it's empty
-                if (!item["value"])
-                {
-                    cerr << "Item " << itemNumber << ": No value field on extended definition: " << name << endl;
-                    throw runtime_error("Item " + to_string(itemNumber) + ": No value field on extended definition: " + name);
-                }
-
-                // Fill with values, then place on the map
-                const YAML::Node &valueNode = item["value"];
-                if (valueNode.IsMap()) // Material Map
-                {
-                    // In case we tried to extend a transform instead of a material
-                    if (!extendedNode.IsMap())
-                    {
-                        cerr << "Item " << itemNumber << ": " << "(Material) " << name << " cannot extend (Transform) " << parentName << endl;
-                        throw runtime_error("Item " + to_string(itemNumber) + ": " + "(Material) " + name + " cannot extend (Transform) " + parentName);
-                    }
-
-                    for (const auto &pair : valueNode)
-                    {
-                        string key = pair.first.as<string>();
-
-                        // If this is an original field, we'll update it
-                        if (extendedNode[key].IsDefined())
-                        {
-                            extendedNode[key] = pair.second;
-                            continue;
-                        }
-
-                        // If this is a new field, we'll add it
-                        extendedNode.push_back(pair);
-                    }
-                }
-                else if (valueNode.IsSequence()) // Transform Sequence
-                {
-                    // In case we tried to extend a material instead of a transform
-                    if (!extendedNode.IsSequence())
-                    {
-                        cerr << "Item " << itemNumber << ": " << "(Transform) " << name << " cannot extend (Material) " << parentName << endl;
-                        throw runtime_error("Item " + to_string(itemNumber) + ": " + "(Transform) " + name + " cannot extend (Material) " + parentName);
-                    }
-
-                    for (const auto &entry : valueNode)
-                    {
-                        extendedNode.push_back(entry);
-                    }
-                }
-                else
-                {
-                    cerr << "Item " << itemNumber << ": Unsupported value field type for extended definition: " << name << endl;
-                    throw runtime_error("Item " + to_string(itemNumber) + ": Unsupported value field type for extended definition: " + name);
-                }
-
-                CheckDefValidity(item, defines, itemNumber);
-
-                // Extend node is saved
-                defines[name] = extendedNode;
-                continue;
-            }
-
             // value should be a required field, even if it's empty
             if (!item["value"])
             {
@@ -280,153 +391,45 @@ pair<Camera, World> YamlParser::ParseYaml(const YAML::Node &root)
                 throw runtime_error("Item " + to_string(itemNumber) + ": No value field on extended definition: " + name);
             }
 
-            CheckDefValidity(item, defines, itemNumber);
+            // First we should make sure that the 'value' field has properly formatted values
+            // If not, there's no point in building out a new node, so an error will be emitted and handled in CheckDefValidity
+            CheckDefValidity(item, defines, itemNumber); 
+
+            // If the item has an extend, we are making a new material or transform that builds on top of one in the map
+            if (item["extend"])
+            {
+                // We'll build the new node
+                YAML::Node extendedNode;
+                ExtendItem(item, defines, itemNumber, name, extendedNode);
+
+                // Extend node is saved
+                defines[name] = extendedNode;
+                continue;
+            }
 
             // Defined node is saved
             defines[name] = item["value"];
             continue;
         }
 
-        // Item Type
-        string type = item["add"].as<string>();
 
-        if (type == "light")
-        {
-            try
-            {
-                Light light = item.as<Light>();
-                world.Add(light);
-            }
-            catch (const std::exception &e)
-            {
-                cerr << "Item " << itemNumber << ": " << e.what() << endl;
-                throw runtime_error("Item " + to_string(itemNumber) + ": " + e.what());
-            }
-
-            continue;
-        }
-
-        if (type == "sphere")
-        {
-            // We need to catch if the user missed a required field
-            if (!CheckShapeFields(item, itemNumber, "sphere"))
-            {
-                continue;
-            }
-
-            // We'll be creating a new node that turns into a sphere, since it's ambiguous whether the user
-            // is going to manually define a material/object or use a variable for it
-            YAML::Node expanded;
-            expanded["material"] = YAML::ResolveMaterial(item["material"], defines, itemNumber);
-            expanded["transform"] = YAML::ResolveTransform(item["transform"], defines, itemNumber);
-
-            try
-            {
-                // Sphere gets decoded finally
-                Sphere sphere = expanded.as<Sphere>();
-
-                // The world takes ownership of the sphere
-                world.Add(std::move(sphere));
-            }
-            catch (const std::exception &e)
-            {
-                cerr << "Item " << itemNumber << ": " << e.what() << endl;
-                throw runtime_error("Item " + to_string(itemNumber) + ": " + e.what());
-            }
-
-            continue;
-        }
-
-        if (type == "cube")
-        {
-            // We need to catch if the user missed a required field
-            if (!CheckShapeFields(item, itemNumber, "cube"))
-            {
-                continue;
-            }
-
-            // We'll be creating a new node that turns into a cube, since it's ambiguous whether the user
-            // is going to manually define a material/object or use a variable for it
-            YAML::Node expanded;
-            expanded["material"] = YAML::ResolveMaterial(item["material"], defines, itemNumber);
-            expanded["transform"] = YAML::ResolveTransform(item["transform"], defines, itemNumber);
-
-            try
-            {
-                // Cube gets decoded finally
-                Cube cube = expanded.as<Cube>();
-
-                // The world takes ownership of the cube
-                world.Add(std::move(cube));
-            }
-            catch (const std::exception &e)
-            {
-                cerr << "Item " << itemNumber << ": " << e.what() << endl;
-                throw runtime_error("Item " + to_string(itemNumber) + ": " + e.what());
-            }
-
-            continue;
-        }
-
-        if (type == "plane")
-        {
-            // We need to catch if the user missed a required field
-            if (!CheckShapeFields(item, itemNumber, "plane"))
-            {
-                continue;
-            }
-
-            // We'll be creating a new node that turns into a plane, since it's ambiguous whether the user
-            // is going to manually define a material/object or use a variable for it
-            YAML::Node expanded;
-            expanded["material"] = YAML::ResolveMaterial(item["material"], defines, itemNumber);
-            expanded["transform"] = YAML::ResolveTransform(item["transform"], defines, itemNumber);
-
-            try
-            {
-                // Plane gets decoded finally
-                Plane plane = expanded.as<Plane>();
-
-                // The world takes ownership of the plane
-                world.Add(std::move(plane));
-            }
-            catch (const std::exception &e)
-            {
-                cerr << "Item " << itemNumber << ": " << e.what() << endl;
-                throw runtime_error("Item " + to_string(itemNumber) + ": " + e.what());
-            }
-
-            continue;
-        }
-
-        if (type == "camera")
-        {
+        // If not an extend/define, we are adding an item, which the AddItem method handles
+        // AddItem returns true only if a camera was just added, as we need to track the amount of cameras in the scene
+        if (AddItem(item, defines, itemNumber, world, camera)) {
+            
+            // Report a problem if an extra camera was added
             if (cameraSet)
             {
                 cerr << "Item " << itemNumber << ": Only one camera can be defined" << endl;
                 throw runtime_error("Item " + to_string(itemNumber) + ": Only one camera can be defined");
             }
 
-            try
-            {
-                Camera c = item.as<Camera>();
-                camera = std::move(item.as<Camera>());
-            }
-            catch (const std::exception &e)
-            {
-                cerr << "Item " << itemNumber << ": " << e.what() << endl;
-                throw runtime_error("Item " + to_string(itemNumber) + ": " + e.what());
-            }
-
+            // Mark that we added a camera
             cameraSet = true;
-            continue;
         }
-
-        // Getting here means the item is not a valid type
-        cerr << "Item " << itemNumber << ": Invalid add key: " << type << endl;
-        throw runtime_error("Item " + to_string(itemNumber) + ": Invalid add key: " + type);
     }
 
+    // Confirm the scene has exactly 1 camera before returning
     if (!cameraSet)
     {
         cerr << "A camera must be defined in the scene" << endl;

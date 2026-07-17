@@ -162,8 +162,8 @@ namespace Rendering
     {
         if constexpr (!std::is_same_v<T, Perturb>)
         {
-            if constexpr (std::is_same_v<T, Perturb>, "Wrong overload used to make this pattern. This wouldn't have a seed.")
-                ;
+            if constexpr (std::is_same_v<T, Perturb>)
+                static_assert(std::is_same_v<T, Perturb>, "Wrong overload used to make this pattern. This wouldn't have a seed.");
             return nullptr;
         }
 

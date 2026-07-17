@@ -10,7 +10,7 @@
 // Rendering
 #include "Color.h"
 #include "Material.h"
-// TODO: Pattern
+#include "Pattern.h"
 
 // Scene
 #include "Light.h"
@@ -406,4 +406,32 @@ namespace YAML
             return true;
         }
     };
+
+    /*static const std::unordered_set<std::string> patternValues = {
+        "checkers",
+        "stripes",
+    };
+
+    template <>
+    struct convert<Rendering::Pattern>
+    {
+        static bool decode(const Node &node, Rendering::Pattern &rhs)
+        {
+            if (!node["value"]) {
+                throw std::runtime_error("Pattern requires a 'value' key");
+            }
+
+
+
+            for (const auto &key : node)
+            {
+
+            }
+            // Value;
+            // Colors
+            // Transform (optional)
+
+            return true;
+        }
+    };*/
 }
