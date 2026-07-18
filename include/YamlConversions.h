@@ -198,6 +198,7 @@ namespace YAML
 
     static const std::unordered_set<std::string> materialKeys = {
         "color",
+        "pattern",
         "ambient",
         "diffuse",
         "specular",
@@ -211,8 +212,15 @@ namespace YAML
     {
         static bool decode(const Node &node, Rendering::Material &rhs)
         {
+
             // Everything on material is optional, so we'll initialize it with default values
             rhs = Rendering::Material();
+
+            // Only one of these should be used
+            if (node["color"] && node["pattern"])
+            {
+                throw std::runtime_error("Material cannot have both 'color' and 'pattern'");
+            }
 
             // We'll iterate through each key-value pair in the node so that we can properly error check
             // This will, of course, be slightly slower than just checking keys, but we only need to run this code once
@@ -235,7 +243,14 @@ namespace YAML
                     continue;
                 }
 
-                // Everything else is a float, wo we can check those
+                if (key == "pattern")
+                {
+                    Rendering::Pattern *temp = kv.second.as<Rendering::Pattern *>();
+                    rhs.pattern = std::unique_ptr<Rendering::Pattern>(temp);
+                    continue;
+                }
+
+                // Everything else is a float, so we can check those
                 if (!kv.second.IsScalar())
                 {
                     throw std::runtime_error("Value for '" + key + "' on material is invalid");
@@ -407,31 +422,145 @@ namespace YAML
         }
     };
 
-    /*static const std::unordered_set<std::string> patternValues = {
+    // All pattern names
+    static const std::unordered_set<std::string> patternValues = {
         "checkers",
         "stripes",
-    };
+        "gradient",
+        "ring",
+        "radial",
+        "blend",
+        "perturb"};
 
+    // Pattern is an abstract class, so we're returning a pointer to a pattern instead
     template <>
-    struct convert<Rendering::Pattern>
+    struct convert<Rendering::Pattern *>
     {
-        static bool decode(const Node &node, Rendering::Pattern &rhs)
+        // We'll have problems if the first and second pointers are deallocated at the end of decode, so we're saving them until the next time yaml parses
+        // This lets this method work and lets us still avoid memory leaks
+        static inline std::vector<Rendering::Pattern *> allocated;
+
+        static bool decode(const Node &node, Rendering::Pattern *&rhs)
         {
-            if (!node["value"]) {
-                throw std::runtime_error("Pattern requires a 'value' key");
-            }
-
-
-
-            for (const auto &key : node)
+            // Look for required keys
+            if (!node["type"] || !node["colors"])
             {
-
+                throw std::runtime_error("Missing required pattern fields: 'type' and/or 'colors'");
             }
-            // Value;
-            // Colors
-            // Transform (optional)
+
+            // We'll confirm all keys are valid
+            for (const auto &kv : node)
+            {
+                std::string key = kv.first.as<std::string>();
+
+                // If this is a fake key, we should return a warning to the user
+                if (key != "type" && key != "colors" && key != "transform" && key != "seed")
+                {
+                    throw std::runtime_error("Unknown key on pattern: " + key);
+                }
+            }
+
+            std::string type = node["type"].as<std::string>();
+            Node colorNode = node["colors"];
+
+            // We make sure the colorNode is correct at a glance
+            if (!colorNode.IsSequence() || colorNode.size() != 2)
+            {
+                // perturb works differently, so we have a final check for improper fromatting
+                if (!(type == "perturb" && colorNode.size() == 1))
+                {
+                    throw std::runtime_error("'colors' should be a list of 2 items (1 if using a perturb pattern), with only 'color' and 'pattern' being allowed inputs");
+                }
+            }
+
+            Rendering::Pattern *first;
+            if (colorNode[0].IsSequence())
+            {
+                // This is color that we need to turn into a solid color pattern
+                Rendering::Color color = safe_as<Rendering::Color>(colorNode[0], "colors[0]", "pattern");
+                first = new Rendering::SolidColor(color);
+            }
+            else
+            {
+                // This is another pattern and we need to treat it as such
+                first = colorNode[0].as<Rendering::Pattern *>();
+            }
+
+            Rendering::Pattern *second;
+            if (type != "perturb")
+            {
+                if (colorNode[1].IsSequence())
+                {
+                    // This is color that we need to turn into a solid color pattern
+                    Rendering::Color color = safe_as<Rendering::Color>(colorNode[1], "colors[1]", "pattern");
+                    second = new Rendering::SolidColor(color);
+                }
+                else
+                {
+                    // This is another pattern and we need to treat it as such
+                    second = colorNode[1].as<Rendering::Pattern *>();
+                }
+            }
+
+            // Seed will only affect perturb patterns, so it is completely optional
+            // We won't throw errors whether or not a seed key is present regardless of circumstance, to keep things simple
+            int seed = 1337;
+            if (node["seed"])
+            {
+                seed = node["seed"].as<int>();
+            }
+
+            // Now we will finally make the actual pattern
+            if (type == "checkers")
+            {
+                rhs = Rendering::MakePattern<Rendering::Checker>(first, second).release();
+            }
+            else if (type == "stripes")
+            {
+                rhs = Rendering::MakePattern<Rendering::StripePattern>(first, second).release();
+            }
+            else if (type == "gradient")
+            {
+                rhs = Rendering::MakePattern<Rendering::Gradient>(first, second).release();
+            }
+            else if (type == "ring")
+            {
+                rhs = Rendering::MakePattern<Rendering::Ring>(first, second).release();
+            }
+            else if (type == "radial")
+            {
+                rhs = Rendering::MakePattern<Rendering::RadialGradient>(first, second).release();
+            }
+            else if (type == "blend")
+            {
+                rhs = Rendering::MakePattern<Rendering::Blend>(first, second).release();
+            }
+            else if (type == "perturb")
+            {
+                rhs = Rendering::MakePattern<Rendering::Perturb>(first, seed).release();
+            }
+            else
+            {
+                throw std::runtime_error("Unknown pattern type: " + type);
+            }
+
+            // TODO: error check transform
+            // Transform is an optional key
+            if (node["transform"])
+            {
+                // Todo: transform for patterns
+                // Set to identity matrix when patterns are constructed, so this is fine right now
+            }
 
             return true;
         }
-    };*/
+
+        // Cleaning up previous pointers to avoid memory leaks
+        static void ClearAll()
+        {
+            for (auto *p : allocated)
+                delete p;
+            allocated.clear();
+        }
+    };
 }

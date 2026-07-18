@@ -54,6 +54,33 @@ namespace YAML
         return node;
     }
 
+    // TODO: If this is still the same as ResolveMaterial after pattern is implemented, use the same function for both
+    // If the pattern is in the map, we need to substitute it in
+    Node ResolvePattern(const Node &node, const unordered_map<string, Node> &defines, int itemNumber)
+    {
+        if (node.IsScalar())
+        {
+            string patternName = node.as<string>();
+
+            if (!defines.count(patternName))
+            {
+                cerr << "Item " << itemNumber << ": pattern not found: " << patternName << endl;
+                throw runtime_error("Item " + to_string(itemNumber) + ": pattern not found: " + patternName);
+            }
+
+            if (!defines.at(patternName).IsMap())
+            {
+                cerr << "Item " << itemNumber << ": " << patternName << " is not a pattern" << endl;
+                throw runtime_error("Item " + to_string(itemNumber) + ": " + patternName + " is not a pattern");
+            }
+
+            return defines.at(patternName);
+        }
+
+        // pattern was already unrolled or empty, so we can just return it
+        return node;
+    }
+
     // If the transform is in the map, we need to substitute it in
     Node ResolveTransform(const Node &node, const unordered_map<string, Node> &defines, int itemNumber)
     {
@@ -142,16 +169,25 @@ namespace YAML
             }
         }
 
-        // Confirm material is set up correctly
+        // Confirm material/pattern is set up correctly
         if (item["value"].IsMap())
         {
             try
             {
-                auto node = ResolveMaterial(item["value"], defines, itemNumber);
+                bool isMat = !item["type"];
+
+                auto node = isMat ? ResolveMaterial(item["value"], defines, itemNumber) : ResolvePattern(item["value"], defines, itemNumber);
 
                 try
                 {
-                    auto ret = node.as<Rendering::Material>();
+                    if (isMat)
+                    {
+                        auto ret = node.as<Rendering::Material>();
+                    }
+                    else
+                    {
+                        auto ret = node.as<Rendering::Pattern *>();
+                    }
                 }
                 catch (const std::exception &e)
                 {
@@ -184,13 +220,26 @@ namespace YAML
 
         // Fill with values, then place on the map
         const Node &valueNode = item["value"];
-        if (valueNode.IsMap()) // Material Map
+        if (valueNode.IsMap()) // Material Map or Pattern
         {
-            // In case we tried to extend a transform instead of a material
+            bool isMaterial = valueNode["type"] ? false : true;
+
+            // In case we tried to extend a transform instead of a material/pattern
             if (!extendedNode.IsMap())
             {
-                cerr << "Item " << itemNumber << ": " << "(Material) " << name << " cannot extend (Transform) " << parentName << endl;
-                throw runtime_error("Item " + to_string(itemNumber) + ": " + "(Material) " + name + " cannot extend (Transform) " + parentName);
+                string cur = isMaterial ? "(Material) " : "(Pattern) ";
+                cerr << "Item " << itemNumber << ": " << cur << name << " cannot extend (Transform) " << parentName << endl;
+                throw runtime_error("Item " + to_string(itemNumber) + ": " + cur + name + " cannot extend (Transform) " + parentName);
+            }
+
+            // In case we tried to mix up a material and a pattern
+            if (isMaterial && extendedNode["type"])
+            {
+                string cur = isMaterial ? "(Material) " : "(Pattern) ";
+                string other = !isMaterial ? "(Material) " : "(Pattern) ";
+
+                cerr << "Item " << itemNumber << ": " << cur << name << " cannot extend " << other << parentName << endl;
+                throw runtime_error("Item " + to_string(itemNumber) + ": " + cur + name + " cannot extend " + other + parentName);
             }
 
             for (const auto &pair : valueNode)
@@ -210,11 +259,12 @@ namespace YAML
         }
         else if (valueNode.IsSequence()) // Transform Sequence
         {
-            // In case we tried to extend a material instead of a transform
+            // In case we tried to extend a material/pattern instead of a transform
             if (!extendedNode.IsSequence())
             {
-                cerr << "Item " << itemNumber << ": " << "(Transform) " << name << " cannot extend (Material) " << parentName << endl;
-                throw runtime_error("Item " + to_string(itemNumber) + ": " + "(Transform) " + name + " cannot extend (Material) " + parentName);
+                string other = extendedNode["type"] ? "(Pattern) " : "(Material) ";
+                cerr << "Item " << itemNumber << ": " << "(Transform) " << name << " cannot extend" << other << parentName << endl;
+                throw runtime_error("Item " + to_string(itemNumber) + ": " + "(Transform) " + name + " cannot extend" + other + parentName);
             }
 
             for (const auto &entry : valueNode)
@@ -229,7 +279,8 @@ namespace YAML
         }
     }
 
-    bool AddItem(const Node &item, const unordered_map<string, Node> &defines, int itemNumber, World &world, Camera &camera) {
+    bool AddItem(const Node &item, const unordered_map<string, Node> &defines, int itemNumber, World &world, Camera &camera)
+    {
         // Item Type
         string type = item["add"].as<string>();
 
@@ -369,6 +420,9 @@ pair<Camera, World> YamlParser::ParseYaml(const string &yaml)
 
 pair<Camera, World> YamlParser::ParseYaml(const YAML::Node &root)
 {
+    // Cleaning up memory before starting
+    YAML::convert<Rendering::Pattern *>::ClearAll();
+
     World world = World();
     unordered_map<string, YAML::Node> defines; // Material and transform definitions
     Camera camera;
@@ -393,7 +447,7 @@ pair<Camera, World> YamlParser::ParseYaml(const YAML::Node &root)
 
             // First we should make sure that the 'value' field has properly formatted values
             // If not, there's no point in building out a new node, so an error will be emitted and handled in CheckDefValidity
-            CheckDefValidity(item, defines, itemNumber); 
+            CheckDefValidity(item, defines, itemNumber);
 
             // If the item has an extend, we are making a new material or transform that builds on top of one in the map
             if (item["extend"])
@@ -412,11 +466,11 @@ pair<Camera, World> YamlParser::ParseYaml(const YAML::Node &root)
             continue;
         }
 
-
         // If not an extend/define, we are adding an item, which the AddItem method handles
         // AddItem returns true only if a camera was just added, as we need to track the amount of cameras in the scene
-        if (AddItem(item, defines, itemNumber, world, camera)) {
-            
+        if (AddItem(item, defines, itemNumber, world, camera))
+        {
+
             // Report a problem if an extra camera was added
             if (cameraSet)
             {

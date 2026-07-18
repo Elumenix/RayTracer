@@ -331,6 +331,43 @@ TEST(YamlTest, DecodeExtendedMaterial)
   EXPECT_EQ(sphere->material, Material(Color(1, 1, 1), 0.0, 0.5, 1.0, 200, 0.7, 0.7, 1.5));
 }
 
+TEST(YamlTest, DecodeDirectPattern)
+{
+  const string yaml = R"(
+- add: camera
+  width: 1
+  height: 1
+  field-of-view: 90 
+
+- add: plane
+  transform:
+  material:
+    pattern:
+      type: checkers
+      colors:
+        - [ 0.15, 0.15, 0.15 ]
+        - [ 0.85, 0.85, 0.85 ]
+    ambient: 0.8
+    diffuse: 0.2
+    specular: 0
+)";
+
+  World world = std::move(YamlParser::getInstance().ParseYaml(yaml).second);
+  Shape *plane = world.shapes[0].get();
+
+  EXPECT_FALSE(dynamic_cast<StripePattern *>(plane->material.pattern.get()));
+  EXPECT_TRUE(dynamic_cast<Checker *>(plane->material.pattern.get()));
+
+  SolidColor s1(Color(0.15, 0.15, 0.15));
+  SolidColor s2(Color(0.85, 0.85, 0.85));
+  Checker c = Checker(&s1, &s2);
+
+  // Make sure that the pattern is correct as it travels, and they don't just return the same color all the time
+  EXPECT_EQ(plane->material.pattern.get()->SampleAt(*plane, Point(0, 0, 0)), c.SampleAt(*plane, Point(0, 0, 0)));
+  EXPECT_NE(plane->material.pattern.get()->SampleAt(*plane, Point(0, 0, 0)), c.SampleAt(*plane, Point(1, 0, 0)));
+  EXPECT_EQ(plane->material.pattern.get()->SampleAt(*plane, Point(1, 0, 0)), c.SampleAt(*plane, Point(1, 0, 0)));
+}
+
 TEST(YamlTest, DecodeDirectTransform)
 {
   const string yaml = R"(
@@ -509,7 +546,8 @@ TEST(YamlTest, FailedMaterialExtend1)
   EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
 }
 
-TEST(YamlTest, FailedMaterialExtend2) {
+TEST(YamlTest, FailedMaterialExtend2)
+{
   const string yaml = R"(
 - add: camera
   width: 100
