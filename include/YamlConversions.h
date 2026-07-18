@@ -548,6 +548,7 @@ namespace YAML
             // Transform is an optional key
             if (node["transform"])
             {
+                rhs->transform = node["transform"].as<Math::Matrix<4, 4>>(); // Default for now. Only the first patterns transform will affect things currently
                 // Todo: transform for patterns
                 // Set to identity matrix when patterns are constructed, so this is fine right now
             }

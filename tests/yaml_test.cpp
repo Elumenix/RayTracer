@@ -347,9 +347,6 @@ TEST(YamlTest, DecodeDirectPattern)
       colors:
         - [ 0.15, 0.15, 0.15 ]
         - [ 0.85, 0.85, 0.85 ]
-    ambient: 0.8
-    diffuse: 0.2
-    specular: 0
 )";
 
   World world = std::move(YamlParser::getInstance().ParseYaml(yaml).second);
@@ -366,6 +363,179 @@ TEST(YamlTest, DecodeDirectPattern)
   EXPECT_EQ(plane->material.pattern.get()->SampleAt(*plane, Point(0, 0, 0)), c.SampleAt(*plane, Point(0, 0, 0)));
   EXPECT_NE(plane->material.pattern.get()->SampleAt(*plane, Point(0, 0, 0)), c.SampleAt(*plane, Point(1, 0, 0)));
   EXPECT_EQ(plane->material.pattern.get()->SampleAt(*plane, Point(1, 0, 0)), c.SampleAt(*plane, Point(1, 0, 0)));
+}
+
+TEST(YamlTest, DecodeDefinedPattern)
+{
+  const string yaml = R"(
+- add: camera
+  width: 1
+  height: 1
+  field-of-view: 90 
+
+- define: my-pattern
+  value:
+    type: checkers
+    colors:
+      - [ 0.15, 0.15, 0.15 ]
+      - [ 0.85, 0.85, 0.85 ]
+
+- add: plane
+  transform:
+  material:
+    pattern: my-pattern
+)";
+
+  World world = std::move(YamlParser::getInstance().ParseYaml(yaml).second);
+  Shape *plane = world.shapes[0].get();
+
+  EXPECT_FALSE(dynamic_cast<StripePattern *>(plane->material.pattern.get()));
+  EXPECT_TRUE(dynamic_cast<Checker *>(plane->material.pattern.get()));
+
+  SolidColor s1(Color(0.15, 0.15, 0.15));
+  SolidColor s2(Color(0.85, 0.85, 0.85));
+  Checker c = Checker(&s1, &s2);
+
+  // Make sure that the pattern is correct as it travels, and they don't just return the same color all the time
+  EXPECT_EQ(plane->material.pattern.get()->SampleAt(*plane, Point(0, 0, 0)), c.SampleAt(*plane, Point(0, 0, 0)));
+  EXPECT_NE(plane->material.pattern.get()->SampleAt(*plane, Point(0, 0, 0)), c.SampleAt(*plane, Point(1, 0, 0)));
+  EXPECT_EQ(plane->material.pattern.get()->SampleAt(*plane, Point(1, 0, 0)), c.SampleAt(*plane, Point(1, 0, 0)));
+}
+
+TEST(YamlTest, DecodeDefinedMaterialPattern)
+{
+  const string yaml = R"(
+- add: camera
+  width: 1
+  height: 1
+  field-of-view: 90 
+
+- define: my-material
+  value:
+    pattern:
+      type: checkers
+      colors:
+        - [ 0.15, 0.15, 0.15 ]
+        - [ 0.85, 0.85, 0.85 ]
+    ambient: 0.8
+    diffuse: 0.2
+    specular: 0
+
+- add: plane
+  transform:
+  material: my-material
+)";
+
+  World world = std::move(YamlParser::getInstance().ParseYaml(yaml).second);
+  Shape *plane = world.shapes[0].get();
+
+  EXPECT_FALSE(dynamic_cast<StripePattern *>(plane->material.pattern.get()));
+  EXPECT_TRUE(dynamic_cast<Checker *>(plane->material.pattern.get()));
+
+  SolidColor s1(Color(0.15, 0.15, 0.15));
+  SolidColor s2(Color(0.85, 0.85, 0.85));
+  Checker c = Checker(&s1, &s2);
+
+  // Make sure that the pattern is correct as it travels, and they don't just return the same color all the time
+  EXPECT_EQ(plane->material.pattern.get()->SampleAt(*plane, Point(0, 0, 0)), c.SampleAt(*plane, Point(0, 0, 0)));
+  EXPECT_NE(plane->material.pattern.get()->SampleAt(*plane, Point(0, 0, 0)), c.SampleAt(*plane, Point(1, 0, 0)));
+  EXPECT_EQ(plane->material.pattern.get()->SampleAt(*plane, Point(1, 0, 0)), c.SampleAt(*plane, Point(1, 0, 0)));
+  EXPECT_FLOAT_EQ(plane->material.diffuse, 0.2);
+}
+
+TEST(YamlTest, DecodeDefinedPatternTree1)
+{
+  const string yaml = R"(
+- add: camera
+  width: 1
+  height: 1
+  field-of-view: 90 
+
+- define: stripe-pattern
+  value:
+    type: stripes
+    colors:
+      - [ 0.15, 0.15, 0.15 ]
+      - [ 0.85, 0.85, 0.85 ]
+
+- define: check
+  value:
+    type: checkers
+    colors:
+      - stripe-pattern
+      - [ 0.4, 0.4, 0.4 ]
+
+- add: plane
+  transform:
+  material:
+    pattern: check
+)";
+
+  World world = std::move(YamlParser::getInstance().ParseYaml(yaml).second);
+  Shape *plane = world.shapes[0].get();
+
+  EXPECT_FALSE(dynamic_cast<StripePattern *>(plane->material.pattern.get()));
+  EXPECT_TRUE(dynamic_cast<Checker *>(plane->material.pattern.get()));
+
+  SolidColor s1(Color(0.15, 0.15, 0.15));
+  SolidColor s2(Color(0.85, 0.85, 0.85));
+  SolidColor s3(Color(.4, .4, .4));
+  StripePattern stripe = StripePattern(&s1, &s2);
+  Checker c = Checker(&stripe, &s3);
+
+  // Make sure that the pattern is correct as it travels, and they don't just return the same color all the time
+  EXPECT_EQ(plane->material.pattern.get()->SampleAt(*plane, Point(0, 0, 0)), c.SampleAt(*plane, Point(0, 0, 0))); // .15 == .15
+  EXPECT_NE(plane->material.pattern.get()->SampleAt(*plane, Point(0, 0, 0)), c.SampleAt(*plane, Point(1, 0, 0))); // .15 != .4
+  EXPECT_EQ(plane->material.pattern.get()->SampleAt(*plane, Point(1, 0, 0)), c.SampleAt(*plane, Point(1, 0, 0))); // .4 == .4
+  EXPECT_NE(plane->material.pattern.get()->SampleAt(*plane, Point(1, 1, 0)), c.SampleAt(*plane, Point(1, 0, 0))); // .85 != .4
+  EXPECT_NE(plane->material.pattern.get()->SampleAt(*plane, Point(1, 1, 0)), c.SampleAt(*plane, Point(0, 0, 0))); // .85 != .15
+  EXPECT_EQ(plane->material.pattern.get()->SampleAt(*plane, Point(1, 1, 0)), c.SampleAt(*plane, Point(1, 1, 0))); // .85 == .85
+}
+
+TEST(YamlTest, DecodeDefinedPatternTree2)
+{
+  const string yaml = R"(
+- add: camera
+  width: 1
+  height: 1
+  field-of-view: 90 
+
+- define: stripe-pattern
+  value:
+    type: stripes
+    colors:
+      - [ 0.15, 0.15, 0.15 ]
+      - [ 0.85, 0.85, 0.85 ]
+
+- add: plane
+  transform:
+  material:
+    pattern:
+      type: checkers
+      colors:
+        - stripe-pattern
+        - [ 0.4, 0.4, 0.4 ]
+)";
+
+  World world = std::move(YamlParser::getInstance().ParseYaml(yaml).second);
+  Shape *plane = world.shapes[0].get();
+
+  EXPECT_FALSE(dynamic_cast<StripePattern *>(plane->material.pattern.get()));
+  EXPECT_TRUE(dynamic_cast<Checker *>(plane->material.pattern.get()));
+
+  SolidColor s1(Color(0.15, 0.15, 0.15));
+  SolidColor s2(Color(0.85, 0.85, 0.85));
+  SolidColor s3(Color(.4, .4, .4));
+  StripePattern stripe = StripePattern(&s1, &s2);
+  Checker c = Checker(&stripe, &s3);
+
+  // Make sure that the pattern is correct as it travels, and they don't just return the same color all the time
+  EXPECT_EQ(plane->material.pattern.get()->SampleAt(*plane, Point(0, 0, 0)), c.SampleAt(*plane, Point(0, 0, 0))); // .15 == .15
+  EXPECT_NE(plane->material.pattern.get()->SampleAt(*plane, Point(0, 0, 0)), c.SampleAt(*plane, Point(1, 0, 0))); // .15 != .4
+  EXPECT_EQ(plane->material.pattern.get()->SampleAt(*plane, Point(1, 0, 0)), c.SampleAt(*plane, Point(1, 0, 0))); // .4 == .4
+  EXPECT_NE(plane->material.pattern.get()->SampleAt(*plane, Point(1, 1, 0)), c.SampleAt(*plane, Point(1, 0, 0))); // .85 != .4
+  EXPECT_NE(plane->material.pattern.get()->SampleAt(*plane, Point(1, 1, 0)), c.SampleAt(*plane, Point(0, 0, 0))); // .85 != .15
+  EXPECT_EQ(plane->material.pattern.get()->SampleAt(*plane, Point(1, 1, 0)), c.SampleAt(*plane, Point(1, 1, 0))); // .85 == .85
 }
 
 TEST(YamlTest, DecodeDirectTransform)
@@ -580,6 +750,60 @@ TEST(YamlTest, FailedMaterialExtend2)
   EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
 }
 
+TEST(YamlTest, FailedPatternExtend1)
+{
+  const string yaml = R"(
+- add: camera
+  width: 100
+  height: 100
+  field-of-view: 0.785
+- define: white-material
+  value:
+    color: [1, 1, 1]
+    diffuse: 0.7
+    ambient: 0.1
+    specular: 0.0
+    reflective: 0.1
+- define: blue-material
+  extend: white-material
+  value:
+    color: [0.537, 0.831, 0.914]
+- define: stripe-pattern
+  value:
+    type: stripes
+    colors:
+      - white-material
+      - blue-material
+)";
+
+  EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
+}
+
+TEST(YamlTest, FailedPatternExtend2)
+{
+  const string yaml = R"(
+- add: camera
+  width: 100
+  height: 100
+  field-of-view: 0.785
+- define: stripe-pattern
+  value:
+    type: stripes
+    colors:
+      - [ 0.15, 0.15, 0.15 ]
+      - [ 0.85, 0.85, 0.85 ]
+- define: stripes2
+  extend: stripe-pattern
+  value:
+    type: stripes
+    colors:
+      - [ 0.1, 0.1, 0.1 ]
+      - [ 0.8, 0.8, 0.8 ]
+)";
+
+  EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
+}
+
 TEST(YamlTest, FailedTransformExtend1)
 {
   const string yaml = R"(
@@ -671,6 +895,64 @@ TEST(YamlTest, ExtendedWrongType2)
   value:
     color: [ 1, 1, 1 ]
     diffuse: 0.5
+)";
+
+  EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
+}
+
+TEST(YamlTest, ExtendedWrongType3)
+{
+  const string yaml = R"(
+- add: camera
+  width: 100
+  height: 100
+  field-of-view: 0.785
+- define: white-material
+  value:
+    color: [1, 1, 1]
+    diffuse: 0.7
+    ambient: 0.1
+    specular: 0.0
+    reflective: 0.1
+- define: blue-material
+  extend: white-material
+  value:
+    color: [0.537, 0.831, 0.914]
+- define: stripe-pattern
+  value:
+    type: stripes
+    colors:
+      - [ 0.15, 0.15, 0.15 ]
+      - [ 0.85, 0.85, 0.85 ]
+- define: red-material
+  extend: stripe-pattern
+  value:
+    color: [0.941, 0.322, 0.388]
+)";
+
+  EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
+}
+
+TEST(YamlTest, ExtendedWrongType4)
+{
+  const string yaml = R"(
+- add: camera
+  width: 1
+  height: 1
+  field-of-view: 90
+
+- define: stripe-pattern
+  value:
+    type: stripes
+    colors:
+      - [ 0.15, 0.15, 0.15 ]
+      - [ 0.85, 0.85, 0.85 ]
+
+- define: extended-transform
+  extend: stripe-pattern
+  value:
+    - [ translate, 1, -1, 1 ]
+    - [ scale, 0.5, 0.5, 0.5 ]
 )";
 
   EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);

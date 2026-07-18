@@ -28,59 +28,6 @@ namespace YAML
         return true;
     }
 
-    // If the material is in the map, we need to substitute it in
-    Node ResolveMaterial(const Node &node, const unordered_map<string, Node> &defines, int itemNumber)
-    {
-        if (node.IsScalar())
-        {
-            string materialName = node.as<string>();
-
-            if (!defines.count(materialName))
-            {
-                cerr << "Item " << itemNumber << ": Material not found: " << materialName << endl;
-                throw runtime_error("Item " + to_string(itemNumber) + ": Material not found: " + materialName);
-            }
-
-            if (!defines.at(materialName).IsMap())
-            {
-                cerr << "Item " << itemNumber << ": " << materialName << " is not a material" << endl;
-                throw runtime_error("Item " + to_string(itemNumber) + ": " + materialName + " is not a material");
-            }
-
-            return defines.at(materialName);
-        }
-
-        // Material was already unrolled or empty, so we can just return it
-        return node;
-    }
-
-    // TODO: If this is still the same as ResolveMaterial after pattern is implemented, use the same function for both
-    // If the pattern is in the map, we need to substitute it in
-    Node ResolvePattern(const Node &node, const unordered_map<string, Node> &defines, int itemNumber)
-    {
-        if (node.IsScalar())
-        {
-            string patternName = node.as<string>();
-
-            if (!defines.count(patternName))
-            {
-                cerr << "Item " << itemNumber << ": pattern not found: " << patternName << endl;
-                throw runtime_error("Item " + to_string(itemNumber) + ": pattern not found: " + patternName);
-            }
-
-            if (!defines.at(patternName).IsMap())
-            {
-                cerr << "Item " << itemNumber << ": " << patternName << " is not a pattern" << endl;
-                throw runtime_error("Item " + to_string(itemNumber) + ": " + patternName + " is not a pattern");
-            }
-
-            return defines.at(patternName);
-        }
-
-        // pattern was already unrolled or empty, so we can just return it
-        return node;
-    }
-
     // If the transform is in the map, we need to substitute it in
     Node ResolveTransform(const Node &node, const unordered_map<string, Node> &defines, int itemNumber)
     {
@@ -142,6 +89,87 @@ namespace YAML
         return node;
     }
 
+    // If the pattern is in the map, we need to substitute it in
+    Node ResolvePattern(const Node &node, const unordered_map<string, Node> &defines, int itemNumber)
+    {
+        if (node.IsScalar())
+        {
+            string patternName = node.as<string>();
+
+            if (!defines.count(patternName))
+            {
+                cerr << "Item " << itemNumber << ": pattern not found: " << patternName << endl;
+                throw runtime_error("Item " + to_string(itemNumber) + ": pattern not found: " + patternName);
+            }
+
+            if (!defines.at(patternName).IsMap() || !defines.at(patternName)["type"])
+            {
+                cerr << "Item " << itemNumber << ": " << patternName << " is not a pattern" << endl;
+                throw runtime_error("Item " + to_string(itemNumber) + ": " + patternName + " is not a pattern");
+            }
+
+            return defines.at(patternName);
+        }
+
+        // Getting here means the pattern was defined inline on the shape rather than in a define, so it's partly unrolled already
+        // If any colors field is a defined pattern, or the transform field is a defined transform, those will need to be unrolled
+        Node colors = node["colors"];
+        if (!((colors[0] && colors[0].IsScalar()) || (colors[1] && colors[1].IsScalar()) || (node["transform"] && node["transform"].IsScalar())))
+            return node; // everything was already unrolled
+
+        Node unroll = node;
+        if (colors[0] && colors[0].IsScalar())
+        {
+            unroll["colors"][0] = ResolvePattern(colors[0], defines, itemNumber);
+        }
+
+        if (colors[1] && colors[1].IsScalar())
+        {
+            unroll["colors"][1] = ResolvePattern(colors[1], defines, itemNumber);
+        }
+
+        if (node["transform"] && node["transform"].IsScalar())
+        {
+            unroll["transform"] = ResolveTransform(node["transform"], defines, itemNumber);
+        }
+
+        return unroll;
+    }
+
+    // If the material is in the map, we need to substitute it in
+    Node ResolveMaterial(const Node &node, const unordered_map<string, Node> &defines, int itemNumber)
+    {
+        if (node.IsScalar())
+        {
+            string materialName = node.as<string>();
+
+            if (!defines.count(materialName))
+            {
+                cerr << "Item " << itemNumber << ": Material not found: " << materialName << endl;
+                throw runtime_error("Item " + to_string(itemNumber) + ": Material not found: " + materialName);
+            }
+
+            if (!defines.at(materialName).IsMap())
+            {
+                cerr << "Item " << itemNumber << ": " << materialName << " is not a material" << endl;
+                throw runtime_error("Item " + to_string(itemNumber) + ": " + materialName + " is not a material");
+            }
+
+            return defines.at(materialName);
+        }
+
+        // Getting down here means the material is defined on an object rather than using a define, so it is already unrolled
+        // The exception this unrolling is if a define was used for a pattern that might be on the material, which will need to be added on
+        if (node["pattern"])
+        {
+            Node unrolled = node;
+            unrolled["pattern"] = ResolvePattern(node["pattern"], defines, itemNumber);
+            return unrolled;
+        }
+
+        return node;
+    }
+
     void CheckDefValidity(const Node &item, const unordered_map<string, Node> &defines, int itemNumber)
     {
         // Confirm this is a proper transform
@@ -174,9 +202,10 @@ namespace YAML
         {
             try
             {
-                bool isMat = !item["type"];
+                Node val = item["value"];
+                bool isMat = !val["type"];
 
-                auto node = isMat ? ResolveMaterial(item["value"], defines, itemNumber) : ResolvePattern(item["value"], defines, itemNumber);
+                auto node = isMat ? ResolveMaterial(val, defines, itemNumber) : ResolvePattern(val, defines, itemNumber);
 
                 try
                 {
@@ -224,6 +253,12 @@ namespace YAML
         {
             bool isMaterial = valueNode["type"] ? false : true;
 
+            if (!isMaterial)
+            {
+                cerr << "Item " << itemNumber << ": The 'extend' keyword cannot be used on a defined pattern. To use a pattern as part of another pattern, please put the other pattern as one of the items in 'colors'" << endl;
+                throw runtime_error("Item " + to_string(itemNumber) + ": The 'extend' keyword cannot be used on a defined pattern. To use a pattern as part of another pattern, please put the other pattern as one of the items in 'colors'");
+            }
+
             // In case we tried to extend a transform instead of a material/pattern
             if (!extendedNode.IsMap())
             {
@@ -263,8 +298,8 @@ namespace YAML
             if (!extendedNode.IsSequence())
             {
                 string other = extendedNode["type"] ? "(Pattern) " : "(Material) ";
-                cerr << "Item " << itemNumber << ": " << "(Transform) " << name << " cannot extend" << other << parentName << endl;
-                throw runtime_error("Item " + to_string(itemNumber) + ": " + "(Transform) " + name + " cannot extend" + other + parentName);
+                cerr << "Item " << itemNumber << ": " << "(Transform) " << name << " cannot extend " << other << parentName << endl;
+                throw runtime_error("Item " + to_string(itemNumber) + ": " + "(Transform) " + name + " cannot extend " + other + parentName);
             }
 
             for (const auto &entry : valueNode)
@@ -427,8 +462,8 @@ pair<Camera, World> YamlParser::ParseYaml(const YAML::Node &root)
     unordered_map<string, YAML::Node> defines; // Material and transform definitions
     Camera camera;
     bool cameraSet = false;
-
     int itemNumber = 0;
+
     for (const auto &item : root)
     {
         itemNumber++;
