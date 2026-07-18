@@ -146,7 +146,7 @@ namespace Rendering
             static_assert(!std::is_same_v<T, SolidColor>, "Tried to make SolidColor as a smart pointer. Should just use material color instead.");
             return nullptr;
         }
-        else if (std::is_same_v<T, Perturb>)
+        else if constexpr (std::is_same_v<T, Perturb>)
         {
             static_assert(!std::is_same_v<T, Perturb>, "Tried to make Perturb with the wrong overload.");
             return nullptr;
@@ -162,12 +162,12 @@ namespace Rendering
     {
         if constexpr (!std::is_same_v<T, Perturb>)
         {
-            if constexpr (std::is_same_v<T, Perturb>)
-                static_assert(std::is_same_v<T, Perturb>, "Wrong overload used to make this pattern. This wouldn't have a seed.");
-            return nullptr;
+            static_assert(std::is_same_v<T, Perturb>, "Wrong overload used to make this pattern. This wouldn't have a seed.");
         }
-
-        return std::make_unique<Perturb>(a, seed);
+        else
+        {
+            return std::make_unique<Perturb>(a, seed);
+        }
     }
 
     inline bool operator==(const Pattern &self, const Pattern &other)
