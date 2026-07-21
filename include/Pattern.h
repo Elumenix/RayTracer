@@ -16,53 +16,104 @@ inline Rendering::Color Black = Rendering::Color(0, 0, 0);
 
 namespace Rendering
 {
+    // Abstract base class, can't be created directly
     class Pattern
     {
-    protected:
-        Pattern(Pattern *c_A, Pattern *c_B) : a(c_A), b(c_B) {}
-        virtual Color CustomSampleAt(const Math::Point &patternPoint) const = 0;
-        static Color Sample(const Pattern *pattern, const Math::Point &p) { return pattern->CustomSampleAt(p); }
-
     public:
-        Pattern *a;
-        Pattern *b;
         Math::Matrix<4, 4> transform = Math::IdentityMatrix;
-
-        virtual ~Pattern() = default;
         virtual std::unique_ptr<Pattern> Clone() const = 0;
 
+        // Expected access
         Color SampleAt(const Scene::Shape &object, const Math::Point &worldPoint);
+
+        virtual ~Pattern() = default;
+
+        // equal operator is being given access to protected members of the class
+        friend bool operator==(const Pattern &p1, const Pattern &p2)
+        {
+            return typeid(p1) == typeid(p2) && p1.transform == p2.transform && p1.EqualsSameType(p2);
+        }
+
+    protected:
+        virtual Color CustomSampleAt(const Math::Point &patternPoint) const = 0;
+        friend Color Sample(const Pattern *p, const Math::Point &pt); // Allows access to the function below
+        virtual bool EqualsSameType(const Pattern &other) const { return transform == other.transform; }
     };
 
+    // This is a free function because a->Sample(b, pos) is bad syntax when 'a' is not used in the result at all
+    inline Color Sample(const Pattern *p, const Math::Point &pt)
+    {
+        return p->CustomSampleAt(pt);
+    }
+
+    // Leaf Node, essentially
     class SolidColor : public Pattern
     {
     public:
-        SolidColor(Color c) : Pattern(nullptr, nullptr), color(c) {}
+        SolidColor(Color c) : color(c) {}
+
         std::unique_ptr<Pattern> Clone() const override { return std::make_unique<SolidColor>(*this); }
+        Color CustomSampleAt(const Math::Point &patternPoint) const override { return color; }
+        bool EqualsSameType(const Pattern &other) const override
+        {
+            auto &o = static_cast<const SolidColor &>(other); // safe because of preconditions
+            return Pattern::EqualsSameType(other) && color == o.color;
+        }
 
         Color color;
-
-    private:
-        Color CustomSampleAt(const Math::Point &patternPoint) const override { return color; }
     };
 
+    // Useful default values
     inline SolidColor SolidWhite = SolidColor(White);
     inline SolidColor SolidBlack = SolidColor(Black);
 
-    class TestPattern : public Pattern
+    // Abstract base for patterns that hold only 1 child
+    class UnaryPattern : public Pattern
     {
     public:
-        TestPattern(Pattern *c_A = &SolidWhite, Pattern *c_B = &SolidBlack) : Pattern(c_A, c_B) {}
+        Pattern *a;
+
+    protected:
+        UnaryPattern(Pattern *input) : a(input) {}
+
+        virtual bool EqualsSameType(const Pattern &other) const override
+        {
+            auto &o = static_cast<const UnaryPattern &>(other); // safe because of preconditions
+            return Pattern::EqualsSameType(other) && *a == *o.a;
+        }
+    };
+
+    // Abstract base for patterns that hold 2 children
+    class BinaryPattern : public Pattern
+    {
+    public:
+        Pattern *a;
+        Pattern *b;
+
+    protected:
+        BinaryPattern(Pattern *a, Pattern *b) : a(a), b(b) {}
+
+        virtual bool EqualsSameType(const Pattern &other) const override
+        {
+            auto &o = static_cast<const BinaryPattern &>(other); // safe because of preconditions
+            return Pattern::EqualsSameType(other) && *a == *o.a && *b == *o.b;
+        }
+    };
+
+    class TestPattern : public BinaryPattern
+    {
+    public:
+        TestPattern(Pattern *c_A = &SolidWhite, Pattern *c_B = &SolidBlack) : BinaryPattern(c_A, c_B) {}
         std::unique_ptr<Pattern> Clone() const override { return std::make_unique<TestPattern>(*this); }
 
     private:
         Color CustomSampleAt(const Math::Point &patternPoint) const override;
     };
 
-    class StripePattern : public Pattern
+    class StripePattern : public BinaryPattern
     {
     public:
-        StripePattern(Pattern *c_A = &SolidWhite, Pattern *c_B = &SolidBlack) : Pattern(c_A, c_B) {}
+        StripePattern(Pattern *c_A = &SolidWhite, Pattern *c_B = &SolidBlack) : BinaryPattern(c_A, c_B) {}
         std::unique_ptr<Pattern> Clone() const override { return std::make_unique<StripePattern>(*this); }
 
         // Test Function Only
@@ -72,106 +123,91 @@ namespace Rendering
         Color CustomSampleAt(const Math::Point &patternPoint) const override;
     };
 
-    class Gradient : public Pattern
+    class Gradient : public BinaryPattern
     {
     public:
-        Gradient(Pattern *c_A = &SolidWhite, Pattern *c_B = &SolidBlack) : Pattern(c_A, c_B) {}
+        Gradient(Pattern *c_A = &SolidWhite, Pattern *c_B = &SolidBlack) : BinaryPattern(c_A, c_B) {}
         std::unique_ptr<Pattern> Clone() const override { return std::make_unique<Gradient>(*this); }
 
     private:
         Color CustomSampleAt(const Math::Point &patternPoint) const override;
     };
 
-    class Ring : public Pattern
+    class Ring : public BinaryPattern
     {
     public:
-        Ring(Pattern *c_A = &SolidWhite, Pattern *c_B = &SolidBlack) : Pattern(c_A, c_B) {}
+        Ring(Pattern *c_A = &SolidWhite, Pattern *c_B = &SolidBlack) : BinaryPattern(c_A, c_B) {}
         std::unique_ptr<Pattern> Clone() const override { return std::make_unique<Ring>(*this); }
 
     private:
         Color CustomSampleAt(const Math::Point &patternPoint) const override;
     };
 
-    class Checker : public Pattern
+    class Checker : public BinaryPattern
     {
     public:
-        Checker(Pattern *c_A = &SolidWhite, Pattern *c_B = &SolidBlack) : Pattern(c_A, c_B) {}
+        Checker(Pattern *c_A = &SolidWhite, Pattern *c_B = &SolidBlack) : BinaryPattern(c_A, c_B) {}
         std::unique_ptr<Pattern> Clone() const override { return std::make_unique<Checker>(*this); }
 
     private:
         Color CustomSampleAt(const Math::Point &patternPoint) const override;
     };
 
-    class RadialGradient : public Pattern
+    class RadialGradient : public BinaryPattern
     {
     public:
-        RadialGradient(Pattern *c_A = &SolidWhite, Pattern *c_B = &SolidBlack) : Pattern(c_A, c_B) {}
+        RadialGradient(Pattern *c_A = &SolidWhite, Pattern *c_B = &SolidBlack) : BinaryPattern(c_A, c_B) {}
         std::unique_ptr<Pattern> Clone() const override { return std::make_unique<RadialGradient>(*this); }
 
     private:
         Color CustomSampleAt(const Math::Point &patternPoint) const override;
     };
 
-    class Blend : public Pattern
+    class Blend : public BinaryPattern
     {
     public:
-        Blend(Pattern *c_A = &SolidWhite, Pattern *c_B = &SolidBlack) : Pattern(c_A, c_B) {}
+        Blend(Pattern *c_A = &SolidWhite, Pattern *c_B = &SolidBlack) : BinaryPattern(c_A, c_B) {}
         std::unique_ptr<Pattern> Clone() const override { return std::make_unique<Blend>(*this); }
 
     private:
         Color CustomSampleAt(const Math::Point &patternPoint) const override;
     };
 
-    class Perturb : public Pattern
+    class Perturb : public UnaryPattern
     {
     public:
-        Perturb(Pattern *c_A, int seed = 1337) : Pattern(c_A, nullptr)
-        {
-            assert(a != nullptr && "Perturb specifically required a pattern reference to be passed in");
-            p = Noise::Perlin(seed);
-        }
+        Perturb(Pattern *c_A, int seed = 1337) : UnaryPattern(c_A), seed(seed), p(Noise::Perlin(seed)) {}
         std::unique_ptr<Pattern> Clone() const override { return std::make_unique<Perturb>(*this); }
 
-    private:
+    protected:
         Color CustomSampleAt(const Math::Point &patternPoint) const override;
         Noise::Perlin p;
+        int seed;
+
+        // Overriden to check for new variables
+        bool EqualsSameType(const Pattern &other) const override
+        {
+            auto &o = static_cast<const Perturb &>(other); // safe because of preconditions
+
+            // p will always equal o.p if the seed is the same, as we don't allow changing the seed after
+            return Pattern::EqualsSameType(other) && UnaryPattern::EqualsSameType(other) && seed == o.seed;
+        }
     };
 
-    // Factory Method for creating patterns that will automatically be in a smart pointer
-    template <typename T>
-    std::unique_ptr<Pattern> MakePattern(Pattern *a = &SolidWhite, Pattern *b = &SolidBlack)
+    // Factory Methods for creating patterns that will automatically be in a smart pointer
+    // Unary version
+    template <typename T, typename... Args>
+    std::unique_ptr<T> MakePattern(Pattern *a, Args &&...args)
     {
-        if constexpr (std::is_same_v<T, SolidColor>)
-        {
-            static_assert(!std::is_same_v<T, SolidColor>, "Tried to make SolidColor as a smart pointer. Should just use material color instead.");
-            return nullptr;
-        }
-        else if constexpr (std::is_same_v<T, Perturb>)
-        {
-            static_assert(!std::is_same_v<T, Perturb>, "Tried to make Perturb with the wrong overload.");
-            return nullptr;
-        }
-        else
-        {
-            return std::make_unique<T>(a, b);
-        }
+        static_assert(std::is_base_of_v<UnaryPattern, T>, "MakePattern(Pattern*, ...) is only for unary patterns.");
+        return std::make_unique<T>(a, std::forward<Args>(args)...);
     }
 
+    // Binary Version
     template <typename T>
-    std::unique_ptr<Pattern> MakePattern(Pattern *a, int seed)
+    std::unique_ptr<T> MakePattern(Pattern *a = &SolidWhite, Pattern *b = &SolidBlack)
     {
-        if constexpr (!std::is_same_v<T, Perturb>)
-        {
-            static_assert(std::is_same_v<T, Perturb>, "Wrong overload used to make this pattern. This wouldn't have a seed.");
-        }
-        else
-        {
-            return std::make_unique<Perturb>(a, seed);
-        }
-    }
-
-    inline bool operator==(const Pattern &self, const Pattern &other)
-    {
-        return typeid(self) == typeid(other) && self.a == other.a && self.b == other.b && self.transform == other.transform;
+        static_assert(std::is_base_of_v<BinaryPattern, T>, "MakePattern(Pattern*, Pattern*) is only for binary patterns.");
+        return std::make_unique<T>(a, b);
     }
 }
