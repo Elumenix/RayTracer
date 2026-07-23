@@ -288,7 +288,8 @@
                     "doNotSuggest": true,
                     "oneOf": [
                         { "$ref": "#/definitions/Material" },
-                        { "$ref": "#/definitions/Transform" }
+                        { "$ref": "#/definitions/Transform" },
+                        { "$ref": "#/definitions/Pattern" }
                     ]
                 }
             },
@@ -320,67 +321,78 @@
         "Material": {
             "description": "Defines what the surface of an object looks like.",
             "oneOf": [
-                { "type": "object" },
-                { "type": "null", "doNotSuggest": true }
-            ],
-            "properties": {
-                "color": {
-                    "description": "The base color of the surface. Default is white",
-                    "$ref": "#/definitions/Color",
-                    "default": [1, 1, 1]
-                },
-                "diffuse": {
-                    "description": "How much the surface scatters light in all directions when hit by a light source. Higher values make the surface appear more matte.",
-                    "type": "number",
-                    "minimum": 0,
-                    "maximum": 1,
-                    "default": 0.9
-                },
-                "ambient": {
-                    "description": "How much the surface is lit even when not directly facing a light source. Prevents completely unlit areas from being pure black.",
-                    "type": "number",
-                    "minimum": 0,
-                    "maximum": 1,
-                    "default": 0.1
-                },
-                "specular": {
-                    "description": "The brightness of the shiny highlight that appears where a light source reflects toward the camera.",
-                    "type": "number",
-                    "minimum": 0,
-                    "maximum": 1,
-                    "default": 0.9
-                },
-                "shininess": {
-                    "description": "How tight/small the specular highlight is. Higher values make the surface look more polished and less rough.",
-                    "type": "number",
-                    "minimum": 0,
-                    "default": 200
-                },
-                "reflective": {
-                    "description": "How much the surface reflects light. Higher values make the surface more reflective.",
-                    "type": "number",
-                    "minimum": 0,
-                    "maximum": 1,
-                    "default": 0
-                },
-                "transparency": {
-                    "description": "How much light passes through the surface. 0 is fully opaque, 1 is fully transparent.",
-                    "type": "number",
-                    "minimum": 0,
-                    "maximum": 1,
-                    "default": 0
-                },
-                "refractive-index": {
-                    "description": "How much light bends when passing through a transparent surface. Some examples: air: 1.0, water: 1.33, glass: 1.5.",
-                    "type": "number",
-                    "minimum": 0,
-                    "default": 1
+                { "type": "null", "doNotSuggest": true },
+                {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "color": {
+                            "description": "The base color of the surface.\nDefault is white",
+                            "$ref": "#/definitions/Color",
+                            "default": [1, 1, 1]
+                        },
+                        "pattern": {
+                            "description": "The pattern that will be drawn across the surface of the object.",
+                            "$ref": "#/definitions/Pattern",
+                            "doNotSuggest": true
+                        },
+                        "diffuse": {
+                            "description": "How much the surface scatters light in all directions when hit by a light source.\nHigher values make the surface appear more matte.",
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 1,
+                            "default": 0.9
+                        },
+                        "ambient": {
+                            "description": "How much the surface is lit even when not directly facing a light source.\nPrevents completely unlit areas from being pure black.",
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 1,
+                            "default": 0.1
+                        },
+                        "specular": {
+                            "description": "The brightness of the shiny highlight that appears where a light source reflects toward the camera.",
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 1,
+                            "default": 0.9
+                        },
+                        "shininess": {
+                            "description": "How tight/small the specular highlight is.\nHigher values make the surface look more polished and less rough.",
+                            "type": "number",
+                            "minimum": 0,
+                            "default": 200
+                        },
+                        "reflective": {
+                            "description": "How much the surface reflects light.\nHigher values make the surface more reflective.",
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 1,
+                            "default": 0
+                        },
+                        "transparency": {
+                            "description": "How much light passes through the surface.\n0 is fully opaque, 1 is fully transparent.",
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 1,
+                            "default": 0
+                        },
+                        "refractive-index": {
+                            "description": "How much light bends when passing through a transparent surface.\nSome examples: air: 1.0, water: 1.33, glass: 1.5.",
+                            "type": "number",
+                            "minimum": 0,
+                            "default": 1
+                        }
+                    },
+                    "not": {
+                        "required": ["color", "pattern"]
+                    }
                 }
-            },
+            ],
             "defaultSnippets": [
                 {
                     "label": "Full Material",
-                    "sortText": "0_FullMaterial",
+                    "sortText": "1_FullMaterial",
                     "description": "A material with all fields exposed to their default values",
                     "body": {
                         "color": "[1,1,1]",
@@ -392,13 +404,103 @@
                         "transparency": 0,
                         "refractive-index": 1
                     }
+                },
+                {
+                    "label": "Simple Material",
+                    "sortText": "0_SimpleMaterial",
+                    "description": "A material with some basic fields exposed to their default values",
+                    "body": {
+                        "color": "[1,1,1]",
+                        "ambient": 0.1,
+                        "diffuse": 0.9,
+                        "specular": 0.9
+                    }
+                },
+                {
+                    "label": "Glass Material",
+                    "sortText": "2_GlassMaterial",
+                    "description": "Quick setup for a material that has the qualities of glass",
+                    "body": {
+                        "color": "[1,1,1]",
+                        "diffuse": 0.1,
+                        "shininess": 300,
+                        "reflective": 0.9,
+                        "transparency": 0.9,
+                        "refractive-index": 1.5
+                    }
+                }
+            ]
+        },
+        "Pattern": {
+            "description": "Defines how a material varies over an objects surface.\nTo use a pattern, replace the 'color' field on a material with a 'pattern' field.",
+            "oneOf": [
+                { "type": "null", "doNotSuggest": true },
+                { "type": "string", "doNotSuggest": true },
+                {
+                    "type": "object",
+                    "doNotSuggest":true,
+                    "additionalProperties": false,
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "description": "Defines the type of pattern that will be applied to the material.",
+                            "enum": ["checkers","stripes","gradient","ring","radial","blend","perturb"]
+                        },
+                        "colors": {
+                            "type": "array",
+                            "description": "The colors or child patterns that will be used to draw this pattern.\nOrder does matter.",
+                            "items": {
+                                "oneOf": [
+                                    { "type": "string" },
+                                    { "$ref": "#/definitions/Color" }
+                                ]
+                            }
+                        },
+                        "seed": {
+                            "type": "integer",
+                            "description": "The seed that will be used for random patterns.\nPerturb is the only pattern that uses a seed."
+                        },
+                        "transform": {
+                            "description": "Determines the position, rotation, and scale of the material on the object.",
+                            "$ref": "#/definitions/Transform"
+                        }
+                    },
+                    "required": ["type", "colors"],
+                    "if": {
+                        "properties": { "type": { "const": "perturb" } }
+                    },
+                    "then": {
+                        "properties": { "colors": { "minItems": 1, "maxItems": 1 } }
+                    },
+                    "else": {
+                        "properties": { "colors": { "minItems": 2, "maxItems": 2 } }
+                    }
+                }
+            ],
+            "defaultSnippets": [
+                {
+                    "label": "Full Pattern",
+                    "sortText": "1_FullPattern",
+                    "description": "A pattern with all fields exposed",
+                    "bodyText": "\n\ttype: stripes\n\tcolors:\n\t\t- [0, 0, 0]\n\t\t- [1, 1, 1]\n\tseed: 1337\n\ttransform:"
+                },
+                {
+                    "label": "Simple Pattern",
+                    "sortText": "0_SimplePattern",
+                    "description": "A pattern with only the basic field exposed",
+                    "bodyText": "\n\ttype: stripes\n\tcolors:\n\t\t- [0, 0, 0]\n\t\t- [1, 1, 1]"
+                },
+                {
+                    "label": "Perturb Pattern",
+                    "sortText": "2_PerturbPattern",
+                    "description": "Quick set-up for perturbing another pattern",
+                    "bodyText": "\n\ttype: perturb\n\tcolors:\n\t\t- pattern-name\n\tseed: 1337"
                 }
             ]
         },
         "Transform": {
             "description": "Determines the position, rotation, and scale of an object in the scene.\nA transform is essentially a list of transformations to apply to an object.",
             "oneOf": [
-                { "type": "array" },
                 { 
                     "type": "null", 
                     "doNotSuggest": true,
@@ -410,139 +512,142 @@
                             "bodyText": "\n-"
                         }
                     ]
-                }
-            ],
-            "items": {
-                "oneOf": [
-                    {
-                        "description": "A reference to a previously defined transform.",
-                        "type": "string"
-                    },
-                    {
-                        "description": "Move the position of the object in 3D space.",
-                        "type": "array",
-                        "doNotSuggest": true,
-                        "items": [
-                            { "const": "translate" },
-                            { "type": "number", "description": "x" },
-                            { "type": "number", "description": "y" },
-                            { "type": "number", "description": "z" }
-                        ],
-                        "minItems": 4,
-                        "maxItems": 4,
-                        "defaultSnippets": [
+                },
+                {
+                    "type": "array",
+                    "items": {
+                        "oneOf": [
                             {
-                            "label": "Translate",
-                            "sortText": "0_Translate",
-                            "description": "Move the object in 3D space.",
-                            "bodyText": "[translate, 0, 0, 0]"
-                            }
-                        ]
-                    },
-                    {
-                        "description": "Multiply the scale of the object.",
-                        "type": "array",
-                        "doNotSuggest": true,
-                        "items": [
-                            { "const": "scale" },
-                            { "type": "number", "description": "x" },
-                            { "type": "number", "description": "y" },
-                            { "type": "number", "description": "z" }
-                        ],
-                        "minItems": 4,
-                        "maxItems": 4,
-                        "defaultSnippets": [
+                                "description": "A reference to a previously defined transform.",
+                                "type": "string"
+                            },
                             {
-                            "label": "Scale",
-                            "sortText": "1_Scale",
-                            "description": "Multiply the object's scale.",
-                            "bodyText": "[scale, 1, 1, 1]"
-                            }
-                        ]
-                    },
-                    {
-                        "description": "Rotate the object around the world's X axis.",
-                        "type": "array",
-                        "doNotSuggest": true,
-                        "items": [
-                            { "const": "rotate-x" },
-                            { "type": "number", "description": "radians" }
-                        ],
-                        "minItems": 2,
-                        "maxItems": 2,
-                        "defaultSnippets": [
+                                "description": "Move the position of the object in 3D space.",
+                                "type": "array",
+                                "doNotSuggest": true,
+                                "items": [
+                                    { "const": "translate" },
+                                    { "type": "number", "description": "x" },
+                                    { "type": "number", "description": "y" },
+                                    { "type": "number", "description": "z" }
+                                ],
+                                "minItems": 4,
+                                "maxItems": 4,
+                                "defaultSnippets": [
+                                    {
+                                    "label": "Translate",
+                                    "sortText": "0_Translate",
+                                    "description": "Move the object in 3D space.",
+                                    "bodyText": "[translate, 0, 0, 0]"
+                                    }
+                                ]
+                            },
                             {
-                            "label": "Rotate X",
-                            "sortText": "2_RotateX",
-                            "description": "Rotate around the world's X axis.",
-                            "bodyText": "[rotate-x, 0]"
-                            }
-                        ]
-                    },
-                    {
-                        "description": "Rotate the object around the world's Y axis.",
-                        "type": "array",
-                        "doNotSuggest": true,
-                        "items": [
-                            { "const": "rotate-y" },
-                            { "type": "number", "description": "radians" }
-                        ],
-                        "minItems": 2,
-                        "maxItems": 2,
-                        "defaultSnippets": [
+                                "description": "Multiply the scale of the object.",
+                                "type": "array",
+                                "doNotSuggest": true,
+                                "items": [
+                                    { "const": "scale" },
+                                    { "type": "number", "description": "x" },
+                                    { "type": "number", "description": "y" },
+                                    { "type": "number", "description": "z" }
+                                ],
+                                "minItems": 4,
+                                "maxItems": 4,
+                                "defaultSnippets": [
+                                    {
+                                    "label": "Scale",
+                                    "sortText": "1_Scale",
+                                    "description": "Multiply the object's scale.",
+                                    "bodyText": "[scale, 1, 1, 1]"
+                                    }
+                                ]
+                            },
                             {
-                            "label": "Rotate Y",
-                            "sortText": "2_RotateY",
-                            "description": "Rotate around the world's Y axis.",
-                            "bodyText": "[rotate-y, 0]"
-                            }
-                        ]
-                    },
-                    {
-                        "description": "Rotate the object around the world's Z axis.",
-                        "type": "array",
-                        "doNotSuggest": true,
-                        "items": [
-                            { "const": "rotate-z" },
-                            { "type": "number", "description": "radians" }
-                        ],
-                        "minItems": 2,
-                        "maxItems": 2,
-                        "defaultSnippets": [
+                                "description": "Rotate the object around the world's X axis.",
+                                "type": "array",
+                                "doNotSuggest": true,
+                                "items": [
+                                    { "const": "rotate-x" },
+                                    { "type": "number", "description": "radians" }
+                                ],
+                                "minItems": 2,
+                                "maxItems": 2,
+                                "defaultSnippets": [
+                                    {
+                                    "label": "Rotate X",
+                                    "sortText": "2_RotateX",
+                                    "description": "Rotate around the world's X axis.",
+                                    "bodyText": "[rotate-x, 0]"
+                                    }
+                                ]
+                            },
                             {
-                            "label": "Rotate Z",
-                            "sortText": "2_RotateZ",
-                            "description": "Rotate around the world's Z axis.",
-                            "bodyText": "[rotate-z, 0]"
-                            }
-                        ]
-                    },
-                    {
-                        "description": "Shear the object along the specified axes.",
-                        "type": "array",
-                        "doNotSuggest": true,
-                        "items": [
-                            { "const": "shear" },
-                            { "type": "number", "description": "xy" },
-                            { "type": "number", "description": "xz" },
-                            { "type": "number", "description": "yx" },
-                            { "type": "number", "description": "yz" },
-                            { "type": "number", "description": "zx" },
-                            { "type": "number", "description": "zy" }
-                        ],
-                        "minItems": 7,
-                        "maxItems": 7,
-                        "defaultSnippets": [
+                                "description": "Rotate the object around the world's Y axis.",
+                                "type": "array",
+                                "doNotSuggest": true,
+                                "items": [
+                                    { "const": "rotate-y" },
+                                    { "type": "number", "description": "radians" }
+                                ],
+                                "minItems": 2,
+                                "maxItems": 2,
+                                "defaultSnippets": [
+                                    {
+                                    "label": "Rotate Y",
+                                    "sortText": "2_RotateY",
+                                    "description": "Rotate around the world's Y axis.",
+                                    "bodyText": "[rotate-y, 0]"
+                                    }
+                                ]
+                            },
                             {
-                            "label": "Shear",
-                            "sortText": "3_Shear",
-                            "description": "Shear the object along the specified axes.",
-                            "bodyText": "[shear, 0, 0, 0, 0, 0, 0]"
+                                "description": "Rotate the object around the world's Z axis.",
+                                "type": "array",
+                                "doNotSuggest": true,
+                                "items": [
+                                    { "const": "rotate-z" },
+                                    { "type": "number", "description": "radians" }
+                                ],
+                                "minItems": 2,
+                                "maxItems": 2,
+                                "defaultSnippets": [
+                                    {
+                                    "label": "Rotate Z",
+                                    "sortText": "2_RotateZ",
+                                    "description": "Rotate around the world's Z axis.",
+                                    "bodyText": "[rotate-z, 0]"
+                                    }
+                                ]
+                            },
+                            {
+                                "description": "Shear the object along the specified axes.",
+                                "type": "array",
+                                "doNotSuggest": true,
+                                "items": [
+                                    { "const": "shear" },
+                                    { "type": "number", "description": "xy" },
+                                    { "type": "number", "description": "xz" },
+                                    { "type": "number", "description": "yx" },
+                                    { "type": "number", "description": "yz" },
+                                    { "type": "number", "description": "zx" },
+                                    { "type": "number", "description": "zy" }
+                                ],
+                                "minItems": 7,
+                                "maxItems": 7,
+                                "defaultSnippets": [
+                                    {
+                                    "label": "Shear",
+                                    "sortText": "3_Shear",
+                                    "description": "Shear the object along the specified axes.",
+                                    "bodyText": "[shear, 0, 0, 0, 0, 0, 0]"
+                                    }
+                                ]
                             }
                         ]
                     }
-                ]
-            }
+                }
+            ]
         },
 
 

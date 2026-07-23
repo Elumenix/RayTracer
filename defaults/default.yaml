@@ -1,169 +1,173 @@
+# ======================================================
 # the camera
 # ======================================================
+
 - add: camera
-  width: 100
-  height: 100
-  field-of-view: 0.785
-  from: [-6, 6, -10]
-  to: [6, 0, 6]
-  up: [-0.45, 1, 0]
+  width: 400
+  height: 200
+  field-of-view: 1.152
+  from: [-2.6, 1.5, -3.9]
+  to: [-0.6, 1, -0.8]
+  up: [0, 1, 0]
+
 # ======================================================
 # light sources
 # ======================================================
+
 - add: light
-  at: [50, 100, -50]
+  at: [-4.9, 4.9, -1]
   intensity: [1, 1, 1]
-# an optional second light for additional illumination
-- add: light
-  at: [-400, 50, -10]
-  intensity: [0.2, 0.2, 0.2]
+
 # ======================================================
-# define some constants to avoid duplication
+# define constants to avoid duplication
 # ======================================================
-- define: white-material
+
+- define: wall-material
   value:
-    color: [1, 1, 1]
-    diffuse: 0.7
-    ambient: 0.1
-    specular: 0.0
-    reflective: 0.1
-- define: blue-material
-  extend: white-material
-  value:
-    color: [0.537, 0.831, 0.914]
-- define: red-material
-  extend: white-material
-  value:
-    color: [0.941, 0.322, 0.388]
-- define: purple-material
-  extend: white-material
-  value:
-    color: [0.373, 0.404, 0.550]
-- define: standard-transform
-  value:
-    - [translate, 1, -1, 1]
-    - [scale, 0.5, 0.5, 0.5]
-- define: large-object
-  value:
-    - standard-transform
-    - [scale, 3.5, 3.5, 3.5]
-- define: medium-object
-  value:
-    - standard-transform
-    - [scale, 3, 3, 3]
-- define: small-object
-  value:
-    - standard-transform
-    - [scale, 2, 2, 2]
-# ======================================================
-# a white backdrop for the scene
-# ======================================================
-- add: plane
-  material:
-    color: [1, 1, 1]
-    ambient: 1
-    diffuse: 0
+    pattern:
+      type: stripes
+      colors:
+        - [0.45, 0.45, 0.45]
+        - [0.55, 0.55, 0.55]
+      transform:
+        - [ scale, 0.25, 0.25, 0.25 ]
+        - [ rotate-y, 1.5708 ]
+    ambient: 0
+    diffuse: 0.4
     specular: 0
-  transform:
-    - [rotate-x, 1.5707963267948966] # pi/2
-    - [translate, 0, 0, 500]
+    reflective: 0.3
+
 # ======================================================
 # describe the elements of the scene
 # ======================================================
-- add: sphere
+
+# the checkered floor
+- add: plane
+  transform:
+    - [ rotate-y, 0.31415 ]
   material:
-    color: [0.373, 0.404, 0.550]
-    diffuse: 0.2
-    ambient: 0.0
-    specular: 1.0
-    shininess: 200
-    reflective: 0.7
-    transparency: 0.7
+    pattern:
+      type: checkers
+      colors:
+        - [0.35, 0.35, 0.35]
+        - [0.65, 0.65, 0.65]
+    specular: 0
+    reflective: 0.4
+
+# the ceiling
+- add: plane
+  transform:
+    - [ translate, 0, 5, 0 ]
+  material:
+    color: [0.8, 0.8, 0.8]
+    ambient: 0.3
+    specular: 0
+
+# west wall
+- add: plane
+  transform:
+    - [ rotate-y, 1.5708 ] # orient texture
+    - [ rotate-z, 1.5708 ] # rotate to vertical
+    - [ translate, -5, 0, 0 ]
+  material: wall-material
+
+# east wall
+- add: plane
+  transform:
+    - [ rotate-y, 1.5708 ] # orient texture
+    - [ rotate-z, 1.5708 ] # rotate to vertical
+    - [ translate, 5, 0, 0 ]
+  material: wall-material
+
+# north wall
+- add: plane
+  transform:
+    - [ rotate-x, 1.5708 ] # rotate to vertical
+    - [ translate, 0, 0, 5 ]
+  material: wall-material
+
+# south wall
+- add: plane
+  transform:
+    - [ rotate-x, 1.5708 ] # rotate to vertical
+    - [ translate, 0, 0, -5 ]
+  material: wall-material
+
+# ----------------------
+# background balls
+# ----------------------
+
+- add: sphere
+  transform:
+    - [ scale, 0.4, 0.4, 0.4 ]
+    - [ translate, 4.6, 0.4, 1 ]
+  material:
+    color: [0.8, 0.5, 0.3]
+    shininess: 50
+
+- add: sphere
+  transform:
+    - [ scale, 0.3, 0.3, 0.3 ]
+    - [ translate, 4.7, 0.3, 0.4 ]
+  material:
+    color: [0.9, 0.4, 0.5]
+    shininess: 50
+
+- add: sphere
+  transform:
+    - [ scale, 0.5, 0.5, 0.5 ]
+    - [ translate, -1, 0.5, 4.5 ]
+  material:
+    color: [0.4, 0.9, 0.6]
+    shininess: 50
+
+- add: sphere
+  transform:
+    - [ scale, 0.3, 0.3, 0.3 ]
+    - [ translate, -1.7, 0.3, 4.7 ]
+  material:
+    color: [0.4, 0.6, 0.9]
+    shininess: 50
+
+# ----------------------
+# foreground balls
+# ----------------------
+
+# red sphere
+- add: sphere
+  transform:
+    - [ translate, -0.6, 1, 0.6 ]
+  material:
+    color: [1, 0.3, 0.2]
+    specular: 0.4
+    shininess: 5
+
+# blue glass sphere
+- add: sphere
+  transform:
+    - [ scale, 0.7, 0.7, 0.7 ]
+    - [ translate, 0.6, 0.7, -0.6 ]
+  material:
+    color: [0, 0, 0.2]
+    ambient: 0
+    diffuse: 0.4
+    specular: 0.9
+    shininess: 300
+    reflective: 0.9
+    transparency: 0.9
     refractive-index: 1.5
+
+# green glass sphere
+- add: sphere
   transform:
-    - large-object
-- add: cube
-  material: white-material
-  transform:
-    - medium-object
-    - [translate, 4, 0, 0]
-- add: cube
-  material: blue-material
-  transform:
-    - large-object
-    - [translate, 8.5, 1.5, -0.5]
-- add: cube
-  material: red-material
-  transform:
-    - large-object
-    - [translate, 0, 0, 4]
-- add: cube
-  material: white-material
-  transform:
-    - small-object
-    - [translate, 4, 0, 4]
-- add: cube
-  material: purple-material
-  transform:
-    - medium-object
-    - [translate, 7.5, 0.5, 4]
-- add: cube
-  material: white-material
-  transform:
-    - medium-object
-    - [translate, -0.25, 0.25, 8]
-- add: cube
-  material: blue-material
-  transform:
-    - large-object
-    - [translate, 4, 1, 7.5]
-- add: cube
-  material: red-material
-  transform:
-    - medium-object
-    - [translate, 10, 2, 7.5]
-- add: cube
-  material: white-material
-  transform:
-    - small-object
-    - [translate, 8, 2, 12]
-- add: cube
-  material: white-material
-  transform:
-    - small-object
-    - [translate, 20, 1, 9]
-- add: cube
-  material: blue-material
-  transform:
-    - large-object
-    - [translate, -0.5, -5, 0.25]
-- add: cube
-  material: red-material
-  transform:
-    - large-object
-    - [translate, 4, -4, 0]
-- add: cube
-  material: white-material
-  transform:
-    - large-object
-    - [translate, 8.5, -4, 0]
-- add: cube
-  material: white-material
-  transform:
-    - large-object
-    - [translate, 0, -4, 4]
-- add: cube
-  material: purple-material
-  transform:
-    - large-object
-    - [translate, -0.5, -4.5, 8]
-- add: cube
-  material: white-material
-  transform:
-    - large-object
-    - [translate, 0, -8, 4]
-- add: cube
-  material: white-material
-  transform:
-    - large-object
-    - [translate, -0.5, -8.5, 8]
+    - [ scale, 0.5, 0.5, 0.5 ]
+    - [ translate, -0.7, 0.5, -0.8 ]
+  material:
+    color: [0, 0.2, 0]
+    ambient: 0
+    diffuse: 0.4
+    specular: 0.9
+    shininess: 300
+    reflective: 0.9
+    transparency: 0.9
+    refractive-index: 1.5
