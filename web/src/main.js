@@ -224,10 +224,9 @@ Promise.all([loadYamlSchema(), loadDefaultYaml()])
 
                 // Regex to match color arrays in the format: color: [r, g, b]
                 // Honestly, just trust the process. I barely understand how regex works but this seems to work well
-                const regex = /(color|intensity):\s*\[\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*\]/g;
-
+                const keyedRegex = /(color|intensity):\s*\[\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*\]/g;
                 let match;
-                while ((match = regex.exec(text))) {
+                while ((match = keyedRegex.exec(text))) {
                     const fieldName = match[1];
                     const r = parseFloat(match[2]);
                     const g = parseFloat(match[3]);
@@ -249,6 +248,30 @@ Promise.all([loadYamlSchema(), loadDefaultYaml()])
                             endPos.lineNumber,
                             endPos.column
                         )
+                    });
+                }
+
+                
+                // This is essentially the same as above, it's just targeting pattern colors, which would be in an array instead of a key. So: - [r, g, b]
+                const seqItemRegex = /-\s*\[\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*\]/g;
+                while ((match = seqItemRegex.exec(text))) {
+                    const r = parseFloat(match[1]);
+                    const g = parseFloat(match[2]);
+                    const b = parseFloat(match[3]);
+                    const color = { red: r, green: g, blue: b, alpha: 1 };
+
+                    const arrayStart = match.index + match[0].indexOf("[");
+                    const arrayEnd = match.index + match[0].lastIndexOf("]") + 1;
+                    const startPos = model.getPositionAt(arrayStart);
+                    const endPos = model.getPositionAt(arrayEnd);
+
+                    results.push({
+                        color,
+                        range: new monaco.Range(
+                            startPos.lineNumber, 
+                            startPos.column, 
+                            endPos.lineNumber, 
+                            endPos.column)
                     });
                 }
 

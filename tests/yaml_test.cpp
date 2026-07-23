@@ -35,6 +35,22 @@ TEST(YamlTest, MinimalCamera)
   EXPECT_EQ(camera.transform, IdentityMatrix /*Transformations::ViewTransform(Point(0, 0, 0), Point(1, 1, 1), Vector(0, 1, 0))*/);
 }
 
+TEST(YamlTest, FullCamera)
+{
+  const string yaml = R"(
+- add: camera
+  width: 1
+  height: 1
+  field-of-view: 1.5 
+  from: [0, 0, 0]
+  to: [1, 1, 1]
+  up: [0, 1, 0]
+)";
+
+  Camera camera = YamlParser::getInstance().ParseYaml(yaml).first;
+  EXPECT_EQ(camera.transform, Transformations::ViewTransform(Point(0, 0, 0), Point(1, 1, 1), Vector(0, 1, 0)));
+}
+
 TEST(YamlTest, SceneMissingCamera)
 {
   const string yaml = R"(
@@ -49,7 +65,7 @@ TEST(YamlTest, BadCamera1)
 - add: camera
   width: 1
   height: 1.3
-  field-of-view: 90 
+  field-of-view: 1.5 
 )";
 
   EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
@@ -67,29 +83,13 @@ TEST(YamlTest, BadCamera2)
   EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
 }
 
-TEST(YamlTest, FullCamera)
-{
-  const string yaml = R"(
-- add: camera
-  width: 1
-  height: 1
-  field-of-view: 90 
-  from: [0, 0, 0]
-  to: [1, 1, 1]
-  up: [0, 1, 0]
-)";
-
-  Camera camera = YamlParser::getInstance().ParseYaml(yaml).first;
-  EXPECT_EQ(camera.transform, Transformations::ViewTransform(Point(0, 0, 0), Point(1, 1, 1), Vector(0, 1, 0)));
-}
-
 TEST(YamlTest, BadCamera3)
 {
   const string yaml = R"(
 - add: camera
   width: 1
   height: 1
-  field-of-view: 90 
+  field-of-view: 1.5 
   from: [0, 0, 0]
   to: [0, 1, 0]
   up: [0, 1, 0]
@@ -104,7 +104,7 @@ TEST(YamlTest, BadCamera4)
 - add: camera
   width: 1
   height: 1
-  field-of-view: 90 
+  field-of-view: 1.5 
   from: [0, 0, 0]
   to: [1, 1, 1]
   up: [0, 1]
@@ -119,7 +119,7 @@ TEST(YamlTest, BadCamera5)
 - add: camera
   width: 1
   height: 1
-  field-of-view: 90 
+  field-of-view: 1.5 
   from: [0, 0, 0]
   to: [1, 1, 1]
   up: [0, 1, 0]
@@ -143,7 +143,7 @@ TEST(YamlTest, DecodeLight)
 - add: camera
   width: 1
   height: 1
-  field-of-view: 90 
+  field-of-view: 1.5 
 
 - add: light
   at: [50, 100, -50]
@@ -163,7 +163,7 @@ TEST(YamlTest, BadLight1)
 - add: camera
   width: 1
   height: 1
-  field-of-view: 90 
+  field-of-view: 1.5 
 
 - add: light
   at: 
@@ -179,11 +179,11 @@ TEST(YamlTest, BadLight2)
 - add: camera
   width: 1
   height: 1
-  field-of-view: 90 
+  field-of-view: 1.5 
 
 - add: light
   at: [50, 100, -50]
-  intenity: [30, 40, 50]
+  intenity: [1, 1, 1]
 )";
 
   EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
@@ -195,11 +195,11 @@ TEST(YamlTest, BadLight3)
 - add: camera
   width: 1
   height: 1
-  field-of-view: 90 
+  field-of-view: 1.5 
 
 - add: light
   at: 3
-  intensity: [30, 40, 50]
+  intensity: [1, 1, 1]
 )";
 
   EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
@@ -211,12 +211,29 @@ TEST(YamlTest, BadLight4)
 - add: camera
   width: 1
   height: 1
-  field-of-view: 90 
+  field-of-view: 1.5 
 
 - add: light
   at: [50, 100, -50]
-  intensity: [30, 40, 50]
+  intensity: [1, 1, 1]
   style: 3
+)";
+
+  EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
+}
+
+// Finally testing an invalid color
+TEST(YamlTest, BadLight5)
+{
+  const string yaml = R"(
+- add: camera
+  width: 1
+  height: 1
+  field-of-view: 1.5 
+
+- add: light
+  at: [50, 100, -50]
+  intensity: [30, 40, 100]
 )";
 
   EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
@@ -228,7 +245,7 @@ TEST(YamlTest, InvalidAddKey)
 - add: camera
   width: 1
   height: 1
-  field-of-view: 90 
+  field-of-view: 1.5 
 
 - add: Rhombus
   material: 
@@ -244,7 +261,7 @@ TEST(YamlTest, DecodeDirectMaterial)
 - add: camera
   width: 1
   height: 1
-  field-of-view: 90 
+  field-of-view: 1.5 
 
 - add: sphere
   material:
@@ -271,7 +288,7 @@ TEST(YamlTest, DecodeDefinedMaterial)
 - add: camera
   width: 1
   height: 1
-  field-of-view: 90 
+  field-of-view: 1.5 
 
 - define: my-material
   value:
@@ -301,7 +318,7 @@ TEST(YamlTest, DecodeExtendedMaterial)
 - add: camera
   width: 1
   height: 1
-  field-of-view: 90 
+  field-of-view: 1.5 
 
 - define: base-material
   value:
@@ -337,7 +354,7 @@ TEST(YamlTest, DecodeDirectPattern)
 - add: camera
   width: 1
   height: 1
-  field-of-view: 90 
+  field-of-view: 1.5 
 
 - add: plane
   transform:
@@ -371,7 +388,7 @@ TEST(YamlTest, DecodeDefinedPattern)
 - add: camera
   width: 1
   height: 1
-  field-of-view: 90 
+  field-of-view: 1.5 
 
 - define: my-pattern
   value:
@@ -408,7 +425,7 @@ TEST(YamlTest, DecodeDefinedMaterialPattern)
 - add: camera
   width: 1
   height: 1
-  field-of-view: 90 
+  field-of-view: 1.5 
 
 - define: my-material
   value:
@@ -449,7 +466,7 @@ TEST(YamlTest, DecodeDefinedPatternTree1)
 - add: camera
   width: 1
   height: 1
-  field-of-view: 90 
+  field-of-view: 1.5 
 
 - define: stripe-pattern
   value:
@@ -498,7 +515,7 @@ TEST(YamlTest, DecodeDefinedPatternTree2)
 - add: camera
   width: 1
   height: 1
-  field-of-view: 90 
+  field-of-view: 1.5 
 
 - define: stripe-pattern
   value:
@@ -544,7 +561,7 @@ TEST(YamlTest, DecodeDirectTransform)
 - add: camera
   width: 1
   height: 1
-  field-of-view: 90 
+  field-of-view: 1.5 
 
 - add: sphere
   material:
@@ -565,7 +582,7 @@ TEST(YamlTest, DecodeDefinedTransform)
 - add: camera
   width: 1
   height: 1
-  field-of-view: 90 
+  field-of-view: 1.5 
 
 - define: my-transform
   value:
@@ -589,7 +606,7 @@ TEST(YamlTest, DecodeExtendedTransform)
 - add: camera
   width: 1
   height: 1
-  field-of-view: 90 
+  field-of-view: 1.5 
 
 - define: base-transform
   value:
@@ -618,7 +635,7 @@ TEST(YamlTest, DecodeDefinedTransformTree)
 - add: camera
   width: 1
   height: 1
-  field-of-view: 90 
+  field-of-view: 1.5 
 
 - define: standard-transform
   value:
@@ -653,7 +670,7 @@ TEST(YamlTest, DecodeDefinedTransformTreeWithExtendedTransform)
 - add: camera
   width: 1
   height: 1
-  field-of-view: 90 
+  field-of-view: 1.5 
 
 - define: base-transform
   value:
@@ -693,7 +710,7 @@ TEST(YamlTest, FailedMaterialExtend1)
 - add: camera
   width: 1
   height: 1
-  field-of-view: 90 
+  field-of-view: 1.5 
 
 - define: base-material
   value:
@@ -810,7 +827,7 @@ TEST(YamlTest, FailedTransformExtend1)
 - add: camera
   width: 1
   height: 1
-  field-of-view: 90
+  field-of-view: 1.5
 
 - define: base-transform
   value:
@@ -832,7 +849,7 @@ TEST(YamlTest, FailedTransformExtend2)
 - add: camera
   width: 1
   height: 1
-  field-of-view: 90
+  field-of-view: 1.5
 
 - define: base-transform
   value:
@@ -854,7 +871,7 @@ TEST(YamlTest, ExtendedWrongType1)
 - add: camera
   width: 1
   height: 1
-  field-of-view: 90
+  field-of-view: 1.5
 
 - define: base-material
   value:
@@ -883,7 +900,7 @@ TEST(YamlTest, ExtendedWrongType2)
 - add: camera
   width: 1
   height: 1
-  field-of-view: 90
+  field-of-view: 1.5
 
 - define: base-transform
   value:
@@ -939,7 +956,7 @@ TEST(YamlTest, ExtendedWrongType4)
 - add: camera
   width: 1
   height: 1
-  field-of-view: 90
+  field-of-view: 1.5
 
 - define: stripe-pattern
   value:
@@ -964,7 +981,7 @@ TEST(YamlTest, CatchMissingShapeTags)
 - add: camera
   width: 1
   height: 1
-  field-of-view: 90
+  field-of-view: 1.5
 
 - add: sphere
   transform:
@@ -976,7 +993,7 @@ TEST(YamlTest, CatchMissingShapeTags)
 - add: camera
   width: 1
   height: 1
-  field-of-view: 90
+  field-of-view: 1.5
 
 - add: sphere
   material:
@@ -991,7 +1008,7 @@ TEST(YamlTest, DecodeDefaultSphere)
 - add: camera
   width: 1
   height: 1
-  field-of-view: 90
+  field-of-view: 1.5
 
 - add: sphere
   material:
@@ -1011,7 +1028,7 @@ TEST(YamlTest, DecodeDefaultCube)
 - add: camera
   width: 1
   height: 1
-  field-of-view: 90
+  field-of-view: 1.5
 
 - add: cube
   material:
@@ -1031,7 +1048,7 @@ TEST(YamlTest, DecodeDefaultPlane)
 - add: camera
   width: 1
   height: 1
-  field-of-view: 90
+  field-of-view: 1.5
 
 - add: plane
   material:
@@ -1051,7 +1068,7 @@ TEST(YamlTest, BadShapeMaterial1)
 - add: camera
   width: 1
   height: 1
-  field-of-view: 90
+  field-of-view: 1.5
 
 - define: base-transform
   value:
@@ -1074,7 +1091,7 @@ TEST(YamlTest, BadShapeMaterial2)
 - add: camera
   width: 1
   height: 1
-  field-of-view: 90
+  field-of-view: 1.5
 
 - define: base-material
   value:
@@ -1101,7 +1118,7 @@ TEST(YamlTest, BadShapeMaterial3)
 - add: camera
   width: 1
   height: 1
-  field-of-view: 90
+  field-of-view: 1.5
 
 - define: base-material
   value:
@@ -1123,7 +1140,7 @@ TEST(YamlTest, BadShapeTransform1)
 - add: camera
   width: 1
   height: 1
-  field-of-view: 90
+  field-of-view: 1.5
 
 - define: base-material
   value:
@@ -1131,7 +1148,7 @@ TEST(YamlTest, BadShapeTransform1)
     diffuse: 0.2
     ambient: 0.0
     specular: 1.0
-    shininess: [ 200, 200, 150 ]
+    shininess: 150
     reflective: 0.7
     transparency: 0.7
     refractive-index: 1.5
@@ -1150,7 +1167,7 @@ TEST(YamlTest, BadShapeTransform2)
 - add: camera
   width: 1
   height: 1
-  field-of-view: 90
+  field-of-view: 1.5
 
 - define: base-transform
   value:
@@ -1171,16 +1188,74 @@ TEST(YamlTest, BadShapeTransform3)
 - add: camera
   width: 1
   height: 1
-  field-of-view: 90
+  field-of-view: 1.5
 
 - define: base-transform
   value:
     - [ translate, 1, -1, 1 ]
-    - [ scale, 0.5, 0.5 ]    
+    - [ scale, 0.5, 0.5 ]
 
 - add: sphere
   material:
   transform: base-transform
+)";
+
+  EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
+}
+
+TEST(YamlTest, BadPattern1)
+{
+  const string yaml = R"(
+- add: camera
+  width: 1
+  height: 1
+  field-of-view: 1.5
+
+- define: unique-name
+  value: 
+    type: stipes
+    colors:
+      - [0, 0, 0]
+      - [1, 1, 1]
+)";
+
+  EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
+}
+
+TEST(YamlTest, BadPattern2)
+{
+  const string yaml = R"(
+- add: camera
+  width: 1
+  height: 1
+  field-of-view: 1.5
+
+- define: unique-name
+  value: 
+    type: stripes
+    colors:
+      - [0, 0, 0]
+      - [1, 1, 1]
+      - [.5, .5, .5]
+)";
+
+  EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
+}
+
+TEST(YamlTest, BadPattern3)
+{
+  const string yaml = R"(
+- add: camera
+  width: 1
+  height: 1
+  field-of-view: 1.5
+
+- define: unique-name
+  value: 
+    type: perturb
+    colors:
+      - [0, 0, 0]
+      - [1, 1, 1]
 )";
 
   EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);

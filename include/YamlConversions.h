@@ -101,7 +101,15 @@ namespace YAML
             if (!node.IsSequence() || node.size() != 3)
                 return false;
 
-            rhs = Rendering::Color(node[0].as<float>(), node[1].as<float>(), node[2].as<float>());
+            float r = node[0].as<float>();
+            float g = node[1].as<float>();
+            float b = node[2].as<float>();
+
+            // Valid color values are required, not just numbers
+            if (r < 0 || r > 1 || g < 0 || g > 1 || b < 0 || b > 1)
+                return false;
+
+            rhs = Rendering::Color(r, g, b);
             return true;
         }
     };
@@ -398,6 +406,11 @@ namespace YAML
                 safe_as<int>(node["height"], "height", "camera"),
                 safe_as<float>(node["field-of-view"], "field-of-view", "camera"));
 
+            if (rhs.fov <= 0 || rhs.fov >= 3.14159)
+            {
+                throw std::runtime_error("Value given for 'field-of-view' is invalid: 0 < 'field-of-view' < 3.14159");
+            }
+
             // Some default basis vectors
             Math::Point from(0, 0, 0);
             Math::Point to(0, 0, -1);
@@ -464,12 +477,17 @@ namespace YAML
             Node colorNode = node["colors"];
 
             // We make sure the colorNode is correct at a glance
-            if (!colorNode.IsSequence() || colorNode.size() != 2)
+            if (!colorNode.IsSequence() || colorNode.size() != 2 || type == "perturb")
             {
-                // perturb works differently, so we have a final check for improper fromatting
-                if (!(type == "perturb" && colorNode.size() == 1))
+                if (type != "perturb")
                 {
-                    throw std::runtime_error("'colors' should be a list of 2 items (1 if using a perturb pattern), with only 'color' and 'pattern' being allowed inputs");
+                    throw std::runtime_error("'colors' should have 2 items for this pattern, with allowed values being of type 'color' and 'pattern'");
+                }
+
+                // perturb works differently, so we have a final check for improper formatting
+                else if (!colorNode.IsSequence() || colorNode.size() != 1)
+                {
+                    throw std::runtime_error("'colors' should have 1 item for this pattern, with allowed values being of type 'color' and 'pattern'");
                 }
             }
 
