@@ -562,13 +562,11 @@ namespace YAML
                 throw std::runtime_error("Unknown pattern type: " + type);
             }
 
-            // TODO: error check transform
-            // Transform is an optional key
+            // Transform is an optional key. The Transform converter above already handles errors for this properly
+            // Transforms automatically set to an identity matrix, so it's fine if this isn't set from the get-go
             if (node["transform"])
             {
-                rhs->transform = node["transform"].as<Math::Matrix<4, 4>>(); // Default for now. Only the first patterns transform will affect things currently
-                // Todo: transform for patterns
-                // Set to identity matrix when patterns are constructed, so this is fine right now
+                rhs->transform = node["transform"].as<Math::Matrix<4, 4>>();
             }
 
             return true;

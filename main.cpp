@@ -15,6 +15,7 @@ using namespace Scene;
 // NOTE: This file now only facilitates testing without the web build.
 // If I run 'make build' in the console, everything in the scene will be rendered to a PNG file and saved as 'Scene.png' in the root of the directory.
 // This code serves no purpose in the web build and will not affect it.
+// Any scene rendered here will be using the C++ code directly instead of the simpler yaml conversions
 int main()
 {
     World world;

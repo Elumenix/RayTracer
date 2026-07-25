@@ -114,7 +114,7 @@ namespace YAML
         // Getting here means the pattern was defined inline on the shape rather than in a define, so it's partly unrolled already
         // If any colors field is a defined pattern, or the transform field is a defined transform, those will need to be unrolled
         Node colors = node["colors"];
-        if (!((colors[0] && colors[0].IsScalar()) || (colors[1] && colors[1].IsScalar()) || (node["transform"] && node["transform"].IsScalar())))
+        if (!node["colors"] || !((colors[0] && colors[0].IsScalar()) || (colors[1] && colors[1].IsScalar()) || (node["transform"] && node["transform"].IsScalar())))
             return node; // everything was already unrolled
 
         Node unroll = node;

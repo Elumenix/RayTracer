@@ -1260,3 +1260,27 @@ TEST(YamlTest, BadPattern3)
 
   EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
 }
+
+TEST(YamlTest, BadPattern4)
+{
+  const string yaml = R"(
+- add: camera
+  width: 1
+  height: 1
+  field-of-view: 1.5
+
+- define: grad
+  value: 
+    type: gradient
+    color:
+      - [0.392, 0.722, 0.675]
+      - [0.855, 0.886, 0.412]
+    transform: 
+    - [translate, 1.5, 2.5, 0]
+    - [scale, 5, 5, 5]
+    - [rotate-z, 1.5]
+)";
+
+  // Should be colors instead of color.
+  EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
+}

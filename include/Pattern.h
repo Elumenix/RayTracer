@@ -41,9 +41,10 @@ namespace Rendering
     };
 
     // This is a free function because a->Sample(b, pos) is bad syntax when 'a' is not used in the result at all
-    inline Color Sample(const Pattern *p, const Math::Point &pt)
+    inline Color Sample(const Pattern *child, const Math::Point &parentSpacePoint)
     {
-        return p->CustomSampleAt(pt);
+        Math::Point childPoint = child->transform.Inverse() * parentSpacePoint;
+        return child->CustomSampleAt(childPoint);
     }
 
     // Leaf Node, essentially
