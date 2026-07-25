@@ -42,6 +42,12 @@
                     "exclusiveMaximum": 3.14159,
                     "doNotSuggest": true
                 },
+                "reflection-depth": {
+                    "description": "The maximum number of times a ray will bounce on a surface before terminating.",
+                    "type": "integer",
+                    "minimum": 0,
+                    "doNotSuggest": true
+                },
                 "from": {
                     "description": "The position of the camera in 3D space.",
                     "$ref": "#/definitions/Vec3"
@@ -77,6 +83,7 @@
                         "width": 128,
                         "height": 128,
                         "field-of-view": 1.0472,
+                        "reflection-depth": 5,
                         "from": "[0, 0, 0]",
                         "to": "[0, 0, -1]",
                         "up": "[0, 1, 0]"

@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <tuple>
 
 namespace Scene
 {
@@ -27,9 +28,9 @@ public:
         return instance;
     }
 
-    std::pair<Scene::Camera, Scene::World> ParseFile(const std::string &filename);
-    std::pair<Scene::Camera, Scene::World> ParseYaml(const std::string &yaml);
-    std::pair<Scene::Camera, Scene::World> ParseYaml(const YAML::Node &root);
+    std::tuple<Scene::Camera, Scene::World, int> ParseFile(const std::string &filename);
+    std::tuple<Scene::Camera, Scene::World, int> ParseYaml(const std::string &yaml);
+    std::tuple<Scene::Camera, Scene::World, int> ParseYaml(const YAML::Node &root);
 
 private:
     YamlParser() {}

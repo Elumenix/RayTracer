@@ -17,7 +17,7 @@ static int g_progress = 0;
 extern "C"
 {
     EMSCRIPTEN_KEEPALIVE
-    void render(const char *yamlString, int maxDepth)
+    void render(const char *yamlString)
     {
         // Clean up previous render
         g_lastError = "";
@@ -32,8 +32,9 @@ extern "C"
             printf("Yaml parsing completed\n");
 
             // Extracting isn't necessary, but it makes this so much easier to work with
-            Scene::Camera camera = std::move(scene.first);
-            Scene::World world = std::move(scene.second);
+            Scene::Camera camera = std::move(std::get<0>(scene));
+            Scene::World world = std::move(std::get<1>(scene));
+            int maxDepth = std::get<2>(scene);
 
             // Image size variables. The webpage will read and use these
             g_width = camera.hsize;

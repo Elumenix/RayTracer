@@ -26,8 +26,8 @@ TEST(YamlTest, MinimalCamera)
   field-of-view: 1.0471975511965976
 )";
 
-  pair<Camera, World> result = YamlParser::getInstance().ParseYaml(yaml);
-  Camera camera = result.first;
+  auto result = YamlParser::getInstance().ParseYaml(yaml);
+  Camera camera = std::get<0>(result);
 
   EXPECT_EQ(camera.hsize, 128);
   EXPECT_EQ(camera.vsize, 128);
@@ -41,14 +41,18 @@ TEST(YamlTest, FullCamera)
 - add: camera
   width: 1
   height: 1
-  field-of-view: 1.5 
+  field-of-view: 1.5
+  reflection-depth: 3 
   from: [0, 0, 0]
   to: [1, 1, 1]
   up: [0, 1, 0]
 )";
 
-  Camera camera = YamlParser::getInstance().ParseYaml(yaml).first;
+  auto res = YamlParser::getInstance().ParseYaml(yaml);
+  Camera camera = std::get<0>(res);
+  int depth = std::get<2>(res);
   EXPECT_EQ(camera.transform, Transformations::ViewTransform(Point(0, 0, 0), Point(1, 1, 1), Vector(0, 1, 0)));
+  EXPECT_EQ(depth, 3);
 }
 
 TEST(YamlTest, SceneMissingCamera)
@@ -129,6 +133,22 @@ TEST(YamlTest, BadCamera5)
   EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
 }
 
+TEST(YamlTest, BadCamera6)
+{
+  const string yaml = R"(
+- add: camera
+  width: 1
+  height: 1
+  field-of-view: 1.5
+  reflection-depth: -1 
+  from: [0, 0, 0]
+  to: [1, 1, 1]
+  up: [0, 1, 0]
+)";
+
+  EXPECT_THROW(YamlParser::getInstance().ParseYaml(yaml), std::runtime_error);
+}
+
 TEST(YamlTest, EncodeLight)
 {
   Light light = Light(Point(50, 100, -50), Color(1, 1, 1));
@@ -150,7 +170,7 @@ TEST(YamlTest, DecodeLight)
   intensity: [1, 1, 1]
 )";
 
-  World world = std::move(YamlParser::getInstance().ParseYaml(yaml).second);
+  World world = std::move(std::get<1>(YamlParser::getInstance().ParseYaml(yaml)));
   Light *light = &world.lights[0];
 
   EXPECT_EQ(light->position, Point(50, 100, -50));
@@ -276,7 +296,7 @@ TEST(YamlTest, DecodeDirectMaterial)
   transform:
 )";
 
-  World world = std::move(YamlParser::getInstance().ParseYaml(yaml).second);
+  World world = std::move(std::get<1>(YamlParser::getInstance().ParseYaml(yaml)));
   Shape *sphere = world.shapes[0].get();
 
   EXPECT_EQ(sphere->material, Material(Color(0.373, 0.404, 0.550), 0.0, 0.2, 1.0, 200, 0.7, 0.7, 1.5));
@@ -306,7 +326,7 @@ TEST(YamlTest, DecodeDefinedMaterial)
   transform:
 )";
 
-  World world = std::move(YamlParser::getInstance().ParseYaml(yaml).second);
+  World world = std::move(std::get<1>(YamlParser::getInstance().ParseYaml(yaml)));
   Shape *sphere = world.shapes[0].get();
 
   EXPECT_EQ(sphere->material, Material(Color(0.373, 0.404, 0.550), 0.0, 0.2, 1.0, 200, 0.7, 0.7, 1.5));
@@ -342,7 +362,7 @@ TEST(YamlTest, DecodeExtendedMaterial)
   transform:
 )";
 
-  World world = std::move(YamlParser::getInstance().ParseYaml(yaml).second);
+  World world = std::move(std::get<1>(YamlParser::getInstance().ParseYaml(yaml)));
   Shape *sphere = world.shapes[0].get();
 
   EXPECT_EQ(sphere->material, Material(Color(1, 1, 1), 0.0, 0.5, 1.0, 200, 0.7, 0.7, 1.5));
@@ -366,7 +386,7 @@ TEST(YamlTest, DecodeDirectPattern)
         - [ 0.85, 0.85, 0.85 ]
 )";
 
-  World world = std::move(YamlParser::getInstance().ParseYaml(yaml).second);
+  World world = std::move(std::get<1>(YamlParser::getInstance().ParseYaml(yaml)));
   Shape *plane = world.shapes[0].get();
 
   EXPECT_FALSE(dynamic_cast<StripePattern *>(plane->material.pattern.get()));
@@ -403,7 +423,7 @@ TEST(YamlTest, DecodeDefinedPattern)
     pattern: my-pattern
 )";
 
-  World world = std::move(YamlParser::getInstance().ParseYaml(yaml).second);
+  World world = std::move(std::get<1>(YamlParser::getInstance().ParseYaml(yaml)));
   Shape *plane = world.shapes[0].get();
 
   EXPECT_FALSE(dynamic_cast<StripePattern *>(plane->material.pattern.get()));
@@ -443,7 +463,7 @@ TEST(YamlTest, DecodeDefinedMaterialPattern)
   material: my-material
 )";
 
-  World world = std::move(YamlParser::getInstance().ParseYaml(yaml).second);
+  World world = std::move(std::get<1>(YamlParser::getInstance().ParseYaml(yaml)));
   Shape *plane = world.shapes[0].get();
 
   EXPECT_FALSE(dynamic_cast<StripePattern *>(plane->material.pattern.get()));
@@ -488,7 +508,7 @@ TEST(YamlTest, DecodeDefinedPatternTree1)
     pattern: check
 )";
 
-  World world = std::move(YamlParser::getInstance().ParseYaml(yaml).second);
+  World world = std::move(std::get<1>(YamlParser::getInstance().ParseYaml(yaml)));
   Shape *plane = world.shapes[0].get();
 
   EXPECT_FALSE(dynamic_cast<StripePattern *>(plane->material.pattern.get()));
@@ -534,7 +554,7 @@ TEST(YamlTest, DecodeDefinedPatternTree2)
         - [ 0.4, 0.4, 0.4 ]
 )";
 
-  World world = std::move(YamlParser::getInstance().ParseYaml(yaml).second);
+  World world = std::move(std::get<1>(YamlParser::getInstance().ParseYaml(yaml)));
   Shape *plane = world.shapes[0].get();
 
   EXPECT_FALSE(dynamic_cast<StripePattern *>(plane->material.pattern.get()));
@@ -570,7 +590,7 @@ TEST(YamlTest, DecodeDirectTransform)
     - [ scale, 0.5, 0.5, 0.5 ]
 )";
 
-  World world = std::move(YamlParser::getInstance().ParseYaml(yaml).second);
+  World world = std::move(std::get<1>(YamlParser::getInstance().ParseYaml(yaml)));
   Shape *sphere = world.shapes[0].get();
 
   EXPECT_EQ(sphere->transform, Transformations::Scaling(0.5, 0.5, 0.5) * Transformations::Translation(1, -1, 1) * IdentityMatrix);
@@ -594,7 +614,7 @@ TEST(YamlTest, DecodeDefinedTransform)
   transform: my-transform
 )";
 
-  World world = std::move(YamlParser::getInstance().ParseYaml(yaml).second);
+  World world = std::move(std::get<1>(YamlParser::getInstance().ParseYaml(yaml)));
   Shape *sphere = world.shapes[0].get();
 
   EXPECT_EQ(sphere->transform, Transformations::Scaling(0.5, 0.5, 0.5) * Transformations::Translation(1, -1, 1) * IdentityMatrix);
@@ -623,7 +643,7 @@ TEST(YamlTest, DecodeExtendedTransform)
   transform: extended-transform
 )";
 
-  World world = std::move(YamlParser::getInstance().ParseYaml(yaml).second);
+  World world = std::move(std::get<1>(YamlParser::getInstance().ParseYaml(yaml)));
   Shape *sphere = world.shapes[0].get();
 
   EXPECT_EQ(sphere->transform, Transformations::Scaling(2, 2, 2) * Transformations::Scaling(0.5, 0.5, 0.5) * Transformations::Translation(1, -1, 1) * IdentityMatrix);
@@ -658,7 +678,7 @@ TEST(YamlTest, DecodeDefinedTransformTree)
     - extra-large-object
 )";
 
-  World world = std::move(YamlParser::getInstance().ParseYaml(yaml).second);
+  World world = std::move(std::get<1>(YamlParser::getInstance().ParseYaml(yaml)));
   Shape *sphere = world.shapes[0].get();
 
   EXPECT_EQ(sphere->transform, Transformations::Scaling(2, 2, 2) * Transformations::Scaling(3.5, 3.5, 3.5) * Transformations::Scaling(0.5, 0.5, 0.5) * Transformations::Translation(1, -1, 1) * IdentityMatrix);
@@ -698,7 +718,7 @@ TEST(YamlTest, DecodeDefinedTransformTreeWithExtendedTransform)
     - extra-large-object
 )";
 
-  World world = std::move(YamlParser::getInstance().ParseYaml(yaml).second);
+  World world = std::move(std::get<1>(YamlParser::getInstance().ParseYaml(yaml)));
   Shape *sphere = world.shapes[0].get();
 
   EXPECT_EQ(sphere->transform, Transformations::Scaling(2.1, 2.1, 2.1) * Transformations::Scaling(3.5, 3.5, 3.5) * Transformations::Scaling(2, 2, 2) * Transformations::Scaling(0.25, 0.25, 0.25) * Transformations::Translation(1, -1, 1) * IdentityMatrix);
@@ -1015,7 +1035,7 @@ TEST(YamlTest, DecodeDefaultSphere)
   transform:
 )";
 
-  World world = std::move(YamlParser::getInstance().ParseYaml(yaml).second);
+  World world = std::move(std::get<1>(YamlParser::getInstance().ParseYaml(yaml)));
   Shape *sphere = world.shapes[0].get();
 
   EXPECT_EQ(sphere->material, Material());
@@ -1035,7 +1055,7 @@ TEST(YamlTest, DecodeDefaultCube)
   transform:
 )";
 
-  World world = std::move(YamlParser::getInstance().ParseYaml(yaml).second);
+  World world = std::move(std::get<1>(YamlParser::getInstance().ParseYaml(yaml)));
   Shape *cube = world.shapes[0].get();
 
   EXPECT_EQ(cube->material, Material());
@@ -1055,7 +1075,7 @@ TEST(YamlTest, DecodeDefaultPlane)
   transform:
 )";
 
-  World world = std::move(YamlParser::getInstance().ParseYaml(yaml).second);
+  World world = std::move(std::get<1>(YamlParser::getInstance().ParseYaml(yaml)));
   Shape *plane = world.shapes[0].get();
 
   EXPECT_EQ(plane->material, Material());

@@ -441,19 +441,19 @@ namespace YAML
     }
 }
 
-pair<Camera, World> YamlParser::ParseFile(const string &filename)
+tuple<Camera, World, int> YamlParser::ParseFile(const string &filename)
 {
     YAML::Node root = YAML::LoadFile(filename);
     return ParseYaml(root);
 }
 
-pair<Camera, World> YamlParser::ParseYaml(const string &yaml)
+tuple<Camera, World, int> YamlParser::ParseYaml(const string &yaml)
 {
     YAML::Node root = YAML::Load(yaml);
     return ParseYaml(root);
 }
 
-pair<Camera, World> YamlParser::ParseYaml(const YAML::Node &root)
+tuple<Camera, World, int> YamlParser::ParseYaml(const YAML::Node &root)
 {
     // Cleaning up memory before starting
     YAML::convert<Rendering::Pattern *>::ClearAll();
@@ -463,6 +463,7 @@ pair<Camera, World> YamlParser::ParseYaml(const YAML::Node &root)
     Camera camera;
     bool cameraSet = false;
     int itemNumber = 0;
+    int maxDepth = 5; // default, may be overriden if the camera contains an override
 
     for (const auto &item : root)
     {
@@ -505,7 +506,6 @@ pair<Camera, World> YamlParser::ParseYaml(const YAML::Node &root)
         // AddItem returns true only if a camera was just added, as we need to track the amount of cameras in the scene
         if (AddItem(item, defines, itemNumber, world, camera))
         {
-
             // Report a problem if an extra camera was added
             if (cameraSet)
             {
@@ -515,6 +515,24 @@ pair<Camera, World> YamlParser::ParseYaml(const YAML::Node &root)
 
             // Mark that we added a camera
             cameraSet = true;
+
+            // We know that this is the camera, so we can check depth
+            if (item["reflection-depth"])
+            {
+                try
+                {
+                    maxDepth = item["reflection-depth"].as<int>();
+                    if (maxDepth < 0)
+                    {
+                        throw runtime_error("");
+                    }
+                }
+                catch (const std::exception &e)
+                {
+                    cerr << "Item " << itemNumber << ": 'reflection-depth' field on the camera must be an integer >= 0" << endl;
+                    throw runtime_error("Item " + to_string(itemNumber) + ": 'reflection-depth' field on the camera must be an integer >= 0");
+                }
+            }
         }
     }
 
@@ -526,5 +544,5 @@ pair<Camera, World> YamlParser::ParseYaml(const YAML::Node &root)
     }
 
     // move is required on world because of the smart pointers it contains.
-    return std::pair<Camera, World>{std::move(camera), std::move(world)};
+    return {std::move(camera), std::move(world), maxDepth};
 }

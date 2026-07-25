@@ -376,6 +376,7 @@ namespace YAML
         "width",
         "height",
         "field-of-view",
+        "reflection-depth", // Not actually used in camera class, but the user will put it on the camera
         "from",
         "to",
         "up",

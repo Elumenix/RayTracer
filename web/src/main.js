@@ -251,7 +251,7 @@ Promise.all([loadYamlSchema(), loadDefaultYaml()])
                     });
                 }
 
-                
+
                 // This is essentially the same as above, it's just targeting pattern colors, which would be in an array instead of a key. So: - [r, g, b]
                 const seqItemRegex = /-\s*\[\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*\]/g;
                 while ((match = seqItemRegex.exec(text))) {
@@ -268,9 +268,9 @@ Promise.all([loadYamlSchema(), loadDefaultYaml()])
                     results.push({
                         color,
                         range: new monaco.Range(
-                            startPos.lineNumber, 
-                            startPos.column, 
-                            endPos.lineNumber, 
+                            startPos.lineNumber,
+                            startPos.column,
+                            endPos.lineNumber,
                             endPos.column)
                     });
                 }
@@ -407,7 +407,6 @@ Promise.all([loadYamlSchema(), loadDefaultYaml()])
         // Render button event. Here because it needs to read from editor
         document.getElementById('render-btn').addEventListener('click', () => {
             const yaml = editor.getValue()
-            const maxDepth = 5 // Make an option for this eventually
             currentRenderId++;
 
             // Disable if not disabled aready because it's ambiguous what would be downloaded if the user clicks it while a render is in progress
@@ -421,7 +420,7 @@ Promise.all([loadYamlSchema(), loadDefaultYaml()])
 
             // Send a request to the worker to start rendering the scene
             // The worker will send back updates that are handled in the worker.onmessage function above
-            worker.postMessage({ yaml, maxDepth, renderId: currentRenderId });
+            worker.postMessage({ yaml, renderId: currentRenderId });
             updateProgressBar(0);
         })
 
