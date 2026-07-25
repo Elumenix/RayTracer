@@ -74,7 +74,7 @@ namespace Rendering
         float jitterY = p.Sample(32, patternPoint.x, patternPoint.y, patternPoint.z);
         float jitterZ = p.Sample(64, patternPoint.x, patternPoint.y, patternPoint.z);
 
-        float scale = 0.2f;
+        float scale = strength;
 
         Point jitteredPoint = Point(
             patternPoint.x + jitterX * scale,

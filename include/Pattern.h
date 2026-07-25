@@ -177,13 +177,14 @@ namespace Rendering
     class Perturb : public UnaryPattern
     {
     public:
-        Perturb(Pattern *c_A, int seed = 1337) : UnaryPattern(c_A), seed(seed), p(Noise::Perlin(seed)) {}
+        Perturb(Pattern *c_A, int seed = 1337, float strength = .3) : UnaryPattern(c_A), seed(seed), p(Noise::Perlin(seed)), strength(strength) {}
         std::unique_ptr<Pattern> Clone() const override { return std::make_unique<Perturb>(*this); }
 
     protected:
         Color CustomSampleAt(const Math::Point &patternPoint) const override;
         Noise::Perlin p;
         int seed;
+        float strength;
 
         // Overriden to check for new variables
         bool EqualsSameType(const Pattern &other) const override
@@ -191,7 +192,7 @@ namespace Rendering
             auto &o = static_cast<const Perturb &>(other); // safe because of preconditions
 
             // p will always equal o.p if the seed is the same, as we don't allow changing the seed after
-            return Pattern::EqualsSameType(other) && UnaryPattern::EqualsSameType(other) && seed == o.seed;
+            return Pattern::EqualsSameType(other) && UnaryPattern::EqualsSameType(other) && seed == o.seed && strength == o.strength;
         }
     };
 

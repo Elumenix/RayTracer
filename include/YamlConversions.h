@@ -468,7 +468,7 @@ namespace YAML
                 std::string key = kv.first.as<std::string>();
 
                 // If this is a fake key, we should return a warning to the user
-                if (key != "type" && key != "colors" && key != "transform" && key != "seed")
+                if (key != "type" && key != "colors" && key != "transform" && key != "seed" && key != "strength")
                 {
                     throw std::runtime_error("Unknown key on pattern: " + key);
                 }
@@ -556,7 +556,14 @@ namespace YAML
             }
             else if (type == "perturb")
             {
-                rhs = Rendering::MakePattern<Rendering::Perturb>(first, seed).release();
+                float strength = .3f;
+
+                if (node["strength"])
+                {
+                    strength = safe_as<float>(node["strength"], "strength", "pattern");
+                }
+
+                rhs = Rendering::MakePattern<Rendering::Perturb>(first, seed, strength).release();
             }
             else
             {
