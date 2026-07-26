@@ -9,8 +9,14 @@ namespace Rendering
 {
     Color Pattern::SampleAt(const Shape &object, const Point &worldPoint)
     {
-        Point objPoint = object.transform.Inverse() * worldPoint;
-        Point patternPoint = transform.Inverse() * objPoint;
+        if (!hasInvTransform)
+        {
+            invTransform = transform.Inverse();
+            hasInvTransform = true;
+        }
+
+        Point objPoint = *object.GetInverseTransform() * worldPoint;
+        Point patternPoint = invTransform * objPoint;
         return CustomSampleAt(patternPoint);
     }
 

@@ -63,8 +63,15 @@ namespace Scene
         float worldX = _halfWidth - xOffset;
         float worldY = _halfHeight - yOffset;
 
-        Math::Point pixel = transform.Inverse() * Math::Point(worldX, worldY, -1);
-        Math::Point origin = transform.Inverse() * Math::Point(0, 0, 0);
+        // Still need to check this because test cases don't use render, and so won't set this beforehand
+        if (!hasInvTransform)
+        {
+            invTransform = transform.Inverse();
+            hasInvTransform = true;
+        }
+
+        Math::Point pixel = invTransform * Math::Point(worldX, worldY, -1);
+        Math::Point origin = invTransform * Math::Point(0, 0, 0);
         Math::Vector direction = (pixel - origin).Normalized();
 
         return Ray(origin, direction);
@@ -74,6 +81,10 @@ namespace Scene
     Canvas Camera::Render(const World &world, int recursionLimit, int *progress)
     {
         Canvas image(hsize, vsize);
+
+        // We'll set up the cached invTransform now, because the camera's transform is now locked in for the render
+        invTransform = transform.Inverse();
+        hasInvTransform = true;
 
         for (int y = 0; y < vsize; y++)
         {

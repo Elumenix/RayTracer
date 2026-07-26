@@ -21,6 +21,8 @@ namespace Rendering
     {
     public:
         Math::Matrix<4, 4> transform = Math::IdentityMatrix;
+        mutable Math::Matrix<4, 4> invTransform;
+        mutable bool hasInvTransform = false; // By the first time it's used, it should never change again
         virtual std::unique_ptr<Pattern> Clone() const = 0;
 
         // Expected access
@@ -43,7 +45,13 @@ namespace Rendering
     // This is a free function because a->Sample(b, pos) is bad syntax when 'a' is not used in the result at all
     inline Color Sample(const Pattern *child, const Math::Point &parentSpacePoint)
     {
-        Math::Point childPoint = child->transform.Inverse() * parentSpacePoint;
+        if (!child->hasInvTransform)
+        {
+            child->invTransform = child->transform.Inverse();
+            child->hasInvTransform = true;
+        }
+
+        Math::Point childPoint = child->invTransform * parentSpacePoint;
         return child->CustomSampleAt(childPoint);
     }
 

@@ -156,7 +156,7 @@ namespace YAML
 
             rhs = Scene::Sphere();
 
-            // Structure of a decoded sphere is garunteed because the YamlParser enforces it
+            // Structure of a decoded sphere is guaranteed because the YamlParser enforces it
             rhs.material = node["material"].as<Rendering::Material>();
             rhs.transform = node["transform"].as<Math::Matrix<4, 4>>();
 
@@ -176,7 +176,7 @@ namespace YAML
 
             rhs = Scene::Cube();
 
-            // Structure of a decoded cube is garunteed because the YamlParser enforces it
+            // Structure of a decoded cube is guaranteed because the YamlParser enforces it
             rhs.material = node["material"].as<Rendering::Material>();
             rhs.transform = node["transform"].as<Math::Matrix<4, 4>>();
 
@@ -196,7 +196,7 @@ namespace YAML
 
             rhs = Scene::Plane();
 
-            // Structure of a decoded plane is garunteed because the YamlParser enforces it
+            // Structure of a decoded plane is guaranteed because the YamlParser enforces it
             rhs.material = node["material"].as<Rendering::Material>();
             rhs.transform = node["transform"].as<Math::Matrix<4, 4>>();
 

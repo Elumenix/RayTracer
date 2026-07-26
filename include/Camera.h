@@ -25,6 +25,8 @@ namespace Scene
         const int vsize;
         const float fov;
         Math::Matrix<4, 4> transform;
+        Math::Matrix<4, 4> invTransform; // cached to be much faster
+        bool hasInvTransform = false;
 
         Camera();
         Camera(int hsize, int vsize, float fov);
@@ -36,6 +38,6 @@ namespace Scene
         inline float HalfHeight() { return _halfHeight; }
 
         Rendering::Ray RayForPixel(float px, float py);
-        Rendering::Canvas Render(const World &world, int recursionLimit = 4, int *progress = nullptr);
+        Rendering::Canvas Render(const World &world, int recursionLimit = 5, int *progress = nullptr);
     };
 }

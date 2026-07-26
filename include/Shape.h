@@ -14,7 +14,9 @@ namespace Scene
     {
     protected:
         inline static int idIterator = 0; // Each shape gets a unique id
-        Shape() : id(idIterator++) {};    // Protected constructor, class can't be made by programmer
+        mutable Math::Matrix<4, 4> invTransform;
+        mutable bool hasInvTransform = false; // By the first time it's used, it should never change again
+        Shape() : id(idIterator++) {};        // Protected constructor, class can't be made by programmer
 
         // Copy Constructor
         Shape(const Shape &other) : id(idIterator++), transform(other.transform), material(other.material) {}
@@ -45,6 +47,7 @@ namespace Scene
 
         Rendering::IntersectionList Intersects(const Rendering::Ray &rayWS) const;
         virtual Math::Vector NormalAt(const Math::Point &pointWS) const;
+        Math::Matrix<4, 4> const *GetInverseTransform() const;
 
         virtual bool operator==(const Shape &other) const { return other.material == material && other.transform == transform; };
         bool operator!=(const Shape &other) const { return !(*this == other); }
