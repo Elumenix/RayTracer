@@ -28,7 +28,7 @@ onmessage = async (e) => {
     }
 
     // If we make it this far, it instead means that we are calling the render in C++
-    const { yaml, maxDepth, renderId } = e.data;
+    const { yaml, renderId } = e.data;
     activeRenderId = renderId;
 
     // Initialize WASM module once
@@ -37,5 +37,5 @@ onmessage = async (e) => {
     }
 
     // Calling the c++ render function
-    Module.ccall("render", null, ["string", "number"], [yaml, maxDepth]);
+    Module.ccall("render", null, ["string", "number"], [yaml]);
 };

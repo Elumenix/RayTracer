@@ -42,6 +42,12 @@
                     "exclusiveMaximum": 3.14159,
                     "doNotSuggest": true
                 },
+                "reflection-depth": {
+                    "description": "The maximum number of times a ray will bounce on a surface before terminating.",
+                    "type": "integer",
+                    "minimum": 0,
+                    "doNotSuggest": true
+                },
                 "from": {
                     "description": "The position of the camera in 3D space.",
                     "$ref": "#/definitions/Vec3"
@@ -77,6 +83,7 @@
                         "width": 128,
                         "height": 128,
                         "field-of-view": 1.0472,
+                        "reflection-depth": 5,
                         "from": "[0, 0, 0]",
                         "to": "[0, 0, -1]",
                         "up": "[0, 1, 0]"
@@ -460,6 +467,10 @@
                             "type": "integer",
                             "description": "The seed that will be used for random patterns.\nPerturb is the only pattern that uses a seed."
                         },
+                        "strength": {
+                            "type": "number",
+                            "description": "Affects how much impact a perturb pattern will have on it's child patterns."
+                        },
                         "transform": {
                             "description": "Determines the position, rotation, and scale of the material on the object.",
                             "$ref": "#/definitions/Transform"
@@ -482,7 +493,7 @@
                     "label": "Full Pattern",
                     "sortText": "1_FullPattern",
                     "description": "A pattern with all fields exposed",
-                    "bodyText": "\n\ttype: stripes\n\tcolors:\n\t\t- [0, 0, 0]\n\t\t- [1, 1, 1]\n\tseed: 1337\n\ttransform:"
+                    "bodyText": "\n\ttype: stripes\n\tcolors:\n\t\t- [0, 0, 0]\n\t\t- [1, 1, 1]\n\tseed: 1337\n\tstrength: 0\n\ttransform:"
                 },
                 {
                     "label": "Simple Pattern",
@@ -494,7 +505,7 @@
                     "label": "Perturb Pattern",
                     "sortText": "2_PerturbPattern",
                     "description": "Quick set-up for perturbing another pattern",
-                    "bodyText": "\n\ttype: perturb\n\tcolors:\n\t\t- pattern-name\n\tseed: 1337"
+                    "bodyText": "\n\ttype: perturb\n\tcolors:\n\t\t- pattern-name\n\tseed: 1337\n\tstrength: 0.3"
                 }
             ]
         },
