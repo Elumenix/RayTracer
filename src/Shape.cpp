@@ -13,6 +13,12 @@ namespace Scene
         return CustomIntersects(rayOS);
     }
 
+    void Shape::Intersects(const Rendering::Ray &rayWS, IntersectionList &out) const
+    {
+        Ray rayOS = rayWS.Transform(*GetInverseTransform());
+        CustomIntersects(rayOS, out);
+    }
+
     Vector Shape::NormalAt(const Point &pointWS) const
     {
         const Matrix<4, 4> *inv = GetInverseTransform();

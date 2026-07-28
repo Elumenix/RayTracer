@@ -19,6 +19,17 @@ namespace Scene
         return {Intersection(t, this)};
     }
 
+    void Plane::CustomIntersects(const Rendering::Ray &rayOS, Rendering::IntersectionList &out) const
+    {
+        if (std::abs(rayOS.direction.y) < EPSILON)
+        {
+            return; // Technically infinitly intersecting, but better to pretend it missed
+        }
+
+        float t = -rayOS.origin.y / rayOS.direction.y;
+        out.Append({Intersection(t, this)});
+    }
+
     Vector Plane::CustomNormal(const Point &pointOS) const
     {
         // A plane is uniform, regardless of the point

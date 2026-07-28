@@ -25,6 +25,20 @@ namespace Scene
         return {Intersection(tMin, this), Intersection(tMax, this)};
     }
 
+    void Cube::CustomIntersects(const Rendering::Ray &rayOS, Rendering::IntersectionList &out) const
+    {
+        auto [xMin, xMax] = CheckAxis(rayOS.origin.x, rayOS.direction.x);
+        auto [yMin, yMax] = CheckAxis(rayOS.origin.y, rayOS.direction.y);
+        auto [zMin, zMax] = CheckAxis(rayOS.origin.z, rayOS.direction.z);
+
+        float tMin = std::max({xMin, yMin, zMin});
+        float tMax = std::min({xMax, yMax, zMax});
+
+        if (tMin > tMax)
+            return;
+        out.Append({Intersection(tMin, this), Intersection(tMax, this)});
+    }
+
     Vector Cube::CustomNormal(const Point &pointOS) const
     {
         float maxSide = std::max({std::abs(pointOS.x), std::abs(pointOS.y), std::abs(pointOS.z)});

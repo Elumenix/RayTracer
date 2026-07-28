@@ -3,6 +3,7 @@
 #include "Transformations.h"
 #include "IntersectionList.h"
 #include "Ray.h"
+#include "Constants.h"
 
 using namespace Math;
 using namespace Rendering;
@@ -33,44 +34,54 @@ namespace Scene
     const IntersectionList World::IntersectWorld(const Ray &r) const
     {
         IntersectionList xs;
+        xs.Reserve(shapes.size() * 2); // rough guess. There is at max 2 intersections per shape
         for (auto &shape : shapes)
         {
-            xs.Merge(shape->Intersects(r));
+            shape->Intersects(r, xs);
         }
 
+        xs.Sort(); // result does need to be sorted in ascending order
         return xs;
     }
 
-    Color World::ShadeHit(const Comps &comp, int remaining) const
+    Color World::ShadeHit(const Comps &comp, int remaining, float contribution) const
     {
-        Color c = Color(0, 0, 0);
+        const Material &mat = comp.object->material;
 
+        // Most parameters here are actually light-independant, and so can be calculated ahead of time
+        Color reflected = ReflectedColor(comp, remaining, contribution);
+        Color refracted = RefractedColor(comp, remaining, contribution);
+
+        // Fresnel needs to be applied if the material is both reflective and transparent
+        Color c;
+        if (mat.reflective > 0 && mat.transparency > 0)
+        {
+            float reflectance = SchlickFresnel(comp);
+            c = reflected * reflectance + refracted * (1 - reflectance);
+        }
+        else
+        {
+            c = reflected + refracted;
+        }
+
+        // Diffuse is calculated per light and added to the result
         for (const Light &light : lights)
         {
             bool isShadowed = IsShadowed(comp.overPoint, light);
-            Color surface = light.Lighting(*comp.object, comp.overPoint, comp.eye, comp.normal, isShadowed);
-            Color reflected = ReflectedColor(comp, remaining);
-            Color refracted = RefractedColor(comp, remaining);
-
-            Material mat = comp.object->material;
-
-            // Fresnel needs to be applied if the materail is both reflective and transparent
-            if (mat.reflective > 0 && mat.transparency > 0)
-            {
-                float reflectance = SchlickFresnel(comp);
-                c += surface + reflected * reflectance + refracted * (1 - reflectance);
-            }
-            else
-            {
-                c += surface + reflected + refracted;
-            }
+            c += light.Lighting(*comp.object, comp.overPoint, comp.eye, comp.normal, isShadowed);
         }
 
         return c;
     }
 
-    Color World::ColorAt(const Ray &r, int remaining) const
+    Color World::ColorAt(const Ray &r, int remaining, float contribution) const
     {
+        // If what we're sampling doesn't contribute enough for a noticable difference, return early
+        if (contribution < FALLOFF)
+        {
+            return Color(0, 0, 0);
+        }
+
         IntersectionList xs = IntersectWorld(r);
         const Intersection *i = xs.Hit();
 
@@ -80,26 +91,29 @@ namespace Scene
         }
 
         Comps comp = PrepareComputation(*i, r, xs);
-        Color c = ShadeHit(comp, remaining);
+        Color c = ShadeHit(comp, remaining, contribution);
         return c;
     }
 
-    Rendering::Color World::ReflectedColor(const Rendering::Comps &comp, int remaining) const
+    Rendering::Color World::ReflectedColor(const Rendering::Comps &comp, int remaining, float contribution) const
     {
-        if (comp.object->material.reflective == 0 || remaining <= 0)
+        const float reflective = comp.object->material.reflective;
+
+        if (reflective < EPSILON || remaining <= 0)
         {
             return Color(0, 0, 0);
         }
 
         Ray reflectRay(comp.overPoint, comp.reflect);
-        Color color = ColorAt(reflectRay, remaining - 1);
+        Color color = ColorAt(reflectRay, remaining - 1, contribution * reflective);
 
-        return color * comp.object->material.reflective;
+        return color * reflective;
     }
 
-    Rendering::Color World::RefractedColor(const Rendering::Comps &comp, int remaining) const
+    Rendering::Color World::RefractedColor(const Rendering::Comps &comp, int remaining, float contribution) const
     {
-        if (remaining <= 0 || comp.object->material.transparency == 0)
+        const float transparent = comp.object->material.transparency;
+        if (transparent < EPSILON || remaining <= 0)
         {
             return Color(0, 0, 0);
         }
@@ -120,10 +134,10 @@ namespace Scene
 
         // Create new ray to get the refracted color
         Ray refractRay = Ray(comp.underPoint, direction.Normalized());
-        Color color = ColorAt(refractRay, remaining - 1);
+        Color color = ColorAt(refractRay, remaining - 1, contribution * transparent);
 
         // Account for opacity
-        return color * comp.object->material.transparency;
+        return color * transparent;
     }
 
     bool World::IsShadowed(const Point &p, const Light &light) const
@@ -133,20 +147,25 @@ namespace Scene
         Vector direction = v.Normalized();
 
         Ray r = Ray(p, direction);
-        IntersectionList intersections = IntersectWorld(r);
-        /*const Intersection *h = intersections.Hit();
 
-        return h != nullptr && h->t < distance;*/
-        
-        // Walk all intersections, skip transparent ones. 
-        //Transparent Refractive surfaces would apparently make caustics but that's too complex right now
-        for (const Intersection &i : intersections)
+        for (auto &shape : shapes)
         {
-            if (i.t < 0 || i.t >= distance)
+            // We can skip transparent objects by default
+            // Transparent Refractive surfaces would apparently make caustics but that's too complex right now
+            if (shape->material.transparency >= 1.0f)
                 continue;
-            if (i.object->material.transparency < 1.0f)
-                return true;
+
+            IntersectionList local;
+            shape->Intersects(r, local);
+
+            for (const Intersection &i : local)
+            {
+                if (i.t > 0 && i.t < distance)
+                    return true; // early exit — no need to test remaining shapes
+            }
         }
+
+        // Nothing got in the way of this light
         return false;
     }
 }

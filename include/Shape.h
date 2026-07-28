@@ -35,6 +35,7 @@ namespace Scene
 
         // Force subclass to make implementations of these
         virtual Rendering::IntersectionList CustomIntersects(const Rendering::Ray &rayOS) const = 0;
+        virtual void CustomIntersects(const Rendering::Ray &rayOS, Rendering::IntersectionList &out) const = 0;
         virtual Math::Vector CustomNormal(const Math::Point &pointOS) const = 0;
 
     public:
@@ -46,6 +47,7 @@ namespace Scene
         virtual ~Shape() = default;
 
         Rendering::IntersectionList Intersects(const Rendering::Ray &rayWS) const;
+        void Intersects(const Rendering::Ray &rayWS, Rendering::IntersectionList &out) const;
         virtual Math::Vector NormalAt(const Math::Point &pointWS) const;
         Math::Matrix<4, 4> const *GetInverseTransform() const;
 

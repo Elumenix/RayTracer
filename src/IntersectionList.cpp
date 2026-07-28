@@ -25,4 +25,14 @@ namespace Rendering
         auto middle = list.insert(list.end(), other.list.begin(), other.list.end());
         std::inplace_merge(list.begin(), middle, list.end());
     }
+
+    void IntersectionList::Append(IntersectionList &&other)
+    {
+        list.insert(list.end(), other.list.begin(), other.list.end());
+    }
+
+    void IntersectionList::Sort()
+    {
+        std::sort(list.begin(), list.end());
+    }
 }

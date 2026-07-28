@@ -23,6 +23,9 @@ namespace Rendering
         const Intersection *Hit() const;
         std::size_t Size() const { return list.size(); }
         void Merge(IntersectionList &&other);
+        void Append(IntersectionList &&other);
+        void Sort();
+        constexpr void Reserve(std::size_t __n) { list.reserve(__n); };
 
         // Needed for range-based for loop (They are making be break my naming convention)
         auto begin() { return list.begin(); }
