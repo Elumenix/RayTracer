@@ -1,7 +1,7 @@
 #pragma once
 
-// Can't forward declare because used as a member variable. Need to know class size.
-#include "Matrix.h"
+#include "Matrix.h" // Can't forward declare because used as a member variable. Need to know class size.
+#include <thread>
 
 namespace Rendering
 {
@@ -39,5 +39,6 @@ namespace Scene
 
         Rendering::Ray RayForPixel(float px, float py);
         Rendering::Canvas Render(const World &world, int recursionLimit = 5, int *progress = nullptr);
+        Rendering::Canvas RenderMT(const World &world, int recursionLimit = 5, std::atomic<int> *progress = nullptr);
     };
 }

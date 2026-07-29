@@ -4,6 +4,7 @@
 #include "Noise.h"
 #include "Matrix.h"
 #include <assert.h>
+#include <mutex>
 
 // Forward declare
 namespace Scene
@@ -21,12 +22,11 @@ namespace Rendering
     {
     public:
         Math::Matrix<4, 4> transform = Math::IdentityMatrix;
-        mutable Math::Matrix<4, 4> invTransform;
-        mutable bool hasInvTransform = false; // By the first time it's used, it should never change again
         virtual std::unique_ptr<Pattern> Clone() const = 0;
 
         // Expected access
         Color SampleAt(const Scene::Shape &object, const Math::Point &worldPoint);
+        Math::Matrix<4, 4> const *GetInverseTransform() const;
 
         virtual ~Pattern() = default;
 
@@ -37,21 +37,21 @@ namespace Rendering
         }
 
     protected:
+        Pattern() = default;
+        Pattern(const Pattern &other) : transform(other.transform) {}
         virtual Color CustomSampleAt(const Math::Point &patternPoint) const = 0;
         friend Color Sample(const Pattern *p, const Math::Point &pt); // Allows access to the function below
         virtual bool EqualsSameType(const Pattern &other) const { return transform == other.transform; }
+
+    private:
+        mutable Math::Matrix<4, 4> m_invTransform;
+        mutable std::once_flag invTransformFlag;
     };
 
     // This is a free function because a->Sample(b, pos) is bad syntax when 'a' is not used in the result at all
     inline Color Sample(const Pattern *child, const Math::Point &parentSpacePoint)
     {
-        if (!child->hasInvTransform)
-        {
-            child->invTransform = child->transform.Inverse();
-            child->hasInvTransform = true;
-        }
-
-        Math::Point childPoint = child->invTransform * parentSpacePoint;
+        Math::Point childPoint = *child->GetInverseTransform() * parentSpacePoint;
         return child->CustomSampleAt(childPoint);
     }
 

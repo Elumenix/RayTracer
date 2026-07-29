@@ -36,11 +36,8 @@ namespace Scene
 
     Math::Matrix<4, 4> const *Shape::GetInverseTransform() const
     {
-        if (!hasInvTransform)
-        {
-            invTransform = transform.Inverse();
-            hasInvTransform = true;
-        }
+        std::call_once(invTransformFlag, [this]()
+                       { invTransform = transform.Inverse(); });
 
         return &invTransform;
     }

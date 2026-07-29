@@ -9,15 +9,17 @@ namespace Rendering
 {
     Color Pattern::SampleAt(const Shape &object, const Point &worldPoint)
     {
-        if (!hasInvTransform)
-        {
-            invTransform = transform.Inverse();
-            hasInvTransform = true;
-        }
-
         Point objPoint = *object.GetInverseTransform() * worldPoint;
-        Point patternPoint = invTransform * objPoint;
+        Point patternPoint = *GetInverseTransform() * objPoint;
         return CustomSampleAt(patternPoint);
+    }
+
+    Math::Matrix<4, 4> const *Pattern::GetInverseTransform() const
+    {
+        std::call_once(invTransformFlag, [this]()
+                       { m_invTransform = transform.Inverse(); });
+
+        return &m_invTransform;
     }
 
     Color StripePattern::CustomSampleAt(const Point &patternPoint) const

@@ -64,6 +64,7 @@ namespace Scene
         float worldY = _halfHeight - yOffset;
 
         // Still need to check this because test cases don't use render, and so won't set this beforehand
+        // Note: Render also sets this, so it doesn't cause problems with multithreading in the current setup
         if (!hasInvTransform)
         {
             invTransform = transform.Inverse();
@@ -101,6 +102,46 @@ namespace Scene
                 Ray ray = RayForPixel(x, y);
                 Color color = world.ColorAt(ray, recursionLimit);
                 image.WritePixelAt(x, y, color);
+            }
+        }
+
+        return image;
+    }
+
+    // Some optional pointers so webassembly can track progress and cancel the render if needed
+    Canvas Camera::RenderMT(const World &world, int recursionLimit, std::atomic<int> *progress)
+    {
+        int threadCount = std::thread::hardware_concurrency();
+
+        Canvas image(hsize, vsize);
+
+        // We'll set up the cached invTransform now, because the camera's transform is now locked in for the render
+        invTransform = transform.Inverse();
+        hasInvTransform = true;
+
+        // Scope block to manage jthread lifetimes
+        {
+            std::vector<std::jthread> threads;
+
+            for (int y = 0; y < vsize; y++)
+            {
+                /*#ifdef __EMSCRIPTEN__
+                            if (progress != nullptr)
+                            {
+                                *progress = y;
+                                EM_ASM({ postMessage({type : "progress", progress : $0, total : $1}); }, y, (vsize - 1));
+                            }
+                #endif*/
+
+                for (int x = 0; x < hsize; x++)
+                {
+                    threads.push_back(std::jthread([&](int x, int y)
+                                                   {
+                    Ray ray = RayForPixel(x, y);
+                    Color color = world.ColorAt(ray, recursionLimit);
+                    image.WritePixelAt(x, y, color); 
+                    progress++; }, x, y));
+                }
             }
         }
 

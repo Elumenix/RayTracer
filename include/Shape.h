@@ -1,6 +1,7 @@
 #pragma once
 #include "Material.h" // Member variable prevents forward declare
 #include <cmath>
+#include <mutex>
 
 namespace Rendering
 {
@@ -15,8 +16,8 @@ namespace Scene
     protected:
         inline static int idIterator = 0; // Each shape gets a unique id
         mutable Math::Matrix<4, 4> invTransform;
-        mutable bool hasInvTransform = false; // By the first time it's used, it should never change again
-        Shape() : id(idIterator++) {};        // Protected constructor, class can't be made by programmer
+        mutable std::once_flag invTransformFlag; // Will only be created once
+        Shape() : id(idIterator++) {};           // Protected constructor, class can't be made by programmer
 
         // Copy Constructor
         Shape(const Shape &other) : id(idIterator++), transform(other.transform), material(other.material) {}
