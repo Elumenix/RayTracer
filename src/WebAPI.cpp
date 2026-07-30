@@ -12,12 +12,11 @@ static Rendering::Canvas *g_canvas = nullptr;
 static int g_width = 0;
 static int g_height = 0;
 static std::string g_lastError = "";
-static int g_progress = 0;
 
 extern "C"
 {
     EMSCRIPTEN_KEEPALIVE
-    void render(const char *yamlString)
+    void render(const char *yamlString, const int threadCount)
     {
         // Clean up previous render
         g_lastError = "";
@@ -26,6 +25,8 @@ extern "C"
 
         try
         {
+            printf("Javascript requested this many threads: %d\n", threadCount);
+
             // Parse yaml
             printf("Yaml parsing started\n");
             auto scene = YamlParser::getInstance().ParseYaml(std::string(yamlString));
@@ -42,7 +43,7 @@ extern "C"
 
             // Render the scene
             printf("Rendering started\n");
-            Rendering::Canvas canvas = camera.Render(world, maxDepth, &g_progress);
+            Rendering::Canvas canvas = camera.RenderMT(world, maxDepth, threadCount);
             printf("Rendering completed\n");
 
             // Store in a buffer that javascript can access
@@ -83,12 +84,6 @@ extern "C"
     int get_height()
     {
         return g_height;
-    }
-
-    EMSCRIPTEN_KEEPALIVE
-    int get_progress()
-    {
-        return g_progress;
     }
 
     EMSCRIPTEN_KEEPALIVE

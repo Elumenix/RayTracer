@@ -9,7 +9,6 @@ let worker; // No point in assigning a worker off the bat, render is forced to m
 let scaleImage = true;
 let savedImage = null;
 let debugLetterbox = false;
-let currentRenderId = 0;
 const editorDiv = document.getElementById("editor");
 const canvas = document.getElementById("output");
 const progressContainer = document.getElementById("render-progress");
@@ -407,7 +406,6 @@ Promise.all([loadYamlSchema(), loadDefaultYaml()])
         // Render button event. Here because it needs to read from editor
         document.getElementById('render-btn').addEventListener('click', () => {
             const yaml = editor.getValue()
-            currentRenderId++;
 
             // Disable if not disabled aready because it's ambiguous what would be downloaded if the user clicks it while a render is in progress
             document.getElementById('download-btn').disabled = true;
@@ -417,10 +415,11 @@ Promise.all([loadYamlSchema(), loadDefaultYaml()])
             if (worker) worker.terminate();
             worker = new Worker("/RayTracer/ray_worker.js", { type: "module" });
             worker.onmessage = handleMessage;
+            const numThreads = navigator.hardwareConcurrency || 4;
 
             // Send a request to the worker to start rendering the scene
             // The worker will send back updates that are handled in the worker.onmessage function above
-            worker.postMessage({ yaml, renderId: currentRenderId });
+            worker.postMessage({ yaml, numThreads });
             updateProgressBar(0);
         })
 

@@ -59,18 +59,20 @@ if (EMSCRIPTEN)
   SUFFIX ".js"
   )
 
-  target_compile_options(RayTracer PRIVATE -fexceptions)
-  target_compile_options(raytrace_lib PRIVATE -fexceptions)
-  target_compile_options(yaml-cpp PRIVATE -fexceptions)
+  target_compile_options(RayTracer PRIVATE -fexceptions -pthread)
+  target_compile_options(raytrace_lib PRIVATE -fexceptions -pthread)
+  target_compile_options(yaml-cpp PRIVATE -fexceptions -pthread)
 
   target_link_options(RayTracer PRIVATE 
+    -pthread
+    -sPTHREAD_POOL_SIZE=16
     -fexceptions
     -sALLOW_MEMORY_GROWTH=1
     -sEXPORT_ES6=1
     -sMODULARIZE=1
     -sENVIRONMENT=worker
     "SHELL:-sEXPORTED_RUNTIME_METHODS=['ccall','cwrap','HEAPU8']"
-    "SHELL:-sEXPORTED_FUNCTIONS=['_render','_get_width','_get_height','_get_progress','_copy_to_buffer','_get_last_error','_malloc','_free']"
+    "SHELL:-sEXPORTED_FUNCTIONS=['_render','_get_width','_get_height','_copy_to_buffer','_get_last_error','_malloc','_free']"
   )
   
   if (EXISTS ${CMAKE_SOURCE_DIR}/web/dist/)

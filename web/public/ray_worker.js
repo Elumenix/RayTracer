@@ -1,7 +1,5 @@
 import initWasm from "/RayTracer/raytracer.js";
-
 let Module = null;
-let activeRenderId = 0;
 
 onmessage = async (e) => {
     const message = e.data;
@@ -28,8 +26,7 @@ onmessage = async (e) => {
     }
 
     // If we make it this far, it instead means that we are calling the render in C++
-    const { yaml, renderId } = e.data;
-    activeRenderId = renderId;
+    const { yaml, numThreads } = e.data;
 
     // Initialize WASM module once
     if (!Module) {
@@ -37,5 +34,5 @@ onmessage = async (e) => {
     }
 
     // Calling the c++ render function
-    Module.ccall("render", null, ["string", "number"], [yaml]);
+    Module.ccall("render", null, ["string", "number"], [yaml, numThreads]);
 };

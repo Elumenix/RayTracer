@@ -78,8 +78,7 @@ namespace Scene
         return Ray(origin, direction);
     }
 
-    // Some optional pointers so webassembly can track progress and cancel the render if needed
-    Canvas Camera::Render(const World &world, int recursionLimit, int *progress)
+    Canvas Camera::Render(const World &world, int recursionLimit)
     {
         Canvas image(hsize, vsize);
 
@@ -89,60 +88,71 @@ namespace Scene
 
         for (int y = 0; y < vsize; y++)
         {
-#ifdef __EMSCRIPTEN__
-            if (progress != nullptr)
-            {
-                *progress = y;
-                EM_ASM({ postMessage({type : "progress", progress : $0, total : $1}); }, y, (vsize - 1));
-            }
-#endif
-
             for (int x = 0; x < hsize; x++)
             {
                 Ray ray = RayForPixel(x, y);
                 Color color = world.ColorAt(ray, recursionLimit);
                 image.WritePixelAt(x, y, color);
             }
+
+            // Communicate progress to javascript
+#ifdef __EMSCRIPTEN__
+            EM_ASM({ postMessage({type : "progress", progress : $0, total : $1}); }, y, (vsize - 1));
+#endif
         }
 
         return image;
     }
 
-    // Some optional pointers so webassembly can track progress and cancel the render if needed
-    Canvas Camera::RenderMT(const World &world, int recursionLimit, std::atomic<int> *progress)
+    Canvas Camera::RenderMT(const World &world, int recursionLimit, const int threadCount)
     {
-        int threadCount = std::thread::hardware_concurrency();
-
         Canvas image(hsize, vsize);
 
         // We'll set up the cached invTransform now, because the camera's transform is now locked in for the render
         invTransform = transform.Inverse();
         hasInvTransform = true;
 
-        // Scope block to manage jthread lifetimes
+        // Safe fallback of 4 if a strange error occurs in the javaScript;
+        unsigned int numThreads = threadCount == 0 ? 4 : threadCount;
+        std::atomic<int> nextRow{0};
+        std::atomic<int> rowsCompleted{0};
+
+        auto worker = [&]()
         {
-            std::vector<std::jthread> threads;
-
-            for (int y = 0; y < vsize; y++)
+            // Thereads will retrieve and increment the atomic rowNumber to figure out what data to work on
+            int y;
+            while ((y = nextRow.fetch_add(1)) < vsize)
             {
-                /*#ifdef __EMSCRIPTEN__
-                            if (progress != nullptr)
-                            {
-                                *progress = y;
-                                EM_ASM({ postMessage({type : "progress", progress : $0, total : $1}); }, y, (vsize - 1));
-                            }
-                #endif*/
-
+                // This thread will find the color for each pixel in this row
                 for (int x = 0; x < hsize; x++)
                 {
-                    threads.push_back(std::jthread([&](int x, int y)
-                                                   {
                     Ray ray = RayForPixel(x, y);
                     Color color = world.ColorAt(ray, recursionLimit);
-                    image.WritePixelAt(x, y, color); 
-                    progress++; }, x, y));
+                    image.WritePixelAt(x, y, color);
                 }
+
+                // Mark atomically that another row has been completed
+                int completed = rowsCompleted.fetch_add(1) + 1;
+
+                // Communication with javascript
+#ifdef __EMSCRIPTEN__
+                // Send message back to the main thread to increment the progress bar
+                MAIN_THREAD_ASYNC_EM_ASM({ postMessage({type : "progress", progress : $0, total : $1}); }, completed, vsize);
+#endif
             }
+        };
+
+        // Threads start immediately executing the above block while the main thread continues to add more threads
+        std::vector<std::thread> threads;
+        for (unsigned int i = 0; i < numThreads; i++)
+        {
+            threads.emplace_back(worker);
+        }
+
+        // We stay at the join block until the image is complete and the threads start escaping the while block
+        for (auto &t : threads)
+        {
+            t.join();
         }
 
         return image;
