@@ -27,7 +27,7 @@ namespace Scene
         }
 
         float t = -rayOS.origin.y / rayOS.direction.y;
-        out.Append({Intersection(t, this)});
+        out.Append(Intersection(t, this));
     }
 
     Vector Plane::CustomNormal(const Point &pointOS) const

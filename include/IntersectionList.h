@@ -23,7 +23,8 @@ namespace Rendering
         const Intersection *Hit() const;
         std::size_t Size() const { return list.size(); }
         void Merge(IntersectionList &&other);
-        void Append(IntersectionList &&other);
+        void Append(Intersection &&intersection) { list.push_back(std::move(intersection)); };
+        void Clear() { list.clear(); };
         void Sort();
         constexpr void Reserve(std::size_t __n) { list.reserve(__n); };
 

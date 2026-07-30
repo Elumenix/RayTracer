@@ -5,11 +5,16 @@
 #include "Shape.h"
 #include "Constants.h"
 #include <algorithm>
+#include <array>
 
 using namespace Scene;
 
 namespace Rendering
 {
+    /// @brief Compiles useful values created by a ray at an intersection so that they don't need to be recomputed later
+    /// @param i The intersection we want to create values from
+    /// @param r The ray that would hit at the intersection
+    /// @return Compiled object of values deduced from the ray and intersection
     Comps CompCreation(const Intersection &i, const Ray &r)
     {
         Comps comp;
@@ -41,9 +46,11 @@ namespace Rendering
         return comp;
     }
 
-    void GetNValues(Comps &comp, const Intersection &i, const Ray &r, const IntersectionList &xs)
-    {
+    // This was the original implementation of GetNValues, but uncertain memory didn't play well with multi-threading, so it was replaced
+    // This still works as a safe backup, if the assumptions for the original become false at runtime
+    void GetNValuesSlow(Comps &comp, const Intersection &i, const IntersectionList &xs) {
         std::vector<const Shape *> container;
+        container.reserve(xs.Size());
         const Intersection *hit = &i;
 
         for (const Intersection &intersect : xs)
@@ -90,24 +97,97 @@ namespace Rendering
             }
         }
 
-        assert(false && "This code should never have been reached. Make sure a i is a reference from the list."); // This should not happen
+        assert(false && "The passed Intersection 'i' was not contained within the IntersectionList 'xs'"); // This should not happen
     }
 
+    /// @brief Calculates the n values at an intersection, updating comp to define what a ray is inside before and after this intersection
+    /// @param comp The computed values bundle for the shading at the current intersection
+    /// @param i The Intersection that is being shaded. It is assumed this intersection is in the IntersectionList
+    /// @param xs A list of all the Intersection that some Ray 'r' passes through.
+    void GetNValues(Comps &comp, const Intersection &i, const IntersectionList &xs)
+    {
+        // As an optimization here, we're assuming a ray will not pass through more than 32 object sides (Shape: 2 sides, Plane 1 side)
+        // There's potential that this isn't true if a ray manages to pass through more than 16 objects, so that case we'll use a backup function instead
+        if (xs.Size() > 16) {
+            GetNValuesSlow(comp, i, xs);
+            return;
+        }
+
+        // This prevents array resizing, which will have a strong impact on perfomance as this is expected to be multi-threaded
+        // 32 is a pretty safe number as it is unlikely for a ray in most scenes to pass through more than 16 objects
+        constexpr std::size_t maxContainerSize = 32;
+        std::array<const Shape*, maxContainerSize> container;
+        std::size_t containerSize = 0;
+
+        const Intersection *hit = &i;
+
+        for (const Intersection &intersect : xs)
+        {
+            if (&intersect == hit) 
+            {
+                // Represents the refractive index of the material the ray is exiting (1.0 represent air)
+                comp.n1 = (containerSize == 0) ? 1.0f : container[containerSize-1]->material.refractiveIndex;
+            }
+
+            // find out if intersect is already in the container
+            std::size_t foundIdx = containerSize;
+            for (std::size_t j = 0; j < containerSize; j++) {
+                if (container[j] == intersect.object) { foundIdx = j; break; }
+            }
+
+            // If element is already in the container, remove it
+            if (foundIdx != containerSize)
+            {
+                // We can erase by shifting the container down
+                for (std::size_t j = foundIdx; j + 1 < containerSize; j++) {
+                    container[j] = container[j+1];
+                }
+                containerSize--;
+            }
+            else
+            { 
+                // Add it otherwise
+                container[containerSize++] = intersect.object;
+            }
+
+            if (&intersect == hit)
+            {
+                // Represents the refractive index of the material the ray is entering (1.0 represent air)
+                comp.n2 = (containerSize == 0) ? 1.0f : container[containerSize-1]->material.refractiveIndex;
+                return;
+            }
+        }
+
+        assert(false && "The passed Intersection 'i' was not contained within the IntersectionList 'xs'"); // This should not happen
+    }
+
+    /// @brief Quickly assembles all important values from a ray/intersection
+    /// @param i An intersection in the scene
+    /// @param r The ray that hits the intersection
+    /// @return The assembled values from the ray/intersection
     Comps PrepareComputation(const Intersection &i, const Ray &r)
     {
         Comps comp = CompCreation(i, r);
         IntersectionList xs = {i}; // List only has i
-        GetNValues(comp, *xs[0], r, xs);
+        GetNValues(comp, *xs[0], xs);
         return comp;
     }
 
+    /// @brief Quickly assembles all important values from a ray/intersection
+    /// @param i An intersection in the scene
+    /// @param r The ray that hits the intersection
+    /// @param xs A referenced intersection list, passed so additional memory doesn't need to be created for each call
+    /// @return The assembled values from the ray/intersection
     Comps PrepareComputation(const Intersection &i, const Ray &r, const IntersectionList &xs)
     {
         Comps comp = CompCreation(i, r);
-        GetNValues(comp, i, r, xs);
+        GetNValues(comp, i, xs);
         return comp;
     }
 
+    /// @brief Calculates a fresnel strength, which is essentially a factor of how shiny/reflective something is based on the angle it's viewed.
+    /// @param comp Assempled list if values from an ray/intersection to allow for quicker math
+    /// @return Calculated fresnel term
     float SchlickFresnel(const Comps &comp)
     {
         // cosine of angle between eye and normal

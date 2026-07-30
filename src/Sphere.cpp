@@ -51,10 +51,8 @@ namespace Scene
         float discSqrt = std::sqrt(discriminant);
 
         // Get two intersection points wether they are in front of or behind the sphere
-        Intersection t1 = Intersection((-b - discSqrt) / (2 * a), this);
-        Intersection t2 = Intersection((-b + discSqrt) / (2 * a), this);
-
-        out.Append({t1, t2});
+        out.Append(Intersection((-b - discSqrt) / (2 * a), this));
+        out.Append(Intersection((-b + discSqrt) / (2 * a), this));
     }
 
     Vector Sphere::CustomNormal(const Point &pointOS) const

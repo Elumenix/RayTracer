@@ -36,7 +36,8 @@ namespace Scene
 
         if (tMin > tMax)
             return;
-        out.Append({Intersection(tMin, this), Intersection(tMax, this)});
+        out.Append(Intersection(tMin, this));
+        out.Append(Intersection(tMax, this));
     }
 
     Vector Cube::CustomNormal(const Point &pointOS) const

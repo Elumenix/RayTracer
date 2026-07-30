@@ -44,10 +44,16 @@ namespace Scene
 
         void Add(const Scene::Light &light) { lights.push_back(light); }
         const Rendering::IntersectionList IntersectWorld(const Rendering::Ray &r) const;
-        Rendering::Color ShadeHit(const Rendering::Comps &comp, int remaining = 5, float contribution = 1.0f) const;
+        void IntersectWorld(const Rendering::Ray &r, Rendering::IntersectionList &xs) const;
         Rendering::Color ColorAt(const Rendering::Ray &r, int remaining = 5, float contribution = 1.0f) const;
+        Rendering::Color ShadeHit(const Rendering::Comps &comp, int remaining = 5, float contribution = 1.0f) const;
         Rendering::Color ReflectedColor(const Rendering::Comps &comp, int remaining = 5, float contribution = 1.0f) const;
         Rendering::Color RefractedColor(const Rendering::Comps &comp, int remaining = 5, float contribution = 1.0f) const;
-        bool IsShadowed(const Math::Point &p, const Scene::Light &light) const;
+        bool IsShadowed(const Math::Point &p, const Scene::Light &light, int remaining = 5) const;
+
+    private:
+        // One persistent, reusable list per recursion depth, per thread.
+        // Sized once per thread on first real use; reused (cleared, not reallocated) after that.
+        static thread_local std::vector<Rendering::IntersectionList> depthLists;
     };
 }
