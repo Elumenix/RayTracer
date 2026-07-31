@@ -130,7 +130,7 @@ namespace Scene
         // Diffuse is calculated per light and added to the result
         for (const Light &light : lights)
         {
-            bool isShadowed = IsShadowed(comp.overPoint, light);
+            bool isShadowed = IsShadowed(comp.overPoint, light, remaining);
             c += light.Lighting(*comp.object, comp.overPoint, comp.eye, comp.normal, isShadowed);
         }
 

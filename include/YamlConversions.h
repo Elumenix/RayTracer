@@ -265,6 +265,15 @@ namespace YAML
                 }
 
                 float value = kv.second.as<float>();
+
+                // Quick value confirmation
+                if ((value < 0 || value > 1) && !(key == "shininess" || key == "refractive-index")) {
+                    throw std::runtime_error("Value for '" + key + "' must be a number from 0 to 1");
+                }
+                else if (value < 0) {
+                    throw std::runtime_error("Value for '" + key + "' must be greateater than or equal to 0");
+                }
+
                 if (key == "ambient")
                     rhs.ambient = value;
                 else if (key == "diffuse")
