@@ -1,0 +1,1 @@
+function e(e){return new Worker(`/RayTracer/assets/editor.worker-CEO-6Af7.js`,{name:e?.name})}export{e as default};

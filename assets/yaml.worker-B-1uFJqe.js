@@ -1,0 +1,1 @@
+function e(e){return new Worker(`/RayTracer/assets/yaml.worker-D8g1unx8.js`,{name:e?.name})}export{e as default};
