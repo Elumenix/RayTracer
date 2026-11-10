@@ -10,6 +10,8 @@ const progressContainer = document.getElementById("render-progress");
 const progressBar = progressContainer.querySelector(".progress-bar");
 const errorModalBody = document.getElementById("modal-body");
 const errorModal = document.getElementById("error-Modal");
+const canvasContainer = document.getElementById("canvas-container");
+const documentationContainer = document.getElementById("yaml-documentation");
 
 
 // ############################################################################
@@ -28,6 +30,10 @@ document.getElementById('toggle-fit-btn').addEventListener('click', () => {
     drawOutputCanvas()
 })
 
+document.getElementById('toggle-doc-btn').addEventListener('click', () => {
+    toggleDocumentation();
+})
+
 function updateProgressBar(pct) {
     if (pct === 0) {
         // Temporarily kill the transition so the reset is instant
@@ -39,6 +45,11 @@ function updateProgressBar(pct) {
         progressBar.style.width = pct + "%";
     }
     progressContainer.setAttribute("aria-valuenow", pct);
+}
+
+function toggleDocumentation() {
+    canvasContainer.classList.toggle("d-none");
+    documentationContainer.classList.toggle("d-none");
 }
 
 function showProgressBar() {
@@ -430,6 +441,11 @@ Promise.all([
             // The worker will send back updates that are handled in the worker.onmessage function above
             worker.postMessage({ yaml, numThreads });
             updateProgressBar(0);
+
+            // We should show the render panel immediately when a render starts
+            if (canvasContainer.classList.contains("d-none")) {
+                toggleDocumentation();
+            }
         })
 
         // Match canvas CSS size to editor size
