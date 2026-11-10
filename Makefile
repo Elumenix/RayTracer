@@ -1,4 +1,5 @@
 .PHONY: setup setupDebug setupRelease build test clean setupVite buildVite
+# The Emscripten SDK needs to already be downloaded on the environment for everything to work (It won't be automatically in Github Codespaces)
 # Note, current pipline to mimic github is:
 # make setupVite -> make buildVite -> cd web && npm run dev 
 # This is with both cmake and emscripten set up already on the linux environment (I'm using Ubuntu wsl, things may differ on other systems)
@@ -26,10 +27,10 @@ setupRelease:
 	cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 
 # setup for Vite, also copies the necessary files for the web build
-# This needs to be rerun in there is a change to cmakelists.txt (Because this represent what will happen in github actions)
+# This needs to be rerun in there is a change to cmakelists.txt (Because this represents what will happen in github actions)
 setupVite:
 	make clean
-	cd web && npm run build
+	cd web && npm ci && npm run build
 	emcmake cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 
 # Build and run only the main executable

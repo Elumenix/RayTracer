@@ -4,6 +4,7 @@
 #include "stb_image_write.h" // CMake includes this, it doesn't exist until "make setup" is called
 #include <iostream>
 #include <algorithm>
+#include <cmath>
 #include <sstream>
 
 namespace Rendering

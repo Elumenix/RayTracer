@@ -1,8 +1,3 @@
-// Get monaco packages
-import * as monaco from 'monaco-editor'
-import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
-import { configureMonacoYaml } from 'monaco-yaml'
-import yamlWorker from 'monaco-yaml/yaml.worker?worker'
 let worker; // No point in assigning a worker off the bat, render is forced to make a new one
 
 // Variables related to the image display / persistent data
@@ -172,19 +167,6 @@ function handleMessage(e) {
 // ############################################################################
 // On page load, set up the monaco editor and the YAML schema
 
-// The environment needs the correct workers to handle the programming language (Yaml in this case)
-self.MonacoEnvironment = {
-    getWorker: function (workerId, label) {
-        if (label === 'yaml') {
-            // Return the YAML worker if it exists
-            return new yamlWorker();
-        }
-
-        // Else return the default editor worker
-        return new editorWorker();
-    }
-}
-
 async function loadYamlSchema() {
     const res = await fetch('/RayTracer/schemas/ray-tracer-schema.json');
     return await res.json(); // parse the JSON schema
@@ -195,12 +177,39 @@ async function loadDefaultYaml() {
     return await res.text(); // no parsing needed
 }
 
-Promise.all([loadYamlSchema(), loadDefaultYaml()])
-    .then(([schema, defaultYaml]) => {
-        const schemaUri = new URL('/RayTracer/schemas/ray-tracer-schema.json', window.location.href).toString();
+Promise.all([
+    loadYamlSchema(),
+    loadDefaultYaml(),
+    import('monaco-editor'),
+    import('monaco-yaml'),
+    import('monaco-editor/esm/vs/editor/editor.worker?worker'),
+    import('monaco-yaml/yaml.worker?worker')])
+    .then(([
+        schema,
+        defaultYaml,
+        monaco,
+        yamlModule,
+        editorWorkerModule,
+        yamlWorkerModule
+    ]) => {
+        // Step 1: The environment needs the correct workers to handle the programming language (Yaml in this case)
+        const editorWorker = editorWorkerModule.default;
+        const yamlWorker = yamlWorkerModule.default;
+        self.MonacoEnvironment = {
+            getWorker: function (workerId, label) {
+                if (label === 'yaml') {
+                    // Return the YAML worker if it exists
+                    return new yamlWorker();
+                }
 
-        // Step 1, configure the yaml for monaco using my schema
-        configureMonacoYaml(monaco, {
+                // Else return the default editor worker
+                return new editorWorker();
+            }
+        }
+
+        // Step 2, configure the yaml for monaco using my schema
+        const schemaUri = new URL('/RayTracer/schemas/ray-tracer-schema.json', window.location.href).toString();
+        yamlModule.configureMonacoYaml(monaco, {
             enableSchemaRequest: true, // For some reason this needs to be true when passing locally and it won't make a web request, despite what documentation says
             completion: true,
             validate: true,
@@ -215,7 +224,7 @@ Promise.all([loadYamlSchema(), loadDefaultYaml()])
             ]
         });
 
-        // Step 2, register a color provider for the color arrays in the YAML. This should let monaco recognize color fields and place color decorators
+        // Step 3, register a color provider for the color arrays in the YAML. This should let monaco recognize color fields and place color decorators
         monaco.languages.registerColorProvider("yaml", {
             provideDocumentColors(model) {
                 const text = model.getValue();
@@ -277,7 +286,7 @@ Promise.all([loadYamlSchema(), loadDefaultYaml()])
                 return results;
             },
 
-            // Step 3: Setup how the color picker will update the text in the editor when a new color is selected
+            // Step 4: Setup how the color picker will update the text in the editor when a new color is selected
             provideColorPresentations(model, colorInfo) {
                 const color = colorInfo.color;
                 const range = colorInfo.range;
@@ -299,7 +308,7 @@ Promise.all([loadYamlSchema(), loadDefaultYaml()])
             }
         });
 
-        // Step 4: Set up how the editor looks and behaves
+        // Step 5: Set up how the editor looks and behaves
         const editor = monaco.editor.create(document.getElementById('editor'), {
             // Basics
             value: defaultYaml,
