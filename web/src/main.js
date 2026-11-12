@@ -7,10 +7,11 @@ let debugLetterbox = false;
 const editorDiv = document.getElementById("editor");
 const canvas = document.getElementById("output");
 const progressContainer = document.getElementById("render-progress");
-const progressBar = progressContainer.querySelector(".progress-bar");
+const progressBar = document.getElementById("progress-bar");
 const errorModalBody = document.getElementById("modal-body");
 const errorModal = document.getElementById("error-Modal");
 const canvasContainer = document.getElementById("canvas-container");
+const documentationButton = document.getElementById('toggle-doc-btn');
 const documentationContainer = document.getElementById("yaml-documentation");
 
 
@@ -30,7 +31,7 @@ document.getElementById('toggle-fit-btn').addEventListener('click', () => {
     drawOutputCanvas()
 })
 
-document.getElementById('toggle-doc-btn').addEventListener('click', () => {
+documentationButton.addEventListener('click', () => {
     toggleDocumentation();
 })
 
@@ -445,6 +446,9 @@ Promise.all([
             // We should show the render panel immediately when a render starts
             if (canvasContainer.classList.contains("d-none")) {
                 toggleDocumentation();
+
+                // Lets bootstrap handle the button css, since it needs to change in this case
+                documentationButton.checked = false;
             }
         })
 
