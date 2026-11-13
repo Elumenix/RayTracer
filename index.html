@@ -78,12 +78,15 @@
             </div>
         </nav>
 
-        <!-- Top row: editor + canvas -->
+        <!-- Main -->
         <div class="row flex-grow-1 m-0">
+
+            <!-- Monaco Editor -->
             <div class="col-md-6 d-flex flex-column p-0">
-                <!-- Editor fills remaining height -->
                 <div id="editor" class="flex-grow-1"></div>
             </div>
+
+            <!-- Canvas/Documentation -->
             <div class="col-md-6 d-flex flex-column p-0" id="right-col">
                 <div id="canvas-container"
                     class="flex-grow-1 d-flex justify-content-center align-items-center position-relative d-none">
@@ -192,20 +195,19 @@
                             </div>
                         </div>
 
-                        <!-- SCENE OBJECTS -->
+                        <!-- Camera -->
                         <div class="accordion-item">
                             <h2 class="accordion-header">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#yamlObjects">
-                                    Scene Objects
+                                    data-bs-target="#yamlCamera">
+                                    Camera
                                 </button>
                             </h2>
 
-                            <div id="yamlObjects" class="accordion-collapse collapse" data-bs-parent="#yamlAccordion">
+                            <div id="yamlCamera" class="accordion-collapse collapse" data-bs-parent="#yamlAccordion">
 
                                 <div class="accordion-body">
 
-                                    <h6>Camera</h6>
                                     <p>
                                         The camera controls the viewpoint and resolution of the generated
                                         image. Every scene must contain exactly one camera.
@@ -321,30 +323,161 @@
                                         (the direction from <code>from</code> to <code>to</code>).
                                         Otherwise, the camera orientation cannot be calculated.
                                     </div>
+                                </div>
+                            </div>
+                        </div>
 
+                        <!-- Light -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#yamlLight">
+                                    Light
+                                </button>
+                            </h2>
 
+                            <div id="yamlLight" class="accordion-collapse collapse" data-bs-parent="#yamlAccordion">
 
+                                <div class="accordion-body">
 
-                                    <hr>
+                                    <p>
+                                        A point light emits light in all directions from a
+                                        single position in the scene. It illuminates objects
+                                        and allows them to cast shadows.
+                                    </p>
 
-                                    <h6>Light</h6>
-                                    <p>Adds a point light to the scene.</p>
+                                    <h6>Properties</h6>
+
+                                    <table class="table table-sm table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Property</th>
+                                                <th>Description</th>
+                                                <th>Required</th>
+                                                <th>Default</th>
+                                                <th>Valid Values / Constraints</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><code>at</code></td>
+                                                <td>Position of the light in world space</td>
+                                                <td>Yes</td>
+                                                <td>&mdash;</td>
+                                                <td>3D vector</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>intensity</code></td>
+                                                <td>RGB light intensity (color)</td>
+                                                <td>Yes</td>
+                                                <td>&mdash;</td>
+                                                <td>RGB vector</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
+                                    <div class="alert alert-info small">
+                                        <b>Tip:</b> Adding at least one light to your scene
+                                        is recommended. Without sufficient lighting, objects
+                                        may appear very dark or not be visible at all.
+                                    </div>
+
+                                    <div class="alert alert-warning small">
+                                        <b>Performance Note:</b> Each additional light increases
+                                        the amount of work required during rendering and may
+                                        increase rendering time, particularly in complex scenes.
+                                    </div>
+
+                                    <div class="alert alert-warning small">
+                                        <b>Important:</b> Placing a light inside an object will
+                                        likely prevent its light from escaping, regardless of
+                                        the object's material. Position lights outside of
+                                        objects to ensure their illumination reaches the rest
+                                        of the scene.
+                                    </div>
+
+                                    <h6>Example</h6>
+                                    <p>
+                                        The following example defines a white light positioned
+                                        at the origin:
+                                    </p>
 
                                     <pre><code class="language-yaml">- add: light
-  at: [0, 5, -5]
+  at: [0, 0, 0]
   intensity: [1, 1, 1]</code></pre>
 
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Shapes -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#yamlShapes">
+                                    Plane, Sphere, & Cube
+                                </button>
+                            </h2>
+
+                            <div id="yamlShapes" class="accordion-collapse collapse" data-bs-parent="#yamlAccordion">
+
+                                <div class="accordion-body">
+
+                                    <p>
+                                        The RayTracer supports three basic geometric shapes:
+                                        planes, spheres, and cubes. All three use the same
+                                        properties to define their appearance and positioning.
+                                    </p>
+
+                                    <h6>Shapes</h6>
+
                                     <ul>
-                                        <li><code>add</code>: Must be light.</li>
-                                        <li><code>at</code>: Light position (Vec3).</li>
-                                        <li><code>intensity</code>: RGB light color (Color).</li>
+                                        <li><b>Sphere:</b> A three-dimensional ball.</li>
+                                        <li><b>Cube:</b> A three-dimensional box with equal sides.</li>
+                                        <li><b>Plane:</b> A flat, infinite surface.</li>
                                     </ul>
 
-                                    <hr>
+                                    <h6>Properties</h6>
 
-                                    <h6>Plane, Sphere, and Cube</h6>
+                                    <table class="table table-sm table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Property</th>
+                                                <th>Description</th>
+                                                <th>Required</th>
+                                                <th>Default</th>
+                                                <th>Valid Values / Constraints</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><code>material</code></td>
+                                                <td>Defines the surface appearance</td>
+                                                <td>Yes (empty = default)</td>
+                                                <td>Default material</td>
+                                                <td>Material definition</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>transform</code></td>
+                                                <td>Defines the shape's position, orientation, and scale</td>
+                                                <td>Yes (empty = default)</td>
+                                                <td>Identity transform</td>
+                                                <td>Transform definition</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
+                                    <div class="alert alert-info small">
+                                        <b>Tip:</b> Materials and transforms have their own
+                                        properties and can be customized independently.
+                                        See the Materials and Transforms sections for more
+                                        information.
+                                    </div>
+
+                                    <h6>Example</h6>
                                     <p>
-                                        All three objects use the same properties.
+                                        The following example creates a red sphere and moves
+                                        it three units along the negative Z-axis:
                                     </p>
 
                                     <pre><code class="language-yaml">- add: sphere
@@ -353,15 +486,10 @@
   transform:
     - [translate, 0, 0, -3]</code></pre>
 
-                                    <ul>
-                                        <li><code>add</code>: Object type.</li>
-                                        <li><code>material</code>: Surface appearance.</li>
-                                        <li><code>transform</code>: Position and orientation.</li>
-                                    </ul>
-
                                 </div>
                             </div>
                         </div>
+
 
                         <!-- MATERIALS -->
                         <div class="accordion-item">
@@ -618,8 +746,10 @@
 
                                     <ul>
                                         <li><code>define</code>: New definition name.</li>
-                                        <li><code>extend</code>: Existing definition to inherit from (optional).</li>
-                                        <li><code>value</code>: Material, pattern, or transform configuration.</li>
+                                        <li><code>extend</code>: Existing definition to inherit from (optional).
+                                        </li>
+                                        <li><code>value</code>: Material, pattern, or transform configuration.
+                                        </li>
                                     </ul>
 
                                 </div>
@@ -639,7 +769,8 @@
             </div>
             <div class="col-md-6 p-2">
                 <!-- Download button -->
-                <button id="download-btn" class="btn btn-secondary" autocomplete="off" disabled>Download PNG</button>
+                <button id="download-btn" class="btn btn-secondary" autocomplete="off" disabled>Download
+                    PNG</button>
 
                 <!-- Toggle resolution checkbox -->
                 <input type="checkbox" class="btn-check" id="toggle-fit-btn" autocomplete="off">
