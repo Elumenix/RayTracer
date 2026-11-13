@@ -21,18 +21,20 @@ TEST(YamlTest, MinimalCamera)
 {
   const string yaml = R"(
 - add: camera
-  width: 128
-  height: 128
+  width: 512
+  height: 512
   field-of-view: 1.0471975511965976
 )";
 
   auto result = YamlParser::getInstance().ParseYaml(yaml);
   Camera camera = std::get<0>(result);
+  /*Transformations::ViewTransform(Point(0, 0, -5), Point(0, 0, 0), Vector(0, 1, 0))*/
+  auto expectedMatrix = Math::Matrix<4, 4>({-1, 0, 0, 0, 0, 1, 0, 0, 0, 0, -1, -5, 0, 0, 0, 1});
 
-  EXPECT_EQ(camera.hsize, 128);
-  EXPECT_EQ(camera.vsize, 128);
+  EXPECT_EQ(camera.hsize, 512);
+  EXPECT_EQ(camera.vsize, 512);
   EXPECT_FLOAT_EQ(camera.fov, 1.0471975511965976);
-  EXPECT_EQ(camera.transform, IdentityMatrix /*Transformations::ViewTransform(Point(0, 0, 0), Point(1, 1, 1), Vector(0, 1, 0))*/);
+  EXPECT_EQ(camera.transform, expectedMatrix);
 }
 
 TEST(YamlTest, FullCamera)

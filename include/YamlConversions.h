@@ -267,10 +267,12 @@ namespace YAML
                 float value = kv.second.as<float>();
 
                 // Quick value confirmation
-                if ((value < 0 || value > 1) && !(key == "shininess" || key == "refractive-index")) {
+                if ((value < 0 || value > 1) && !(key == "shininess" || key == "refractive-index"))
+                {
                     throw std::runtime_error("Value for '" + key + "' must be a number from 0 to 1");
                 }
-                else if (value < 0) {
+                else if (value < 0)
+                {
                     throw std::runtime_error("Value for '" + key + "' must be greateater than or equal to 0");
                 }
 
@@ -421,9 +423,14 @@ namespace YAML
                 throw std::runtime_error("Value given for 'field-of-view' is invalid: 0 < 'field-of-view' < 3.14159");
             }
 
+            if (rhs.HalfWidth() <= 0 || rhs.HalfHeight() <= 0)
+            {
+                throw std::runtime_error("Value for 'width' and 'height' on camera must be > 0");
+            }
+
             // Some default basis vectors
-            Math::Point from(0, 0, 0);
-            Math::Point to(0, 0, -1);
+            Math::Point from(0, 0, -5);
+            Math::Point to(0, 0, 0);
             Math::Vector up(0, 1, 0);
 
             if (node["from"])
