@@ -69,8 +69,8 @@
                     "description": "A minimal camera implementation.",
                     "body": {
                         "add": "camera",
-                        "width": 128,
-                        "height": 128,
+                        "width": 512,
+                        "height": 512,
                         "field-of-view": 1.0472
                     }
                 },
@@ -80,12 +80,12 @@
                     "description": "A camera with all fields defined.",
                     "body": {
                         "add": "camera",
-                        "width": 128,
-                        "height": 128,
+                        "width": 512,
+                        "height": 512,
                         "field-of-view": 1.0472,
                         "reflection-depth": 5,
-                        "from": "[0, 0, 0]",
-                        "to": "[0, 0, -1]",
+                        "from": "[0, 0, -5]",
+                        "to": "[0, 0, 0]",
                         "up": "[0, 1, 0]"
                     }
                 }

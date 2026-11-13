@@ -56,7 +56,7 @@
             margin-bottom: 1rem;
         }
 
-        p>code {
+        span.pre {
             background: #1e1e1e;
         }
     </style>
@@ -86,7 +86,7 @@
             </div>
             <div class="col-md-6 d-flex flex-column p-0" id="right-col">
                 <div id="canvas-container"
-                    class="flex-grow-1 d-flex justify-content-center align-items-center position-relative">
+                    class="flex-grow-1 d-flex justify-content-center align-items-center position-relative d-none">
                     <canvas id="output"></canvas>
 
                     <!-- Progress bar overlay -->
@@ -99,7 +99,7 @@
                     </div>
                 </div>
 
-                <div id="yaml-documentation" class="container-fluid p-3 d-none">
+                <div id="yaml-documentation" class="container-fluid p-3">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="mb-0">RayTracer Documentation</h5>
                         <span class="badge bg-secondary">Reference</span>
@@ -127,28 +127,45 @@
                                 <div class="accordion-body">
 
                                     <p>
-                                        This application uses YAML as input to the RayTracer.
-                                        YAML input consists of a list of objects.
-                                        Each object represents an element added to
-                                        the scene or a reusable definition.
+                                        This application uses YAML (YAML Ain't Markup Language), a
+                                        human-readable data format, as input to the RayTracer.
+                                        A scene consists of a list of objects and reusable definitions,
+                                        including shapes, cameras, lights, materials, transforms, and patterns.
                                     </p>
 
-                                    <p>All members of a list are lines beginning at the same indentation level starting
-                                        with a
-                                        <code
-                                            class="docutils literal notranslate"><span class="pre">"- </span><span class="pre">"</span></code>
-                                        (a dash and a space):
+                                    <p>
+                                        YAML lists of objects use hyphens (<code><span class="pre">-</span></code>)
+                                        to start each entry, followed by indented key-value pairs
+                                        that define its properties. Each hyphen represents a new
+                                        entry, and properties belonging to that entry must be
+                                        indented consistently.
                                     </p>
 
                                     <div class="alert alert-info small">
-                                        Every top-level entry begins with a hyphen (-).
-                                    </div>
-                                    <div class="alert alert-info small">
-                                        Indents determine parent/child relationships on objects.
+                                        <b>Tip:</b> Lists can also be written using square brackets
+                                        to keep values on a single line. For example,
+                                        <code><span class="pre">color: [0, 0.2, 0]</span></code>
+                                        defines a list of three values. This notation is commonly
+                                        used for properties such as colors, positions, and vectors.
                                     </div>
 
                                     <p>
-                                        Below is an example of a starter scene with a visible element:
+                                        Indentation also determines how properties are grouped
+                                        together. Properties indented beneath another property
+                                        belong to it, allowing you to define nested structures.
+                                        This is particularly useful when defining materials,
+                                        patterns, and transforms.
+                                    </p>
+
+                                    <p>
+                                        Property names must match those expected by the RayTracer.
+                                        While YAML allows you to use different names, the RayTracer
+                                        will only recognize supported properties.
+                                    </p>
+
+                                    <p>
+                                        Below is an example of a starter scene containing a camera,
+                                        a light source, and a sphere:
                                     </p>
 
                                     <pre><code class="language-yaml">
@@ -158,7 +175,7 @@
   field-of-view: 1.0472
 
 - add: light
-  at: [0, 5, -5]
+  at: [0, 5, 0]
   intensity: [1, 1, 1]
 
 - add: sphere
@@ -167,7 +184,8 @@
     - [translate, 0, 0, -3]</code></pre>
 
                                     <div class="alert alert-warning small">
-                                        A scene must have <b><u>exactly</u></b> 1 camera in order to render.
+                                        <b>Important Note:</b> A scene must contain <b><u>exactly one</u></b> camera
+                                        in order to render.
                                     </div>
 
                                 </div>
@@ -188,59 +206,106 @@
                                 <div class="accordion-body">
 
                                     <h6>Camera</h6>
-                                    <p>Controls the viewpoint and generated image.</p>
+                                    <p>
+                                        The camera controls the viewpoint and resolution of the generated
+                                        image. Every scene must contain exactly one camera.
+                                    </p>
+
+                                    <p>
+                                        The <code>width</code>, <code>height</code>, and
+                                        <code>field-of-view</code> properties are required.
+                                        All other properties are optional and will use their default
+                                        values if omitted.
+                                    </p>
+
+                                    <h6>Properties</h6>
 
                                     <table class="table table-sm table-bordered">
                                         <thead>
                                             <tr>
                                                 <th>Property</th>
-                                                <th>Required</th>
                                                 <th>Description</th>
+                                                <th>Required</th>
+                                                <th>Default</th>
+                                                <th>Valid Values / Constraints</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <tr>
-                                                <td><code>add</code></td>
-                                                <td>Yes</td>
-                                                <td>Must be camera</td>
-                                            </tr>
-                                            <tr>
                                                 <td><code>width</code></td>
-                                                <td>Yes</td>
                                                 <td>Image width in pixels</td>
+                                                <td>Yes</td>
+                                                <td>&mdash;</td>
+                                                <td>Greater than 0</td>
                                             </tr>
                                             <tr>
                                                 <td><code>height</code></td>
-                                                <td>Yes</td>
                                                 <td>Image height in pixels</td>
+                                                <td>Yes</td>
+                                                <td>&mdash;</td>
+                                                <td>Greater than 0</td>
                                             </tr>
                                             <tr>
                                                 <td><code>field-of-view</code></td>
-                                                <td>Yes</td>
                                                 <td>Field of view in radians</td>
+                                                <td>Yes</td>
+                                                <td>&mdash;</td>
+                                                <td>Greater than 0 and less than 2&pi;</td>
                                             </tr>
                                             <tr>
                                                 <td><code>reflection-depth</code></td>
+                                                <td>Maximum number of ray bounces</td>
                                                 <td>No</td>
-                                                <td>Maximum ray bounces</td>
+                                                <td><code>5</code></td>
+                                                <td>0 or greater</td>
                                             </tr>
                                             <tr>
                                                 <td><code>from</code></td>
-                                                <td>No</td>
                                                 <td>Camera position</td>
+                                                <td>No</td>
+                                                <td><code>[0, 0, -5]</code></td>
+                                                <td>3D vector</td>
                                             </tr>
                                             <tr>
                                                 <td><code>to</code></td>
-                                                <td>No</td>
                                                 <td>Look-at position</td>
+                                                <td>No</td>
+                                                <td><code>[0, 0, 0]</code></td>
+                                                <td>3D vector</td>
                                             </tr>
                                             <tr>
                                                 <td><code>up</code></td>
-                                                <td>No</td>
                                                 <td>Camera up vector</td>
+                                                <td>No</td>
+                                                <td><code>[0, 1, 0]</code></td>
+                                                <td>3D vector</td>
                                             </tr>
                                         </tbody>
                                     </table>
+
+                                    <div class="alert alert-warning small">
+                                        <b>Performance Note:</b> Image resolution
+                                        (<code>width</code> and <code>height</code>) and reflection
+                                        depth (<code>reflection-depth</code>) can significantly
+                                        affect rendering time. Higher values generally result in
+                                        longer render times.
+                                    </div>
+
+                                    <h6>Example</h6>
+                                    <p>
+                                        The following example defines a camera using only the required
+                                        properties. All optional properties will use their default values.
+                                    </p>
+
+                                    <pre><code class="language-yaml">- add: camera
+  width: 512
+  height: 512
+  field-of-view: 1.0472</code></pre>
+
+                                    <p>
+                                        You can also explicitly specify optional properties to customize
+                                        the camera:
+                                    </p>
 
                                     <pre><code class="language-yaml">- add: camera
   width: 512
@@ -249,6 +314,16 @@
   from: [0, 0, -5]
   to: [0, 0, 0]
   up: [0, 1, 0]</code></pre>
+
+                                    <div class="alert alert-warning small">
+                                        <b>Important:</b> The <code>up</code> vector must be non-zero
+                                        and must not be parallel to the camera's viewing direction
+                                        (the direction from <code>from</code> to <code>to</code>).
+                                        Otherwise, the camera orientation cannot be calculated.
+                                    </div>
+
+
+
 
                                     <hr>
 
@@ -571,7 +646,7 @@
                 <label class="btn btn-outline-secondary" for="toggle-fit-btn">Show Native Resolution</label>
 
                 <!-- Toggle Documentation checkbox -->
-                <input type="checkbox" class="btn-check" id="toggle-doc-btn" autocomplete="off">
+                <input type="checkbox" class="btn-check" id="toggle-doc-btn" autocomplete="off" checked>
                 <label class="btn btn-outline-secondary" for="toggle-doc-btn">Show Documentation</label>
             </div>
         </div>
