@@ -504,79 +504,135 @@
                                 <div class="accordion-body">
 
                                     <p>
-                                        Materials determine how an object's surface
-                                        interacts with light.
+                                        Materials determine how an object's surface interacts with light,
+                                        controlling its color, shading, reflectivity, and transparency.
+                                        Materials can also use patterns to create more complex surface appearances.
                                     </p>
+
+
+                                    <h6>Properties</h6>
 
                                     <table class="table table-sm table-bordered">
                                         <thead>
                                             <tr>
                                                 <th>Property</th>
-                                                <th>Default</th>
                                                 <th>Description</th>
+                                                <th>Required</th>
+                                                <th>Default</th>
+                                                <th>Valid Values / Constraints</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <tr>
-                                                <td>color</td>
-                                                <td>[1,1,1]</td>
-                                                <td>Base RGB color</td>
+                                                <td><code>color</code></td>
+                                                <td>Base color of the material</td>
+                                                <td>No*</td>
+                                                <td><code>[1, 1, 1]</code></td>
+                                                <td>RGB vector</td>
                                             </tr>
                                             <tr>
-                                                <td>diffuse</td>
-                                                <td>0.9</td>
-                                                <td>Matte scattering</td>
-                                            </tr>
-                                            <tr>
-                                                <td>ambient</td>
-                                                <td>0.1</td>
-                                                <td>Background illumination</td>
-                                            </tr>
-                                            <tr>
-                                                <td>specular</td>
-                                                <td>0.9</td>
-                                                <td>Highlight brightness</td>
-                                            </tr>
-                                            <tr>
-                                                <td>shininess</td>
-                                                <td>200</td>
-                                                <td>Highlight sharpness</td>
-                                            </tr>
-                                            <tr>
-                                                <td>reflective</td>
-                                                <td>0</td>
-                                                <td>Reflectivity</td>
-                                            </tr>
-                                            <tr>
-                                                <td>transparency</td>
-                                                <td>0</td>
-                                                <td>Transparency</td>
-                                            </tr>
-                                            <tr>
-                                                <td>refractive-index</td>
-                                                <td>1</td>
-                                                <td>Light refraction</td>
-                                            </tr>
-                                            <tr>
-                                                <td>pattern</td>
+                                                <td><code>pattern</code></td>
+                                                <td>Defines a pattern applied to the object's surface</td>
+                                                <td>No*</td>
                                                 <td>None</td>
-                                                <td>Surface pattern</td>
+                                                <td>Pattern definition</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>ambient</code></td>
+                                                <td>Controls how much the surface is illuminated independently of direct
+                                                    lighting</td>
+                                                <td>No</td>
+                                                <td><code>0.1</code></td>
+                                                <td>Between 0 and 1</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>diffuse</code></td>
+                                                <td>Controls how much the surface scatters light in different directions
+                                                </td>
+                                                <td>No</td>
+                                                <td><code>0.9</code></td>
+                                                <td>Between 0 and 1</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>specular</code></td>
+                                                <td>Controls the brightness of specular highlights</td>
+                                                <td>No</td>
+                                                <td><code>0.9</code></td>
+                                                <td>Between 0 and 1</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>shininess</code></td>
+                                                <td>Controls the size and sharpness of specular highlights</td>
+                                                <td>No</td>
+                                                <td><code>200</code></td>
+                                                <td>0 or greater</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>reflective</code></td>
+                                                <td>Controls how much the surface reflects light</td>
+                                                <td>No</td>
+                                                <td><code>0</code></td>
+                                                <td>Between 0 and 1</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>transparency</code></td>
+                                                <td>Controls how much light passes through the surface</td>
+                                                <td>No</td>
+                                                <td><code>0</code></td>
+                                                <td>Between 0 and 1</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>refractive-index</code></td>
+                                                <td>Determines how much light bends when passing through the material
+                                                </td>
+                                                <td>No</td>
+                                                <td><code>1</code></td>
+                                                <td>0 or greater</td>
                                             </tr>
                                         </tbody>
                                     </table>
 
-                                    <pre><code class="language-yaml">material:
-  color: [1, 1, 1]
-  diffuse: 0.1
-  shininess: 300
-  reflective: 0.9
-  transparency: 0.9
-  refractive-index: 1.5</code></pre>
+                                    <div class="alert alert-info small">
+                                        <b>Tip:</b> All material properties are optional and will use
+                                        their default values if omitted. This allows you to customize
+                                        only the properties you need.
+                                    </div>
 
-                                    <p class="small text-muted">
-                                        RGB values must be between 0 and 1.
+                                    <div class="alert alert-warning small">
+                                        <b>Important:</b> A material can define either <code>color</code>
+                                        or <code>pattern</code>, but never both. If neither is specified,
+                                        the material will use its default white color.
+                                    </div>
+
+                                    <h6>Example</h6>
+
+                                    <p>
+                                        The following example creates a red material with reduced diffuse
+                                        lighting and increased reflectivity:
                                     </p>
 
+                                    <pre><code class="language-yaml">material:
+  color: [1, 0, 0]
+  diffuse: 0.5
+  reflective: 0.5</code></pre>
+
+                                    <p>
+                                        You can also define a pattern instead of a color:
+                                    </p>
+
+                                    <pre><code class="language-yaml">material:
+  pattern:
+    type: stripes
+    colors:
+      - [0, 0, 0]
+      - [1, 1, 1]</code></pre>
+
+                                    <div class="alert alert-info small">
+                                        <b>Tip:</b> See the Patterns section for more information about available
+                                        pattern types and their properties. Materials can also be defined
+                                        and reused across multiple objects. See the Definitions section
+                                        for more information.
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -595,40 +651,189 @@
                                 <div class="accordion-body">
 
                                     <p>
-                                        Patterns replace a material's solid color
-                                        with a procedural surface design.
+                                        Patterns define how a material's appearance varies across an object's
+                                        surface. They can be used to create procedural designs using colors
+                                        or combinations of other patterns.
                                     </p>
 
-                                    <ul>
-                                        <li><code>checkers</code> - Checkerboard</li>
-                                        <li><code>stripes</code> - Alternating stripes</li>
-                                        <li><code>gradient</code> - Color gradient</li>
-                                        <li><code>ring</code> - Concentric rings</li>
-                                        <li><code>radial</code> - Radial pattern</li>
-                                        <li><code>blend</code> - Blended colors/patterns</li>
-                                        <li><code>perturb</code> - Randomized distortion</li>
-                                    </ul>
+                                    <p>
+                                        Patterns are assigned to a material using the <code>pattern</code>
+                                        property in place of <code>color</code>. Each pattern requires a
+                                        type and a list of colors or child patterns.
+                                    </p>
+
+                                    <h6>Pattern Types</h6>
+
+                                    <table class="table table-sm table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Type</th>
+                                                <th>Description</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><code>checkers</code></td>
+                                                <td>Creates a checkerboard pattern.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>stripes</code></td>
+                                                <td>Creates alternating stripes.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>gradient</code></td>
+                                                <td>Creates a gradual transition between colors.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>ring</code></td>
+                                                <td>Creates concentric rings.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>radial</code></td>
+                                                <td>Creates a radial gradint ring.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>blend</code></td>
+                                                <td>Combines two colors or child patterns.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>perturb</code></td>
+                                                <td>Distorts another pattern using perlin noise.</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
+                                    <h6>Properties</h6>
+
+                                    <table class="table table-sm table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Property</th>
+                                                <th>Description</th>
+                                                <th>Required</th>
+                                                <th>Default</th>
+                                                <th>Valid Values / Constraints</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><code>type</code></td>
+                                                <td>Determines the type of pattern</td>
+                                                <td>Yes</td>
+                                                <td>&mdash;</td>
+                                                <td>Supported pattern type</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>colors</code></td>
+                                                <td>
+                                                    Colors or child patterns used to create the pattern
+                                                    <br>
+                                                    Requires 2 entries / 1 entry (<code>perturb</code> only).
+                                                </td>
+                                                <td>Yes</td>
+                                                <td>&mdash;</td>
+                                                <td>
+                                                    RGB vector or Pattern definition
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>seed</code></td>
+                                                <td>
+                                                    Determines the random seed used for pattern distortion
+                                                    <br>
+                                                    Only affects <code>perturb</code>
+                                                </td>
+                                                <td>No</td>
+                                                <td><code>1337</code></td>
+                                                <td>Integer</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>strength</code></td>
+                                                <td>
+                                                    Controls the amount of distortion applied to the pattern
+                                                    <br>
+                                                    Only affects <code>perturb</code>
+                                                </td>
+                                                <td>No</td>
+                                                <td><code>0.3</code></td>
+                                                <td>Numeric value</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>transform</code></td>
+                                                <td>Controls the position, rotation, and scale of the pattern</td>
+                                                <td>No</td>
+                                                <td>Identity transform</td>
+                                                <td>Transform definition</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
+                                    <div class="alert alert-info small">
+                                        <b>Tip:</b> The order of entries in <code>colors</code> matters.
+                                        Each entry can be either an RGB color or a child pattern,
+                                        allowing patterns to be combined.
+                                    </div>
+
+                                    <div class="alert alert-info small">
+                                        <b>Tip:</b> The <code>seed</code> and <code>strength</code>
+                                        properties only affect <code>perturb</code> patterns.
+                                        If omitted, they default to <code>1337</code> and
+                                        <code>0.3</code>, respectively. It is recommended to keep
+                                        <code>strength</code> below <code>1</code> for a subtle distortion.
+                                    </div>
+
+                                    <div class="alert alert-warning small">
+                                        <b>Important:</b> All patterns except <code>perturb</code>
+                                        require exactly two entries in <code>colors</code>.
+                                        Perturb patterns require exactly one entry, which defines
+                                        the pattern being distorted.
+                                    </div>
+
+                                    <h6>Example</h6>
+
+                                    <p>
+                                        The following example creates a striped pattern using black
+                                        and white:
+                                    </p>
 
                                     <pre><code class="language-yaml">material:
   pattern:
     type: stripes
     colors:
       - [0, 0, 0]
-      - [1, 1, 1]</code></pre>
+      - [1, 1, 1]
+    </code></pre>
 
-                                    <h6>Pattern Properties</h6>
+                                    <p>
+                                        Patterns can also use previously defined patterns as their colors.
+                                        The following example defines a striped pattern and then uses it
+                                        as the input for a perturb pattern:
+                                    </p>
 
-                                    <ul>
-                                        <li><code>type</code>: Pattern type.</li>
-                                        <li><code>colors</code>: Colors or child patterns.</li>
-                                        <li><code>seed</code>: Random seed for perturb.</li>
-                                        <li><code>strength</code>: Perturbation strength.</li>
-                                        <li><code>transform</code>: Pattern positioning.</li>
-                                    </ul>
+                                    <pre><code class="language-yaml">- define: stripes-pattern
+  value:
+    type: stripes
+    colors:
+      - [0, 0, 0]
+      - [1, 1, 1]
+
+- add: cube
+  material:
+    pattern:
+      type: perturb
+      colors:
+        - stripes-pattern
+      seed: 1337
+      strength: 0.3
+  transform:</code></pre>
+
 
                                     <div class="alert alert-info small">
-                                        Standard patterns require exactly two colors.
-                                        Perturb patterns require exactly one.
+                                        <b>Tip:</b> Transforms can also be applied to patterns
+                                        independently of their objects, allowing you to adjust
+                                        the position, rotation, and scale of a pattern without
+                                        changing the object's transformation.
+                                        See the Transforms section for more information.
                                     </div>
 
                                 </div>
@@ -650,54 +855,116 @@
                                 <div class="accordion-body">
 
                                     <p>
-                                        Transforms control the position, rotation,
-                                        and scale of an object.
+                                        Transforms determine the position, orientation, and scale
+                                        of an object in the scene. They can be used to move, rotate,
+                                        resize, and distort objects using a sequence of transformation
+                                        operations.
                                     </p>
+
+                                    <p>
+                                        Transforms are assigned using the <code>transform</code>
+                                        property and consist of a list of operations. Each operation
+                                        is applied in the order it appears in the list.
+                                    </p>
+
+                                    <h6>Transformation Operations</h6>
 
                                     <table class="table table-sm table-bordered">
                                         <thead>
                                             <tr>
                                                 <th>Operation</th>
+                                                <th>Description</th>
                                                 <th>Format</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <tr>
-                                                <td>Translate</td>
+                                                <td><code>translate</code></td>
+                                                <td>Moves the object along the X, Y, and Z axes.</td>
                                                 <td><code>[translate, x, y, z]</code></td>
                                             </tr>
                                             <tr>
-                                                <td>Scale</td>
+                                                <td><code>scale</code></td>
+                                                <td>Multiplies the object's size along the X, Y, and Z axes.</td>
                                                 <td><code>[scale, x, y, z]</code></td>
                                             </tr>
                                             <tr>
-                                                <td>Rotate X</td>
+                                                <td><code>rotate-x</code></td>
+                                                <td>Rotates the object around the world's X axis.</td>
                                                 <td><code>[rotate-x, radians]</code></td>
                                             </tr>
                                             <tr>
-                                                <td>Rotate Y</td>
+                                                <td><code>rotate-y</code></td>
+                                                <td>Rotates the object around the world's Y axis.</td>
                                                 <td><code>[rotate-y, radians]</code></td>
                                             </tr>
                                             <tr>
-                                                <td>Rotate Z</td>
+                                                <td><code>rotate-z</code></td>
+                                                <td>Rotates the object around the world's Z axis.</td>
                                                 <td><code>[rotate-z, radians]</code></td>
                                             </tr>
                                             <tr>
-                                                <td>Shear</td>
+                                                <td><code>shear</code></td>
+                                                <td>Skews the object along the specified axes.</td>
                                                 <td><code>[shear, xy, xz, yx, yz, zx, zy]</code></td>
                                             </tr>
                                         </tbody>
                                     </table>
 
+                                    <div class="alert alert-info small">
+                                        <b>Tip:</b> Translation and scaling operations require
+                                        three numeric values, one for each axis. Rotation operations
+                                        require a single numeric value representing the rotation
+                                        angle in radians. Shearing requires six numeric values,
+                                        representing the shear factors between the axes.
+                                    </div>
+
+                                    <div class="alert alert-warning small">
+                                        <b>Important:</b> The order of transformation operations
+                                        matters. Each operation is applied in sequence, so changing
+                                        their order can produce a different result. Rotations are
+                                        performed around the world's axes.
+                                    </div>
+
+                                    <h6>Example</h6>
+
+                                    <p>
+                                        The following example scales an object to twice its original
+                                        size, rotates it 45 degrees around the Y axis, and then moves
+                                        it along the Y and negative Z axes:
+                                    </p>
+
                                     <pre><code class="language-yaml">transform:
   - [scale, 2, 2, 2]
   - [rotate-y, 0.7854]
-  - [translate, 0, 1, -3]</code></pre>
-
-                                    <p class="small text-muted">
-                                        Rotation values are specified in radians.
+  - [translate, 0, 1, -3]
+</code></pre>
+                                    <p>
+                                        Transforms can also be defined and reused across multiple
+                                        objects. This is useful when several objects need to share
+                                        related positioning, rotation, or scaling operations.
                                     </p>
 
+                                    <pre><code class="language-yaml">- define: shared-transform
+  value:
+  - [scale, 1.5, 1.5, 1.5]
+  - [translate, 2, 0, 5]
+
+- add: cube
+  material: 
+  transform: shared-transform
+
+- add: cube 
+  material: 
+  transform: 
+  - shared-transform
+  - [translate, -4, 0, 0]
+</code></pre>
+                                    <div class="alert alert-info small">
+                                        <b>Info:</b> Transforms can also be extended (See Definitions).
+                                        In practice, this behaves identically to the above example of putting
+                                        the definition in the transform list, making it less preferred.
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -707,7 +974,7 @@
                             <h2 class="accordion-header">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                     data-bs-target="#yamlDefinitions">
-                                    Reusable Definitions
+                                    Definitions
                                 </button>
                             </h2>
 
@@ -717,42 +984,121 @@
                                 <div class="accordion-body">
 
                                     <p>
-                                        Define reusable materials, patterns, or
-                                        transforms to avoid repeating configurations.
+                                        Definitions allow you to create reusable configurations for
+                                        materials, patterns, and transforms. They help reduce
+                                        repetition and make it easier to maintain consistent
+                                        properties across multiple objects.
                                     </p>
 
-                                    <h6>Define</h6>
+                                    <p>
+                                        Definitions are created using the <code>define</code>
+                                        property and can be referenced by name wherever the
+                                        corresponding configuration is supported.
+                                    </p>
+
+                                    <h6>Properties</h6>
+
+                                    <table class="table table-sm table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Property</th>
+                                                <th>Description</th>
+                                                <th>Required</th>
+                                                <th>Default</th>
+                                                <th>Valid Values / Constraints</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><code>value</code></td>
+                                                <td>Configuration stored in the definition</td>
+                                                <td>Yes</td>
+                                                <td>&mdash;</td>
+                                                <td>Material, pattern, or transform definition</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>extend</code></td>
+                                                <td>Existing definition to inherit properties from</td>
+                                                <td>No</td>
+                                                <td>None</td>
+                                                <td>Name of an existing definition</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
+                                    <h6>Example</h6>
+
+                                    <p>
+                                        The following example defines a red material with reduced
+                                        diffuse lighting:
+                                    </p>
 
                                     <pre><code class="language-yaml">- define: red-material
-  value:
-    color: [1, 0, 0]
-    diffuse: 0.9</code></pre>
+  value: 
+    color: [1, 0, 0] 
+    diffuse: 0.9
+</code></pre>
 
-                                    <h6>Use a definition</h6>
+                                    <p>
+                                        Once defined, the material can be referenced by name when
+                                        assigning materials to objects:
+                                    </p>
 
                                     <pre><code class="language-yaml">- add: sphere
-  material: red-material
+  material: red-material 
   transform:
-    - [translate, 0, 0, -3]</code></pre>
+    - [translate, 0, 0, -3]
+</code></pre>
 
-                                    <h6>Extend</h6>
+                                    <div class="alert alert-info small">
+                                        <b>Tip:</b> Definitions can be referenced by multiple objects,
+                                        allowing them to share the same material, pattern, or transform
+                                        configuration without repeating its properties.
+                                    </div>
+
+                                    <h6>Extending Definitions</h6>
+
+                                    <p>
+                                        Existing definitions can also be extended to create new
+                                        configurations. The <code>extend</code> property specifies
+                                        which definition to inherit from, while <code>value</code>
+                                        contains additional or overridden properties.
+                                    </p>
+
+                                    <p>
+                                        For example, the following definition extends the red
+                                        material by increasing its specular reflection and
+                                        shininess:
+                                    </p>
 
                                     <pre><code class="language-yaml">- define: shiny-red
-  extend: red-material
-  value:
-    specular: 1
-    shininess: 300</code></pre>
+  extend: red-material 
+  value: 
+    specular: 1 
+    shininess: 300
+</code></pre>
 
-                                    <ul>
-                                        <li><code>define</code>: New definition name.</li>
-                                        <li><code>extend</code>: Existing definition to inherit from (optional).
-                                        </li>
-                                        <li><code>value</code>: Material, pattern, or transform configuration.
-                                        </li>
-                                    </ul>
+                                    <p>
+                                        The resulting material retains the properties of
+                                        <code>red-material</code> while applying the additional
+                                        properties specified in <code>value</code>.
+                                    </p>
+
+                                    <div class="alert alert-info small">
+                                        <b>Tip:</b> Definitions can be extended multiple times,
+                                        allowing you to build upon existing configurations
+                                        without modifying the original definition.
+                                    </div>
+
+                                    <p>
+                                        Definitions can be used with materials, patterns, and
+                                        transforms. See their respective sections for examples
+                                        of how definitions can be referenced and extended.
+                                    </p>
 
                                 </div>
                             </div>
+
                         </div>
 
                     </div>
