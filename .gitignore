@@ -48,3 +48,4 @@ web/public/raytracer.js
 web/public/raytracer.wasm
 
 # Emscripten SDK (Because it's actually in the repository when I use codespaces on other computers)
+/emsdk/
