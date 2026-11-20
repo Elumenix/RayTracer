@@ -118,14 +118,13 @@
                         <!-- BASICS OF YAML -->
                         <div class="accordion-item">
                             <h2 class="accordion-header">
-                                <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                     data-bs-target="#yamlBasics">
                                     YAML Basics
                                 </button>
                             </h2>
 
-                            <div id="yamlBasics" class="accordion-collapse collapse show"
-                                data-bs-parent="#yamlAccordion">
+                            <div id="yamlBasics" class="accordion-collapse collapse" data-bs-parent="#yamlAccordion">
 
                                 <div class="accordion-body">
 
@@ -187,10 +186,9 @@
     - [translate, 0, 0, -3]</code></pre>
 
                                     <div class="alert alert-warning small">
-                                        <b>Important Note:</b> A scene must contain <b><u>exactly one</u></b> camera
+                                        <b>Important:</b> A scene must contain <b><u>exactly one</u></b> camera
                                         in order to render.
                                     </div>
-
                                 </div>
                             </div>
                         </div>
@@ -836,7 +834,6 @@
                                         changing the object's transformation.
                                         See the Transforms section for more information.
                                     </div>
-
                                 </div>
                             </div>
                         </div>
@@ -1012,14 +1009,14 @@
                                         <tbody>
                                             <tr>
                                                 <td><code>value</code></td>
-                                                <td>Configuration stored in the definition</td>
+                                                <td>The properties that make up this definition</td>
                                                 <td>Yes</td>
                                                 <td>&mdash;</td>
                                                 <td>Material, pattern, or transform definition</td>
                                             </tr>
                                             <tr>
                                                 <td><code>extend</code></td>
-                                                <td>Existing definition to inherit properties from</td>
+                                                <td>Name of the existing definition to inherit properties from</td>
                                                 <td>No</td>
                                                 <td>None</td>
                                                 <td>Name of an existing definition</td>
@@ -1080,10 +1077,21 @@
 </code></pre>
 
                                     <p>
-                                        The resulting material retains the properties of
-                                        <code>red-material</code> while applying the additional
-                                        properties specified in <code>value</code>.
+                                        The resulting material inherits all properties from <code>red-material</code>,
+                                        with any properties specified in <code>value</code> added or overridden.
                                     </p>
+
+                                    <div class="alert alert-warning small">
+                                        <b>Important:</b> Users do not need to specify the type of object a definition
+                                        represents. The program determines its type based on the properties provided, as
+                                        long as the definition is properly formatted.
+                                        <br>
+                                        The same applies when extending definitions. However, any properties added or
+                                        overridden must be compatible with the type of the definition being extended.
+                                        For example, extending a material definition allows you to add or override
+                                        material properties, but not pattern or transform properties.
+
+                                    </div>
 
                                     <div class="alert alert-info small">
                                         <b>Tip:</b> Definitions can be extended multiple times,
@@ -1099,9 +1107,7 @@
 
                                 </div>
                             </div>
-
                         </div>
-
                     </div>
                 </div>
             </div>
